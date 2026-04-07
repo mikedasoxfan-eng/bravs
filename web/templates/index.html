@@ -330,6 +330,205 @@ nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
   color: var(--text-3);
 }
 
+/* Nav tabs */
+.nav-tabs {
+  display: flex;
+  gap: 0;
+  max-width: 680px;
+  margin: 24px auto 0;
+  padding: 0 24px;
+}
+.nav-tab {
+  padding: 8px 16px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 1px solid var(--border);
+  border-right: none;
+  background: var(--surface);
+  color: var(--text-3);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.nav-tab:first-child { border-radius: 6px 0 0 6px; }
+.nav-tab:last-child { border-radius: 0 6px 6px 0; border-right: 1px solid var(--border); }
+.nav-tab:hover { color: var(--text); }
+.nav-tab.active { background: var(--text); color: var(--surface); border-color: var(--text); }
+
+/* Compare panel */
+.compare-bar {
+  max-width: 760px;
+  margin: 12px auto 0;
+  padding: 0 24px;
+  display: none;
+}
+.compare-bar.visible { display: block; }
+.compare-slots {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.compare-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 11px;
+}
+.compare-chip img { width: 24px; height: 24px; border-radius: 50%; }
+.compare-chip .remove {
+  cursor: pointer;
+  color: var(--text-4);
+  margin-left: 4px;
+  font-weight: 700;
+}
+.compare-chip .remove:hover { color: var(--red); }
+.compare-btn {
+  padding: 6px 14px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--text);
+  color: var(--surface);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+}
+.compare-btn:hover { opacity: 0.85; }
+.add-compare-btn {
+  padding: 5px 12px;
+  font-family: inherit;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px dashed var(--border);
+  border-radius: 4px;
+  color: var(--text-3);
+  cursor: pointer;
+  margin-top: 8px;
+}
+.add-compare-btn:hover { border-color: var(--text-3); color: var(--text); }
+
+/* Compare table */
+.compare-grid {
+  max-width: 960px;
+  margin: 24px auto 64px;
+  padding: 0 24px;
+  display: none;
+}
+.compare-grid.visible { display: block; animation: fadeUp 0.35s ease; }
+.cmp-table {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.cmp-table th, .cmp-table td {
+  padding: 10px 14px;
+  text-align: center;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.cmp-table th {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-4);
+  font-weight: 500;
+  background: var(--bg);
+}
+.cmp-table td:first-child { text-align: left; font-weight: 600; }
+.cmp-table .winner { color: var(--green); font-weight: 700; }
+.cmp-photo { width: 32px; height: 32px; border-radius: 50%; vertical-align: middle; margin-right: 6px; }
+
+/* Award race */
+.award-wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: none;
+}
+.award-wrap.visible { display: block; }
+.award-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.award-controls select, .award-controls input {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+}
+.award-controls .run-btn {
+  padding: 8px 18px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--text);
+  color: var(--surface);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+}
+.award-race-results {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.race-row {
+  display: grid;
+  grid-template-columns: 36px 40px 1fr 80px 80px 80px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.race-row:hover { background: var(--bg); }
+.race-row:last-child { border-bottom: none; }
+.race-row .rank { font-weight: 700; color: var(--text-3); text-align: right; }
+.race-row .rank.gold { color: #b45309; }
+.race-row img { width: 32px; height: 32px; border-radius: 50%; }
+.race-row .pname { font-weight: 600; }
+.race-row .pteam { font-size: 11px; color: var(--text-3); }
+.race-row .bval { font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+.race-row .bval.top { color: var(--green); }
+.race-header {
+  display: grid;
+  grid-template-columns: 36px 40px 1fr 80px 80px 80px;
+  gap: 10px;
+  padding: 8px 16px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-4);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.race-header span:nth-child(n+4) { text-align: right; }
+
 /* Loading */
 .loading {
   text-align: center;
@@ -391,41 +590,92 @@ nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
   <span class="tagline">Bayesian Runs Above Value Standard</span>
 </nav>
 
-<div class="search-wrap">
-  <input
-    class="search-input"
-    id="search"
-    type="text"
-    placeholder="Search any MLB player..."
-    autocomplete="off"
-    spellcheck="false"
-  >
-  <div class="search-hint" id="search-hint">Babe Ruth, Mike Trout, Pedro Martinez, Shohei Ohtani...</div>
-  <div class="dropdown" id="dropdown"></div>
+<div class="nav-tabs" id="nav-tabs">
+  <button class="nav-tab active" data-tab="player" onclick="switchTab('player')">Player</button>
+  <button class="nav-tab" data-tab="awards" onclick="switchTab('awards')">Award Races</button>
 </div>
 
-<div class="seasons-wrap" id="seasons-wrap">
-  <div class="seasons-label">Select season</div>
-  <div class="seasons-scroll" id="seasons-scroll"></div>
+<!-- === PLAYER TAB === -->
+<div id="tab-player">
+  <div class="search-wrap">
+    <input
+      class="search-input"
+      id="search"
+      type="text"
+      placeholder="Search any MLB player..."
+      autocomplete="off"
+      spellcheck="false"
+    >
+    <div class="search-hint" id="search-hint">Babe Ruth, Mike Trout, Pedro Martinez, Shohei Ohtani...</div>
+    <div class="dropdown" id="dropdown"></div>
+  </div>
+
+  <div class="seasons-wrap" id="seasons-wrap">
+    <div class="seasons-label">Select season</div>
+    <div class="seasons-scroll" id="seasons-scroll"></div>
+  </div>
+
+  <div class="compare-bar" id="compare-bar">
+    <div class="compare-slots" id="compare-slots"></div>
+  </div>
+
+  <div class="loading" id="loading">
+    <span>Computing BRAVS<span class="dots"></span></span>
+  </div>
+
+  <div class="error-card" id="error"></div>
+
+  <div class="result-wrap" id="result-wrap"></div>
+
+  <div class="compare-grid" id="compare-grid"></div>
+
+  <div class="empty" id="empty">
+    <h2>Search for a player above</h2>
+    <p>BRAVS computes a full Bayesian posterior over player value, decomposed into hitting, pitching, baserunning, fielding, leverage, and more. Works for any player in MLB history.</p>
+  </div>
 </div>
 
-<div class="loading" id="loading">
-  <span>Computing BRAVS<span class="dots"></span></span>
-</div>
-
-<div class="error-card" id="error"></div>
-
-<div class="result-wrap" id="result-wrap"></div>
-
-<div class="empty" id="empty">
-  <h2>Search for a player above</h2>
-  <p>BRAVS computes a full Bayesian posterior over player value, decomposed into hitting, pitching, baserunning, fielding, leverage, and more. Works for any player in MLB history.</p>
+<!-- === AWARD RACE TAB === -->
+<div id="tab-awards" style="display:none">
+  <div class="award-wrap visible">
+    <div style="margin-top:32px"></div>
+    <div class="award-controls">
+      <select id="award-type">
+        <option value="mvp">MVP</option>
+        <option value="cy_young">Cy Young</option>
+      </select>
+      <select id="award-league">
+        <option value="AL">AL</option>
+        <option value="NL">NL</option>
+      </select>
+      <input id="award-year" type="number" value="2023" min="1956" max="2025" style="width:80px">
+      <button class="run-btn" onclick="loadAwardRace()">Run Race</button>
+    </div>
+    <div class="loading" id="award-loading">
+      <span>Computing BRAVS for all candidates<span class="dots"></span></span>
+    </div>
+    <div id="award-results"></div>
+    <div class="empty" id="award-empty">
+      <h2>Rewrite history</h2>
+      <p>Pick an award, league, and year to see who should have won according to BRAVS. Every candidate gets a full probabilistic valuation and the field is ranked from most to least valuable.</p>
+    </div>
+  </div>
 </div>
 
 <script>
 const $ = id => document.getElementById(id);
 let debounceTimer = null;
 let currentPlayerId = null;
+let currentResult = null;
+const compareList = [];  // [{id, season, name, headshot, bravs}]
+
+// --- Tab switching ---
+function switchTab(tab) {
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.nav-tab[data-tab="${tab}"]`).classList.add('active');
+  $('tab-player').style.display = tab === 'player' ? 'block' : 'none';
+  $('tab-awards').style.display = tab === 'awards' ? 'block' : 'none';
+}
 
 // --- Search ---
 $('search').addEventListener('input', e => {
@@ -553,9 +803,9 @@ async function loadBRAVS(playerId, season) {
 }
 
 function renderResult(r) {
+  currentResult = r;
   const wrap = $('result-wrap');
   const cls = r.bravs >= 0 ? 'pos' : 'neg';
-  const sign = r.bravs >= 0 ? '' : '';
   const maxAbs = Math.max(...r.components.map(c => Math.abs(c.runs)), 8);
 
   // Component bars
@@ -628,9 +878,186 @@ function renderResult(r) {
     '<div class="sub-card">' +
       '<span>Total runs above FAT: ' + r.total_runs.toFixed(1) + '</span>' +
       '<span>Leverage multiplier: ' + r.leverage_mult.toFixed(3) + '</span>' +
-    '</div>';
+    '</div>' +
+    '<button class="add-compare-btn" onclick="addToCompare()">+ Add to comparison</button>';
 
   wrap.classList.add('visible');
+}
+
+// --- Compare ---
+function addToCompare() {
+  if (!currentResult || !currentPlayerId) return;
+  const r = currentResult;
+  const already = compareList.find(c => c.id == currentPlayerId && c.season == r.season);
+  if (already) return;
+  if (compareList.length >= 6) { compareList.shift(); }
+
+  compareList.push({
+    id: currentPlayerId, season: r.season, name: r.player_name,
+    headshot: r.headshot, bravs: r.bravs, bravs_war_eq: r.bravs_war_eq,
+    bravs_era_std: r.bravs_era_std, position: r.position,
+    team_abbrev: r.team_abbrev, ci90_lo: r.ci90_lo, ci90_hi: r.ci90_hi,
+    components: r.components, traditional: r.traditional,
+  });
+  renderCompareBar();
+}
+
+function removeFromCompare(idx) {
+  compareList.splice(idx, 1);
+  renderCompareBar();
+  if (compareList.length < 2) $('compare-grid').classList.remove('visible');
+}
+
+function renderCompareBar() {
+  const bar = $('compare-bar');
+  const slots = $('compare-slots');
+  if (!compareList.length) { bar.classList.remove('visible'); return; }
+  bar.classList.add('visible');
+
+  slots.innerHTML = compareList.map((c, i) =>
+    '<div class="compare-chip">' +
+      '<img src="' + c.headshot + '" onerror="this.style.display=\'none\'">' +
+      '<span>' + esc(c.name) + ' ' + c.season + '</span>' +
+      '<span class="remove" onclick="removeFromCompare(' + i + ')">x</span>' +
+    '</div>'
+  ).join('') +
+  (compareList.length >= 2
+    ? '<button class="compare-btn" onclick="runCompare()">Compare ' + compareList.length + '</button>'
+    : '<span style="font-size:11px;color:var(--text-4)">Add 1 more to compare</span>');
+}
+
+function runCompare() {
+  if (compareList.length < 2) return;
+  const grid = $('compare-grid');
+  const players = compareList;
+
+  // Find winner for each stat
+  const maxBravs = Math.max(...players.map(p => p.bravs));
+
+  // Build component rows
+  const allCompNames = [...new Set(players.flatMap(p => p.components.map(c => c.name)))];
+
+  let rowsHTML = '';
+
+  // BRAVS row
+  rowsHTML += '<tr><td>BRAVS</td>' + players.map(p =>
+    '<td class="' + (p.bravs === maxBravs ? 'winner' : '') + '">' + p.bravs.toFixed(1) + '</td>'
+  ).join('') + '</tr>';
+
+  // WAR-eq row
+  const maxWar = Math.max(...players.map(p => p.bravs_war_eq));
+  rowsHTML += '<tr><td>WAR-Equiv</td>' + players.map(p =>
+    '<td class="' + (p.bravs_war_eq === maxWar ? 'winner' : '') + '">' + p.bravs_war_eq.toFixed(1) + '</td>'
+  ).join('') + '</tr>';
+
+  // Era-Std row
+  const maxEra = Math.max(...players.map(p => p.bravs_era_std));
+  rowsHTML += '<tr><td>Era-Std</td>' + players.map(p =>
+    '<td class="' + (p.bravs_era_std === maxEra ? 'winner' : '') + '">' + p.bravs_era_std.toFixed(1) + '</td>'
+  ).join('') + '</tr>';
+
+  // 90% CI
+  rowsHTML += '<tr><td>90% CI</td>' + players.map(p =>
+    '<td>' + p.ci90_lo.toFixed(1) + ' to ' + p.ci90_hi.toFixed(1) + '</td>'
+  ).join('') + '</tr>';
+
+  // Component rows
+  for (const cn of allCompNames) {
+    const vals = players.map(p => {
+      const c = p.components.find(x => x.name === cn);
+      return c ? c.runs : 0;
+    });
+    const maxV = Math.max(...vals);
+    rowsHTML += '<tr><td>' + formatCompName(cn) + '</td>' + vals.map((v, i) => {
+      const sign = v >= 0 ? '+' : '';
+      const cls = v === maxV && v > 0 ? 'winner' : '';
+      return '<td class="' + cls + '">' + sign + v.toFixed(1) + '</td>';
+    }).join('') + '</tr>';
+  }
+
+  // Traditional stats
+  const tradKeys = players[0].traditional.batting
+    ? ['AVG','OBP','SLG','HR','SB'] : ['ERA','IP','K','W'];
+  const tradSrc = players[0].traditional.batting ? 'batting' : 'pitching';
+  for (const key of tradKeys) {
+    rowsHTML += '<tr><td>' + key + '</td>' + players.map(p => {
+      const t = (p.traditional || {})[tradSrc] || {};
+      return '<td>' + (t[key] !== undefined ? t[key] : '--') + '</td>';
+    }).join('') + '</tr>';
+  }
+
+  grid.innerHTML = '<table class="cmp-table"><thead><tr><th></th>' +
+    players.map(p =>
+      '<th><img class="cmp-photo" src="' + p.headshot + '" onerror="this.style.display=\'none\'">' +
+      esc(p.name) + '<br><span style="font-weight:400;font-size:9px">' + p.season + ' ' + p.team_abbrev + '</span></th>'
+    ).join('') +
+    '</tr></thead><tbody>' + rowsHTML + '</tbody></table>';
+
+  grid.classList.add('visible');
+  grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// --- Award Race ---
+async function loadAwardRace() {
+  const award = $('award-type').value;
+  const league = $('award-league').value;
+  const year = $('award-year').value;
+
+  $('award-empty').style.display = 'none';
+  $('award-results').innerHTML = '';
+  $('award-loading').classList.add('visible');
+
+  try {
+    const resp = await fetch('/api/awards/' + award + '/' + year + '/' + league);
+    const data = await resp.json();
+    $('award-loading').classList.remove('visible');
+
+    if (data.error) {
+      $('award-results').innerHTML = '<div class="error-card visible">' + data.error + '</div>';
+      return;
+    }
+    renderAwardRace(data);
+  } catch (e) {
+    $('award-loading').classList.remove('visible');
+    $('award-results').innerHTML = '<div class="error-card visible">Failed: ' + e.message + '</div>';
+  }
+}
+
+function renderAwardRace(data) {
+  const c = data.candidates;
+  if (!c.length) {
+    $('award-results').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-4);font-size:12px">No qualified candidates found</div>';
+    return;
+  }
+
+  const awardLabel = data.award === 'cy_young' ? 'Cy Young' : 'MVP';
+  const topBravs = c[0].bravs;
+
+  $('award-results').innerHTML =
+    '<div style="margin-bottom:12px;font-size:13px;font-weight:600">' +
+      data.season + ' ' + data.league + ' ' + awardLabel + ' Race (BRAVS)</div>' +
+    '<div class="award-race-results">' +
+      '<div class="race-header"><span></span><span></span><span>Player</span>' +
+        '<span>BRAVS</span><span>Era-Std</span><span>WAR-eq</span></div>' +
+      c.map((p, i) =>
+        '<div class="race-row" onclick="loadPlayerFromAward(' + (p.player_id||0) + ',' + data.season + ')">' +
+          '<span class="rank ' + (i === 0 ? 'gold' : '') + '">' + (i+1) + '</span>' +
+          '<img src="' + (p.headshot||'') + '" onerror="this.style.display=\'none\'">' +
+          '<div><span class="pname">' + esc(p.player_name) + '</span> ' +
+            '<span class="pteam">' + (p.team_abbrev||'') + ' / ' + p.position + '</span></div>' +
+          '<span class="bval ' + (i === 0 ? 'top' : '') + '">' + p.bravs.toFixed(1) + '</span>' +
+          '<span class="bval">' + p.bravs_era_std.toFixed(1) + '</span>' +
+          '<span class="bval">' + p.bravs_war_eq.toFixed(1) + '</span>' +
+        '</div>'
+      ).join('') +
+    '</div>';
+}
+
+function loadPlayerFromAward(playerId, season) {
+  switchTab('player');
+  currentPlayerId = playerId;
+  $('seasons-wrap').classList.remove('visible');
+  loadBRAVS(playerId, season);
 }
 
 // --- Helpers ---

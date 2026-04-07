@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -30,6 +31,31 @@ TEAM_LOGO_URL = "https://www.mlbstatic.com/team-logos/{tid}.svg"
 
 # Simple in-memory cache
 _cache: dict[str, object] = {}
+
+
+def _display_name(full_name: str) -> str:
+    """Strip middle names/suffixes for cleaner display.
+
+    'George Herman Ruth' -> 'George Ruth'
+    'Michael Nelson Trout' -> 'Michael Trout'
+    'Vladimir Guerrero Jr.' -> 'Vladimir Guerrero Jr.'
+    """
+    parts = full_name.strip().split()
+    if len(parts) <= 2:
+        return full_name
+
+    # Keep suffixes like Jr., Sr., II, III, IV
+    suffixes = {"Jr.", "Sr.", "II", "III", "IV", "Jr", "Sr"}
+    last_parts: list[str] = []
+    while parts and parts[-1] in suffixes:
+        last_parts.insert(0, parts.pop())
+    if not parts:
+        return full_name
+
+    first = parts[0]
+    last = parts[-1] if len(parts) > 1 else ""
+    return " ".join([first, last] + last_parts).strip()
+
 
 # Team abbreviation -> MLB team ID
 TEAM_IDS: dict[str, int] = {
@@ -124,9 +150,10 @@ def search_players():
         debut_year = int(debut[:4]) if debut else None
         last_year = int(last_played[:4]) if last_played else None
 
+        raw_name = p.get("fullFMLName", p.get("fullName", "Unknown"))
         results.append({
             "id": p["id"],
-            "name": p.get("fullFMLName", p.get("fullName", "Unknown")),
+            "name": _display_name(raw_name),
             "position": pos.get("abbreviation", ""),
             "team": team.get("name", ""),
             "team_abbrev": _get_team_abbrev(team),
@@ -391,7 +418,7 @@ def compute_player_bravs(player_id: int, season: int):
         }
 
     return jsonify({
-        "player_name": ps.player_name,
+        "player_name": _display_name(ps.player_name),
         "season": season,
         "position": ps.position,
         "team": team_name,
@@ -413,6 +440,118 @@ def compute_player_bravs(player_id: int, season: int):
         "components": components,
         "traditional": trad_stats,
     })
+
+
+@app.route("/api/awards/<award>/<int:season>/<league>")
+def award_race(award: str, season: int, league: str):
+    """Compute BRAVS for all top candidates in an award race.
+
+    Fetches the top qualified players for the season/league and ranks by BRAVS.
+    award: 'mvp' or 'cy_young'
+    league: 'AL' or 'NL'
+    """
+    league_id = 103 if league.upper() == "AL" else 104
+
+    if award == "cy_young":
+        # Get top pitchers by IP
+        data = _mlb_get(
+            f"{MLB_API}/stats",
+            {"stats": "season", "season": season, "group": "pitching",
+             "gameType": "R", "leagueId": league_id, "limit": 15,
+             "sortStat": "inningsPitched", "order": "desc"},
+        )
+        if not data or "stats" not in data:
+            return jsonify({"error": "Could not fetch pitching leaders"}), 500
+
+        candidates = []
+        for group in data["stats"]:
+            for split in group.get("splits", []):
+                pid = split.get("player", {}).get("id")
+                pname = split.get("player", {}).get("fullName", "Unknown")
+                if not pid:
+                    continue
+                ip = _parse_ip(split.get("stat", {}).get("inningsPitched", 0))
+                if ip < 80:
+                    continue
+                candidates.append({"id": pid, "name": _display_name(pname), "ip": ip})
+    else:
+        # MVP: get top position players by PA
+        data = _mlb_get(
+            f"{MLB_API}/stats",
+            {"stats": "season", "season": season, "group": "hitting",
+             "gameType": "R", "leagueId": league_id, "limit": 15,
+             "sortStat": "plateAppearances", "order": "desc"},
+        )
+        if not data or "stats" not in data:
+            return jsonify({"error": "Could not fetch batting leaders"}), 500
+
+        candidates = []
+        for group in data["stats"]:
+            for split in group.get("splits", []):
+                pid = split.get("player", {}).get("id")
+                pname = split.get("player", {}).get("fullName", "Unknown")
+                if not pid:
+                    continue
+                pa = _safe_int(split.get("stat", {}).get("plateAppearances"))
+                if pa < 200:
+                    continue
+                candidates.append({"id": pid, "name": _display_name(pname), "pa": pa})
+
+    # Compute BRAVS for each candidate
+    results = []
+    for cand in candidates[:10]:
+        try:
+            resp_data = compute_player_bravs_internal(cand["id"], season)
+            if resp_data:
+                resp_data["player_id"] = cand["id"]
+                results.append(resp_data)
+        except Exception as e:
+            logger.warning("Failed to compute BRAVS for %s: %s", cand["name"], e)
+
+    results.sort(key=lambda x: x.get("bravs", 0), reverse=True)
+
+    return jsonify({
+        "award": award,
+        "season": season,
+        "league": league.upper(),
+        "candidates": results,
+    })
+
+
+def compute_player_bravs_internal(player_id: int, season: int) -> dict | None:
+    """Internal BRAVS computation returning a dict (shared with award race endpoint)."""
+    with app.test_request_context():
+        resp = compute_player_bravs(player_id, season)
+        if isinstance(resp, tuple):
+            return None
+        return resp.get_json()
+
+
+@app.route("/api/compare", methods=["POST"])
+def compare_players():
+    """Compare multiple player-seasons side by side.
+
+    POST body: {"players": [{"id": 545361, "season": 2016}, ...]}
+    """
+    data = flask_request.get_json()
+    if not data or "players" not in data:
+        return jsonify({"error": "Missing 'players' array"}), 400
+
+    results = []
+    for entry in data["players"][:6]:
+        pid = entry.get("id")
+        season = entry.get("season")
+        if not pid or not season:
+            continue
+        try:
+            r = compute_player_bravs_internal(int(pid), int(season))
+            if r:
+                r["player_id"] = pid
+                results.append(r)
+        except Exception as e:
+            logger.warning("Compare failed for %s/%s: %s", pid, season, e)
+
+    return jsonify({"players": results})
 
 
 if __name__ == "__main__":
