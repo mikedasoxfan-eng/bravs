@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRAVS - Bayesian Runs Above Value Standard</title>
+    <style>
+        :root {
+            --bg: #0a0e17;
+            --surface: #111827;
+            --surface2: #1a2235;
+            --border: #2a3550;
+            --text: #e2e8f0;
+            --text-muted: #8896b0;
+            --accent: #3b82f6;
+            --accent-dim: #1e40af;
+            --green: #22c55e;
+            --red: #ef4444;
+            --gold: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border);
+            padding: 20px 32px;
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+        }
+
+        header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--accent);
+        }
+
+        header .subtitle {
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 400;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            min-height: calc(100vh - 70px);
+        }
+
+        .sidebar {
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 70px);
+        }
+
+        .main {
+            padding: 28px 36px;
+            overflow-y: auto;
+            max-height: calc(100vh - 70px);
+        }
+
+        /* Presets */
+        .presets {
+            margin-bottom: 20px;
+        }
+
+        .presets label {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .preset-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .preset-btn {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 10px;
+            font-size: 11px;
+            font-family: inherit;
+            cursor: pointer;
+            border-radius: 4px;
+            text-align: left;
+            transition: all 0.15s;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .preset-btn .year {
+            color: var(--text-muted);
+            font-size: 10px;
+        }
+
+        /* Form */
+        .form-section {
+            margin-bottom: 16px;
+        }
+
+        .form-section h3 {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--accent);
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .field-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 6px;
+        }
+
+        .field-grid.two-col { grid-template-columns: 1fr 1fr; }
+        .field-grid.one-col { grid-template-columns: 1fr; }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .field label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .field input, .field select {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 8px;
+            font-size: 13px;
+            font-family: inherit;
+            border-radius: 3px;
+            width: 100%;
+        }
+
+        .field input:focus, .field select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .compute-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: inherit;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 12px;
+            transition: background 0.15s;
+        }
+
+        .compute-btn:hover { background: #2563eb; }
+        .compute-btn:disabled { background: var(--border); cursor: wait; }
+
+        /* Results */
+        .result-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 20px;
+        }
+
+        .result-header .player-info h2 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .result-header .player-info .meta {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 2px;
+        }
+
+        .bravs-display {
+            text-align: right;
+        }
+
+        .bravs-display .big-number {
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .bravs-display .big-number.positive { color: var(--green); }
+        .bravs-display .big-number.negative { color: var(--red); }
+
+        .bravs-display .label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-box {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .metric-box .value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .metric-box .label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        /* Component bars */
+        .components h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .comp-row {
+            display: grid;
+            grid-template-columns: 130px 1fr 70px;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .comp-name {
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        .comp-bar-wrap {
+            position: relative;
+            height: 22px;
+            background: var(--surface2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .comp-bar {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
+
+        .comp-bar.positive {
+            left: 50%;
+            background: var(--green);
+            opacity: 0.7;
+        }
+
+        .comp-bar.negative {
+            right: 50%;
+            background: var(--red);
+            opacity: 0.7;
+        }
+
+        .comp-zero-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: var(--border);
+        }
+
+        .comp-value {
+            font-weight: 600;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .comp-value.positive { color: var(--green); }
+        .comp-value.negative { color: var(--red); }
+
+        .ci-range {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+            color: var(--text-muted);
+        }
+
+        .empty-state h2 {
+            font-size: 18px;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p { font-size: 13px; line-height: 1.6; }
+
+        .warnings {
+            background: #1c1507;
+            border: 1px solid #78350f;
+            border-radius: 4px;
+            padding: 10px 14px;
+            margin-top: 16px;
+            font-size: 12px;
+            color: var(--gold);
+        }
+
+        .error-msg {
+            background: #1c0707;
+            border: 1px solid #7f1d1d;
+            border-radius: 4px;
+            padding: 10px 14px;
+            color: var(--red);
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BRAVS</h1>
+        <span class="subtitle">Bayesian Runs Above Value Standard</span>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="presets">
+                <label>Quick Presets</label>
+                <div class="preset-grid">
+                    <button class="preset-btn" onclick="loadPreset('trout_2016')">Mike Trout <span class="year">2016</span></button>
+                    <button class="preset-btn" onclick="loadPreset('ohtani_2023')">Shohei Ohtani <span class="year">2023</span></button>
+                    <button class="preset-btn" onclick="loadPreset('bonds_2004')">Barry Bonds <span class="year">2004</span></button>
+                    <button class="preset-btn" onclick="loadPreset('judge_2022')">Aaron Judge <span class="year">2022</span></button>
+                    <button class="preset-btn" onclick="loadPreset('degrom_2018')">Jacob deGrom <span class="year">2018</span></button>
+                    <button class="preset-btn" onclick="loadPreset('pedro_1999')">Pedro Martinez <span class="year">1999</span></button>
+                    <button class="preset-btn" onclick="loadPreset('rivera_2004')">Mariano Rivera <span class="year">2004</span></button>
+                </div>
+            </div>
+
+            <form id="bravs-form" onsubmit="computeBRAVS(event)">
+                <div class="form-section">
+                    <h3>Player Info</h3>
+                    <div class="field-grid two-col">
+                        <div class="field"><label>Name</label><input name="player_name" id="player_name" placeholder="e.g. Mike Trout"></div>
+                        <div class="field"><label>Season</label><input name="season" id="season" type="number" value="2024"></div>
+                        <div class="field"><label>Team</label><input name="team" id="team" placeholder="NYY"></div>
+                        <div class="field"><label>Position</label>
+                            <select name="position" id="position">
+                                <option value="DH">DH</option><option value="C">C</option>
+                                <option value="1B">1B</option><option value="2B">2B</option>
+                                <option value="3B">3B</option><option value="SS">SS</option>
+                                <option value="LF">LF</option><option value="CF">CF</option>
+                                <option value="RF">RF</option><option value="P">P</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Batting</h3>
+                    <div class="field-grid">
+                        <div class="field"><label>PA</label><input name="pa" id="pa" type="number"></div>
+                        <div class="field"><label>AB</label><input name="ab" id="ab" type="number"></div>
+                        <div class="field"><label>H</label><input name="hits" id="hits" type="number"></div>
+                        <div class="field"><label>2B</label><input name="doubles" id="doubles" type="number"></div>
+                        <div class="field"><label>3B</label><input name="triples" id="triples" type="number"></div>
+                        <div class="field"><label>HR</label><input name="hr" id="hr" type="number"></div>
+                        <div class="field"><label>BB</label><input name="bb" id="bb" type="number"></div>
+                        <div class="field"><label>IBB</label><input name="ibb" id="ibb" type="number"></div>
+                        <div class="field"><label>HBP</label><input name="hbp" id="hbp" type="number"></div>
+                        <div class="field"><label>K</label><input name="k" id="k" type="number"></div>
+                        <div class="field"><label>SF</label><input name="sf" id="sf" type="number"></div>
+                        <div class="field"><label>Games</label><input name="games" id="games" type="number"></div>
+                        <div class="field"><label>SB</label><input name="sb" id="sb" type="number"></div>
+                        <div class="field"><label>CS</label><input name="cs" id="cs" type="number"></div>
+                        <div class="field"><label>GIDP</label><input name="gidp" id="gidp" type="number"></div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Pitching</h3>
+                    <div class="field-grid">
+                        <div class="field"><label>IP</label><input name="ip" id="ip" type="number" step="0.1"></div>
+                        <div class="field"><label>ER</label><input name="er" id="er" type="number"></div>
+                        <div class="field"><label>H</label><input name="hits_allowed" id="hits_allowed" type="number"></div>
+                        <div class="field"><label>HR</label><input name="hr_allowed" id="hr_allowed" type="number"></div>
+                        <div class="field"><label>BB</label><input name="bb_allowed" id="bb_allowed" type="number"></div>
+                        <div class="field"><label>HBP</label><input name="hbp_allowed" id="hbp_allowed" type="number"></div>
+                        <div class="field"><label>K</label><input name="k_pitching" id="k_pitching" type="number"></div>
+                        <div class="field"><label>G</label><input name="games_pitched" id="games_pitched" type="number"></div>
+                        <div class="field"><label>GS</label><input name="games_started" id="games_started" type="number"></div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Fielding & Context</h3>
+                    <div class="field-grid">
+                        <div class="field"><label>Inn Fld</label><input name="inn_fielded" id="inn_fielded" type="number"></div>
+                        <div class="field"><label>UZR</label><input name="uzr" id="uzr" type="number" step="0.1"></div>
+                        <div class="field"><label>DRS</label><input name="drs" id="drs" type="number" step="0.1"></div>
+                        <div class="field"><label>OAA</label><input name="oaa" id="oaa" type="number" step="0.1"></div>
+                        <div class="field"><label>Park Fac</label><input name="park_factor" id="park_factor" type="number" step="0.01" value="1.00"></div>
+                        <div class="field"><label>Lg R/G</label><input name="league_rpg" id="league_rpg" type="number" step="0.01" value="4.50"></div>
+                        <div class="field"><label>gmLI</label><input name="avg_leverage_index" id="avg_leverage_index" type="number" step="0.01" value="1.00"></div>
+                        <div class="field"><label>Szn Games</label><input name="season_games" id="season_games" type="number" value="162"></div>
+                    </div>
+                </div>
+
+                <button type="submit" class="compute-btn" id="compute-btn">COMPUTE BRAVS</button>
+            </form>
+        </aside>
+
+        <main class="main" id="results-area">
+            <div class="empty-state">
+                <h2>Enter stats or pick a preset</h2>
+                <p>Fill in the batting and/or pitching stats on the left, or click a preset player to get started. BRAVS will compute a full Bayesian posterior over player value with component decomposition.</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function loadPreset(key) {
+            const resp = await fetch(`/api/preset/${key}`);
+            const data = await resp.json();
+
+            // Clear all fields first
+            document.querySelectorAll('#bravs-form input[type="number"]').forEach(el => el.value = '');
+
+            // Fill in preset data
+            for (const [field, value] of Object.entries(data)) {
+                const el = document.getElementById(field);
+                if (el) el.value = value;
+            }
+
+            // Auto-compute
+            computeBRAVS();
+        }
+
+        async function computeBRAVS(event) {
+            if (event) event.preventDefault();
+
+            const btn = document.getElementById('compute-btn');
+            btn.disabled = true;
+            btn.textContent = 'COMPUTING...';
+
+            const form = document.getElementById('bravs-form');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const resp = await fetch('/api/compute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+
+                const result = await resp.json();
+
+                if (result.error) {
+                    showError(result.error, result.details);
+                } else {
+                    renderResult(result);
+                }
+            } catch (e) {
+                showError('Request failed: ' + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'COMPUTE BRAVS';
+            }
+        }
+
+        function showError(msg, details) {
+            const area = document.getElementById('results-area');
+            area.innerHTML = `<div class="error-msg"><strong>Error:</strong> ${msg}${details ? '<br>' + details.join(', ') : ''}</div>`;
+        }
+
+        function renderResult(r) {
+            const area = document.getElementById('results-area');
+            const bravsCls = r.bravs >= 0 ? 'positive' : 'negative';
+
+            // Find max absolute component value for bar scaling
+            const maxAbs = Math.max(...r.components.map(c => Math.abs(c.runs)), 10);
+
+            let compHtml = r.components.map(c => {
+                const pct = Math.abs(c.runs) / maxAbs * 50;
+                const cls = c.runs >= 0 ? 'positive' : 'negative';
+                const sign = c.runs >= 0 ? '+' : '';
+                return `
+                    <div class="comp-row">
+                        <span class="comp-name">${c.name}</span>
+                        <div class="comp-bar-wrap">
+                            <div class="comp-zero-line"></div>
+                            <div class="comp-bar ${cls}" style="width: ${pct}%"></div>
+                        </div>
+                        <span class="comp-value ${cls}">${sign}${c.runs.toFixed(1)}</span>
+                    </div>`;
+            }).join('');
+
+            let warningsHtml = '';
+            if (r.warnings && r.warnings.length > 0) {
+                warningsHtml = `<div class="warnings"><strong>Warnings:</strong> ${r.warnings.join('; ')}</div>`;
+            }
+
+            area.innerHTML = `
+                <div class="result-card">
+                    <div class="result-header">
+                        <div class="player-info">
+                            <h2>${r.player_name}</h2>
+                            <div class="meta">${r.season} &middot; ${r.team} &middot; ${r.position}</div>
+                        </div>
+                        <div class="bravs-display">
+                            <div class="big-number ${bravsCls}">${r.bravs.toFixed(1)}</div>
+                            <div class="label">BRAVS</div>
+                        </div>
+                    </div>
+
+                    <div class="metrics-row">
+                        <div class="metric-box">
+                            <div class="value">${r.bravs_era_std.toFixed(1)}</div>
+                            <div class="label">Era-Std</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="value">${r.bravs_war_eq.toFixed(1)}</div>
+                            <div class="label">WAR-Equiv</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="value">${r.ci90_lo.toFixed(1)} - ${r.ci90_hi.toFixed(1)}</div>
+                            <div class="label">90% CI</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="value">${r.rpw.toFixed(2)}</div>
+                            <div class="label">Runs/Win</div>
+                        </div>
+                    </div>
+
+                    <div class="components">
+                        <h3>Component Decomposition (runs)</h3>
+                        ${compHtml}
+                    </div>
+
+                    ${warningsHtml}
+                </div>
+
+                <div class="result-card" style="padding: 16px 28px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted);">
+                        <span>Total Runs Above FAT: ${r.total_runs.toFixed(1)}</span>
+                        <span>Leverage Multiplier: ${r.leverage_mult.toFixed(3)}</span>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
