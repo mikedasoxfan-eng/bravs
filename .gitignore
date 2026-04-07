@@ -18,3 +18,5 @@ venv/
 output/*.png
 output/*.svg
 *.DS_Store
+bravs_engine/target/
+*.whl
