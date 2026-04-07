@@ -1,606 +1,649 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BRAVS - Bayesian Runs Above Value Standard</title>
-    <style>
-        :root {
-            --bg: #0a0e17;
-            --surface: #111827;
-            --surface2: #1a2235;
-            --border: #2a3550;
-            --text: #e2e8f0;
-            --text-muted: #8896b0;
-            --accent: #3b82f6;
-            --accent-dim: #1e40af;
-            --green: #22c55e;
-            --red: #ef4444;
-            --gold: #f59e0b;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BRAVS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --border: #e4e4e7;
+  --border-light: #f0f0f3;
+  --text: #18181b;
+  --text-2: #3f3f46;
+  --text-3: #71717a;
+  --text-4: #a1a1aa;
+  --green: #16a34a;
+  --green-bg: #f0fdf4;
+  --red: #dc2626;
+  --red-bg: #fef2f2;
+  --accent: #18181b;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+/* --- NAV --- */
+nav {
+  padding: 16px 40px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+nav .logo { font-size: 15px; font-weight: 800; letter-spacing: 3px; }
+nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
 
-        body {
-            font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-        }
+/* --- SEARCH --- */
+.search-wrap {
+  max-width: 680px;
+  margin: 48px auto 0;
+  padding: 0 24px;
+  position: relative;
+}
+.search-input {
+  width: 100%;
+  padding: 14px 20px;
+  font-family: inherit;
+  font-size: 15px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-input::placeholder { color: var(--text-4); }
+.search-input:focus { border-color: var(--text-3); }
+.search-hint {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--text-4);
+  padding-left: 4px;
+}
 
-        header {
-            border-bottom: 1px solid var(--border);
-            padding: 20px 32px;
-            display: flex;
-            align-items: baseline;
-            gap: 16px;
-        }
+/* --- DROPDOWN --- */
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 24px;
+  right: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-top: 4px;
+  max-height: 420px;
+  overflow-y: auto;
+  z-index: 100;
+  display: none;
+  box-shadow: 0 12px 32px -8px rgba(0,0,0,0.08);
+}
+.dropdown.open { display: block; }
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-light);
+  transition: background 0.12s;
+}
+.dropdown-item:last-child { border-bottom: none; }
+.dropdown-item:hover { background: var(--bg); }
+.dropdown-item img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--bg);
+  flex-shrink: 0;
+}
+.dropdown-item .info { flex: 1; min-width: 0; }
+.dropdown-item .name { font-size: 13px; font-weight: 600; }
+.dropdown-item .meta { font-size: 11px; color: var(--text-3); margin-top: 1px; }
 
-        header h1 {
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            color: var(--accent);
-        }
+/* --- SEASONS BAR --- */
+.seasons-wrap {
+  max-width: 680px;
+  margin: 20px auto 0;
+  padding: 0 24px;
+  display: none;
+}
+.seasons-wrap.visible { display: block; }
+.seasons-label { font-size: 10px; color: var(--text-4); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
+.seasons-scroll {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+.season-btn {
+  padding: 5px 10px;
+  font-family: inherit;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text-3);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.season-btn:hover { border-color: var(--text-3); color: var(--text); }
+.season-btn.active {
+  background: var(--text);
+  color: var(--surface);
+  border-color: var(--text);
+}
 
-        header .subtitle {
-            color: var(--text-muted);
-            font-size: 13px;
-            font-weight: 400;
-        }
+/* --- RESULT CARD --- */
+.result-wrap {
+  max-width: 760px;
+  margin: 32px auto 64px;
+  padding: 0 24px;
+  display: none;
+}
+.result-wrap.visible { display: block; animation: fadeUp 0.35s ease; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-        .layout {
-            display: grid;
-            grid-template-columns: 380px 1fr;
-            min-height: calc(100vh - 70px);
-        }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
 
-        .sidebar {
-            border-right: 1px solid var(--border);
-            padding: 20px;
-            overflow-y: auto;
-            max-height: calc(100vh - 70px);
-        }
+/* Player Header */
+.player-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 28px 32px;
+}
+.player-photo {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--bg);
+  flex-shrink: 0;
+  border: 2px solid var(--border);
+}
+.player-info { flex: 1; min-width: 0; }
+.player-name { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+.player-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-3);
+}
+.player-meta img { height: 18px; width: auto; }
+.player-meta .sep { color: var(--text-4); }
+.bravs-block { text-align: right; flex-shrink: 0; }
+.bravs-number {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -2px;
+  font-variant-numeric: tabular-nums;
+}
+.bravs-number.pos { color: var(--green); }
+.bravs-number.neg { color: var(--red); }
+.bravs-label {
+  font-size: 10px;
+  color: var(--text-4);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-top: 4px;
+}
 
-        .main {
-            padding: 28px 36px;
-            overflow-y: auto;
-            max-height: calc(100vh - 70px);
-        }
+/* Metrics Row */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border-top: 1px solid var(--border);
+}
+.metric {
+  padding: 16px 20px;
+  text-align: center;
+  border-right: 1px solid var(--border-light);
+}
+.metric:last-child { border-right: none; }
+.metric .val {
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.metric .lbl {
+  font-size: 9px;
+  color: var(--text-4);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 2px;
+}
 
-        /* Presets */
-        .presets {
-            margin-bottom: 20px;
-        }
+/* Components */
+.components-section { padding: 24px 32px; }
+.section-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-4);
+  margin-bottom: 14px;
+}
+.comp-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 60px;
+  align-items: center;
+  gap: 12px;
+  height: 30px;
+  font-size: 12px;
+}
+.comp-name { text-align: right; color: var(--text-3); font-weight: 500; }
+.bar-track {
+  position: relative;
+  height: 16px;
+  background: var(--bg);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.bar-zero {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
+.bar-fill {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  border-radius: 2px;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bar-fill.pos { left: 50%; background: var(--green); opacity: 0.6; }
+.bar-fill.neg { right: 50%; background: var(--red); opacity: 0.6; }
+.comp-val {
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+}
+.comp-val.pos { color: var(--green); }
+.comp-val.neg { color: var(--red); }
 
-        .presets label {
-            display: block;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
+/* Traditional Stats */
+.trad-stats {
+  padding: 20px 32px;
+  border-top: 1px solid var(--border-light);
+}
+.stat-grid {
+  display: flex;
+  gap: 0;
+  flex-wrap: wrap;
+}
+.stat-cell {
+  flex: 1;
+  min-width: 60px;
+  text-align: center;
+  padding: 8px 4px;
+}
+.stat-cell .val {
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.stat-cell .lbl {
+  font-size: 9px;
+  color: var(--text-4);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 1px;
+}
 
-        .preset-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-        }
+/* Subcard */
+.sub-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-3);
+}
 
-        .preset-btn {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 8px 10px;
-            font-size: 11px;
-            font-family: inherit;
-            cursor: pointer;
-            border-radius: 4px;
-            text-align: left;
-            transition: all 0.15s;
-        }
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 64px 0;
+  color: var(--text-4);
+  font-size: 12px;
+  display: none;
+}
+.loading.visible { display: block; }
+.loading .dots::after {
+  content: '';
+  animation: dots 1.5s infinite;
+}
+@keyframes dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
+}
 
-        .preset-btn:hover {
-            border-color: var(--accent);
-            background: var(--accent-dim);
-        }
+/* Empty */
+.empty {
+  text-align: center;
+  padding: 80px 24px;
+  max-width: 440px;
+  margin: 0 auto;
+}
+.empty h2 { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--text-2); }
+.empty p { font-size: 12px; color: var(--text-4); line-height: 1.7; }
 
-        .preset-btn .year {
-            color: var(--text-muted);
-            font-size: 10px;
-        }
+/* Error */
+.error-card {
+  max-width: 680px;
+  margin: 32px auto;
+  padding: 16px 24px;
+  background: var(--red-bg);
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--red);
+  display: none;
+}
+.error-card.visible { display: block; }
 
-        /* Form */
-        .form-section {
-            margin-bottom: 16px;
-        }
-
-        .form-section h3 {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--accent);
-            margin-bottom: 8px;
-            padding-bottom: 4px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .field-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 6px;
-        }
-
-        .field-grid.two-col { grid-template-columns: 1fr 1fr; }
-        .field-grid.one-col { grid-template-columns: 1fr; }
-
-        .field {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .field label {
-            font-size: 10px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .field input, .field select {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 6px 8px;
-            font-size: 13px;
-            font-family: inherit;
-            border-radius: 3px;
-            width: 100%;
-        }
-
-        .field input:focus, .field select:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .compute-btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            font-size: 14px;
-            font-weight: 700;
-            font-family: inherit;
-            letter-spacing: 1px;
-            cursor: pointer;
-            border-radius: 4px;
-            margin-top: 12px;
-            transition: background 0.15s;
-        }
-
-        .compute-btn:hover { background: #2563eb; }
-        .compute-btn:disabled { background: var(--border); cursor: wait; }
-
-        /* Results */
-        .result-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 28px;
-            margin-bottom: 24px;
-        }
-
-        .result-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 20px;
-        }
-
-        .result-header .player-info h2 {
-            font-size: 22px;
-            font-weight: 700;
-        }
-
-        .result-header .player-info .meta {
-            color: var(--text-muted);
-            font-size: 13px;
-            margin-top: 2px;
-        }
-
-        .bravs-display {
-            text-align: right;
-        }
-
-        .bravs-display .big-number {
-            font-size: 42px;
-            font-weight: 800;
-            line-height: 1;
-        }
-
-        .bravs-display .big-number.positive { color: var(--green); }
-        .bravs-display .big-number.negative { color: var(--red); }
-
-        .bravs-display .label {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .metrics-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .metric-box {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            padding: 12px;
-            text-align: center;
-        }
-
-        .metric-box .value {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        .metric-box .label {
-            font-size: 10px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 2px;
-        }
-
-        /* Component bars */
-        .components h3 {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-        }
-
-        .comp-row {
-            display: grid;
-            grid-template-columns: 130px 1fr 70px;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 6px;
-            font-size: 13px;
-        }
-
-        .comp-name {
-            color: var(--text-muted);
-            text-align: right;
-        }
-
-        .comp-bar-wrap {
-            position: relative;
-            height: 22px;
-            background: var(--surface2);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .comp-bar {
-            position: absolute;
-            top: 0;
-            height: 100%;
-            border-radius: 3px;
-            transition: width 0.4s ease;
-        }
-
-        .comp-bar.positive {
-            left: 50%;
-            background: var(--green);
-            opacity: 0.7;
-        }
-
-        .comp-bar.negative {
-            right: 50%;
-            background: var(--red);
-            opacity: 0.7;
-        }
-
-        .comp-zero-line {
-            position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            width: 1px;
-            background: var(--border);
-        }
-
-        .comp-value {
-            font-weight: 600;
-            text-align: right;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .comp-value.positive { color: var(--green); }
-        .comp-value.negative { color: var(--red); }
-
-        .ci-range {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-align: right;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 80px 40px;
-            color: var(--text-muted);
-        }
-
-        .empty-state h2 {
-            font-size: 18px;
-            color: var(--text);
-            margin-bottom: 8px;
-        }
-
-        .empty-state p { font-size: 13px; line-height: 1.6; }
-
-        .warnings {
-            background: #1c1507;
-            border: 1px solid #78350f;
-            border-radius: 4px;
-            padding: 10px 14px;
-            margin-top: 16px;
-            font-size: 12px;
-            color: var(--gold);
-        }
-
-        .error-msg {
-            background: #1c0707;
-            border: 1px solid #7f1d1d;
-            border-radius: 4px;
-            padding: 10px 14px;
-            color: var(--red);
-            font-size: 12px;
-        }
-    </style>
+/* Responsive */
+@media (max-width: 640px) {
+  .player-header { flex-direction: column; text-align: center; padding: 24px 20px; }
+  .bravs-block { text-align: center; }
+  .metrics { grid-template-columns: repeat(3, 1fr); }
+  .comp-row { grid-template-columns: 90px 1fr 50px; gap: 8px; }
+  .components-section { padding: 20px 16px; }
+  .stat-cell { min-width: 50px; }
+}
+</style>
 </head>
 <body>
-    <header>
-        <h1>BRAVS</h1>
-        <span class="subtitle">Bayesian Runs Above Value Standard</span>
-    </header>
 
-    <div class="layout">
-        <aside class="sidebar">
-            <div class="presets">
-                <label>Quick Presets</label>
-                <div class="preset-grid">
-                    <button class="preset-btn" onclick="loadPreset('trout_2016')">Mike Trout <span class="year">2016</span></button>
-                    <button class="preset-btn" onclick="loadPreset('ohtani_2023')">Shohei Ohtani <span class="year">2023</span></button>
-                    <button class="preset-btn" onclick="loadPreset('bonds_2004')">Barry Bonds <span class="year">2004</span></button>
-                    <button class="preset-btn" onclick="loadPreset('judge_2022')">Aaron Judge <span class="year">2022</span></button>
-                    <button class="preset-btn" onclick="loadPreset('degrom_2018')">Jacob deGrom <span class="year">2018</span></button>
-                    <button class="preset-btn" onclick="loadPreset('pedro_1999')">Pedro Martinez <span class="year">1999</span></button>
-                    <button class="preset-btn" onclick="loadPreset('rivera_2004')">Mariano Rivera <span class="year">2004</span></button>
-                </div>
-            </div>
+<nav>
+  <span class="logo">BRAVS</span>
+  <span class="tagline">Bayesian Runs Above Value Standard</span>
+</nav>
 
-            <form id="bravs-form" onsubmit="computeBRAVS(event)">
-                <div class="form-section">
-                    <h3>Player Info</h3>
-                    <div class="field-grid two-col">
-                        <div class="field"><label>Name</label><input name="player_name" id="player_name" placeholder="e.g. Mike Trout"></div>
-                        <div class="field"><label>Season</label><input name="season" id="season" type="number" value="2024"></div>
-                        <div class="field"><label>Team</label><input name="team" id="team" placeholder="NYY"></div>
-                        <div class="field"><label>Position</label>
-                            <select name="position" id="position">
-                                <option value="DH">DH</option><option value="C">C</option>
-                                <option value="1B">1B</option><option value="2B">2B</option>
-                                <option value="3B">3B</option><option value="SS">SS</option>
-                                <option value="LF">LF</option><option value="CF">CF</option>
-                                <option value="RF">RF</option><option value="P">P</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+<div class="search-wrap">
+  <input
+    class="search-input"
+    id="search"
+    type="text"
+    placeholder="Search any MLB player..."
+    autocomplete="off"
+    spellcheck="false"
+  >
+  <div class="search-hint" id="search-hint">Babe Ruth, Mike Trout, Pedro Martinez, Shohei Ohtani...</div>
+  <div class="dropdown" id="dropdown"></div>
+</div>
 
-                <div class="form-section">
-                    <h3>Batting</h3>
-                    <div class="field-grid">
-                        <div class="field"><label>PA</label><input name="pa" id="pa" type="number"></div>
-                        <div class="field"><label>AB</label><input name="ab" id="ab" type="number"></div>
-                        <div class="field"><label>H</label><input name="hits" id="hits" type="number"></div>
-                        <div class="field"><label>2B</label><input name="doubles" id="doubles" type="number"></div>
-                        <div class="field"><label>3B</label><input name="triples" id="triples" type="number"></div>
-                        <div class="field"><label>HR</label><input name="hr" id="hr" type="number"></div>
-                        <div class="field"><label>BB</label><input name="bb" id="bb" type="number"></div>
-                        <div class="field"><label>IBB</label><input name="ibb" id="ibb" type="number"></div>
-                        <div class="field"><label>HBP</label><input name="hbp" id="hbp" type="number"></div>
-                        <div class="field"><label>K</label><input name="k" id="k" type="number"></div>
-                        <div class="field"><label>SF</label><input name="sf" id="sf" type="number"></div>
-                        <div class="field"><label>Games</label><input name="games" id="games" type="number"></div>
-                        <div class="field"><label>SB</label><input name="sb" id="sb" type="number"></div>
-                        <div class="field"><label>CS</label><input name="cs" id="cs" type="number"></div>
-                        <div class="field"><label>GIDP</label><input name="gidp" id="gidp" type="number"></div>
-                    </div>
-                </div>
+<div class="seasons-wrap" id="seasons-wrap">
+  <div class="seasons-label">Select season</div>
+  <div class="seasons-scroll" id="seasons-scroll"></div>
+</div>
 
-                <div class="form-section">
-                    <h3>Pitching</h3>
-                    <div class="field-grid">
-                        <div class="field"><label>IP</label><input name="ip" id="ip" type="number" step="0.1"></div>
-                        <div class="field"><label>ER</label><input name="er" id="er" type="number"></div>
-                        <div class="field"><label>H</label><input name="hits_allowed" id="hits_allowed" type="number"></div>
-                        <div class="field"><label>HR</label><input name="hr_allowed" id="hr_allowed" type="number"></div>
-                        <div class="field"><label>BB</label><input name="bb_allowed" id="bb_allowed" type="number"></div>
-                        <div class="field"><label>HBP</label><input name="hbp_allowed" id="hbp_allowed" type="number"></div>
-                        <div class="field"><label>K</label><input name="k_pitching" id="k_pitching" type="number"></div>
-                        <div class="field"><label>G</label><input name="games_pitched" id="games_pitched" type="number"></div>
-                        <div class="field"><label>GS</label><input name="games_started" id="games_started" type="number"></div>
-                    </div>
-                </div>
+<div class="loading" id="loading">
+  <span>Computing BRAVS<span class="dots"></span></span>
+</div>
 
-                <div class="form-section">
-                    <h3>Fielding & Context</h3>
-                    <div class="field-grid">
-                        <div class="field"><label>Inn Fld</label><input name="inn_fielded" id="inn_fielded" type="number"></div>
-                        <div class="field"><label>UZR</label><input name="uzr" id="uzr" type="number" step="0.1"></div>
-                        <div class="field"><label>DRS</label><input name="drs" id="drs" type="number" step="0.1"></div>
-                        <div class="field"><label>OAA</label><input name="oaa" id="oaa" type="number" step="0.1"></div>
-                        <div class="field"><label>Park Fac</label><input name="park_factor" id="park_factor" type="number" step="0.01" value="1.00"></div>
-                        <div class="field"><label>Lg R/G</label><input name="league_rpg" id="league_rpg" type="number" step="0.01" value="4.50"></div>
-                        <div class="field"><label>gmLI</label><input name="avg_leverage_index" id="avg_leverage_index" type="number" step="0.01" value="1.00"></div>
-                        <div class="field"><label>Szn Games</label><input name="season_games" id="season_games" type="number" value="162"></div>
-                    </div>
-                </div>
+<div class="error-card" id="error"></div>
 
-                <button type="submit" class="compute-btn" id="compute-btn">COMPUTE BRAVS</button>
-            </form>
-        </aside>
+<div class="result-wrap" id="result-wrap"></div>
 
-        <main class="main" id="results-area">
-            <div class="empty-state">
-                <h2>Enter stats or pick a preset</h2>
-                <p>Fill in the batting and/or pitching stats on the left, or click a preset player to get started. BRAVS will compute a full Bayesian posterior over player value with component decomposition.</p>
-            </div>
-        </main>
-    </div>
+<div class="empty" id="empty">
+  <h2>Search for a player above</h2>
+  <p>BRAVS computes a full Bayesian posterior over player value, decomposed into hitting, pitching, baserunning, fielding, leverage, and more. Works for any player in MLB history.</p>
+</div>
 
-    <script>
-        async function loadPreset(key) {
-            const resp = await fetch(`/api/preset/${key}`);
-            const data = await resp.json();
+<script>
+const $ = id => document.getElementById(id);
+let debounceTimer = null;
+let currentPlayerId = null;
 
-            // Clear all fields first
-            document.querySelectorAll('#bravs-form input[type="number"]').forEach(el => el.value = '');
+// --- Search ---
+$('search').addEventListener('input', e => {
+  clearTimeout(debounceTimer);
+  const q = e.target.value.trim();
+  if (q.length < 2) { $('dropdown').classList.remove('open'); return; }
+  debounceTimer = setTimeout(() => searchPlayers(q), 280);
+});
 
-            // Fill in preset data
-            for (const [field, value] of Object.entries(data)) {
-                const el = document.getElementById(field);
-                if (el) el.value = value;
-            }
+$('search').addEventListener('focus', () => {
+  if ($('dropdown').children.length > 0) $('dropdown').classList.add('open');
+});
 
-            // Auto-compute
-            computeBRAVS();
-        }
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-wrap')) $('dropdown').classList.remove('open');
+});
 
-        async function computeBRAVS(event) {
-            if (event) event.preventDefault();
+async function searchPlayers(q) {
+  try {
+    const resp = await fetch('/api/search?q=' + encodeURIComponent(q));
+    const players = await resp.json();
+    renderDropdown(players);
+  } catch (e) {
+    console.error(e);
+  }
+}
 
-            const btn = document.getElementById('compute-btn');
-            btn.disabled = true;
-            btn.textContent = 'COMPUTING...';
+function renderDropdown(players) {
+  const dd = $('dropdown');
+  if (!players.length) { dd.classList.remove('open'); dd.innerHTML = ''; return; }
 
-            const form = document.getElementById('bravs-form');
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
+  dd.innerHTML = players.map(p => {
+    const years = [p.debut_year, p.last_year].filter(Boolean);
+    const yearStr = years.length === 2 ? years[0] + '-' + (p.active ? 'pres' : years[1]) : '';
+    return '<div class="dropdown-item" data-id="' + p.id + '" data-name="' + p.name + '">' +
+      '<img src="' + p.headshot + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
+      '<div class="info">' +
+        '<div class="name">' + esc(p.name) + '</div>' +
+        '<div class="meta">' + p.position + ' &middot; ' + esc(p.team || '') +
+          (yearStr ? ' &middot; ' + yearStr : '') +
+          (p.number ? ' &middot; #' + p.number : '') +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
 
-            try {
-                const resp = await fetch('/api/compute', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data),
-                });
+  dd.classList.add('open');
 
-                const result = await resp.json();
+  dd.querySelectorAll('.dropdown-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const id = el.dataset.id;
+      const name = el.dataset.name;
+      $('search').value = name;
+      dd.classList.remove('open');
+      $('search-hint').textContent = '';
+      loadSeasons(id);
+    });
+  });
+}
 
-                if (result.error) {
-                    showError(result.error, result.details);
-                } else {
-                    renderResult(result);
-                }
-            } catch (e) {
-                showError('Request failed: ' + e.message);
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'COMPUTE BRAVS';
-            }
-        }
+// --- Seasons ---
+async function loadSeasons(playerId) {
+  currentPlayerId = playerId;
+  $('seasons-wrap').classList.add('visible');
+  $('seasons-scroll').innerHTML = '<span style="color:var(--text-4);font-size:12px">Loading seasons...</span>';
 
-        function showError(msg, details) {
-            const area = document.getElementById('results-area');
-            area.innerHTML = `<div class="error-msg"><strong>Error:</strong> ${msg}${details ? '<br>' + details.join(', ') : ''}</div>`;
-        }
+  try {
+    const resp = await fetch('/api/player/' + playerId + '/seasons');
+    const seasons = await resp.json();
+    renderSeasons(seasons);
+  } catch (e) {
+    $('seasons-scroll').innerHTML = '<span style="color:var(--red);font-size:12px">Failed to load seasons</span>';
+  }
+}
 
-        function renderResult(r) {
-            const area = document.getElementById('results-area');
-            const bravsCls = r.bravs >= 0 ? 'positive' : 'negative';
+function renderSeasons(seasons) {
+  const wrap = $('seasons-scroll');
+  if (!seasons.length) {
+    wrap.innerHTML = '<span style="color:var(--text-4);font-size:12px">No MLB seasons found</span>';
+    return;
+  }
 
-            // Find max absolute component value for bar scaling
-            const maxAbs = Math.max(...r.components.map(c => Math.abs(c.runs)), 10);
+  wrap.innerHTML = seasons.map((s, i) => {
+    const label = s.season + (s.team_abbrev ? ' ' + s.team_abbrev : '');
+    return '<button class="season-btn' + (i === 0 ? ' active' : '') + '" data-season="' + s.season + '">' +
+      label + '</button>';
+  }).join('');
 
-            let compHtml = r.components.map(c => {
-                const pct = Math.abs(c.runs) / maxAbs * 50;
-                const cls = c.runs >= 0 ? 'positive' : 'negative';
-                const sign = c.runs >= 0 ? '+' : '';
-                return `
-                    <div class="comp-row">
-                        <span class="comp-name">${c.name}</span>
-                        <div class="comp-bar-wrap">
-                            <div class="comp-zero-line"></div>
-                            <div class="comp-bar ${cls}" style="width: ${pct}%"></div>
-                        </div>
-                        <span class="comp-value ${cls}">${sign}${c.runs.toFixed(1)}</span>
-                    </div>`;
-            }).join('');
+  wrap.querySelectorAll('.season-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      wrap.querySelectorAll('.season-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      loadBRAVS(currentPlayerId, btn.dataset.season);
+    });
+  });
 
-            let warningsHtml = '';
-            if (r.warnings && r.warnings.length > 0) {
-                warningsHtml = `<div class="warnings"><strong>Warnings:</strong> ${r.warnings.join('; ')}</div>`;
-            }
+  // Auto-load first season
+  loadBRAVS(currentPlayerId, seasons[0].season);
+}
 
-            area.innerHTML = `
-                <div class="result-card">
-                    <div class="result-header">
-                        <div class="player-info">
-                            <h2>${r.player_name}</h2>
-                            <div class="meta">${r.season} &middot; ${r.team} &middot; ${r.position}</div>
-                        </div>
-                        <div class="bravs-display">
-                            <div class="big-number ${bravsCls}">${r.bravs.toFixed(1)}</div>
-                            <div class="label">BRAVS</div>
-                        </div>
-                    </div>
+// --- BRAVS ---
+async function loadBRAVS(playerId, season) {
+  $('empty').style.display = 'none';
+  $('result-wrap').classList.remove('visible');
+  $('error').classList.remove('visible');
+  $('loading').classList.add('visible');
 
-                    <div class="metrics-row">
-                        <div class="metric-box">
-                            <div class="value">${r.bravs_era_std.toFixed(1)}</div>
-                            <div class="label">Era-Std</div>
-                        </div>
-                        <div class="metric-box">
-                            <div class="value">${r.bravs_war_eq.toFixed(1)}</div>
-                            <div class="label">WAR-Equiv</div>
-                        </div>
-                        <div class="metric-box">
-                            <div class="value">${r.ci90_lo.toFixed(1)} - ${r.ci90_hi.toFixed(1)}</div>
-                            <div class="label">90% CI</div>
-                        </div>
-                        <div class="metric-box">
-                            <div class="value">${r.rpw.toFixed(2)}</div>
-                            <div class="label">Runs/Win</div>
-                        </div>
-                    </div>
+  try {
+    const resp = await fetch('/api/player/' + playerId + '/bravs/' + season);
+    const data = await resp.json();
+    $('loading').classList.remove('visible');
 
-                    <div class="components">
-                        <h3>Component Decomposition (runs)</h3>
-                        ${compHtml}
-                    </div>
+    if (data.error) {
+      $('error').textContent = data.error;
+      $('error').classList.add('visible');
+      return;
+    }
 
-                    ${warningsHtml}
-                </div>
+    renderResult(data);
+  } catch (e) {
+    $('loading').classList.remove('visible');
+    $('error').textContent = 'Failed to compute BRAVS: ' + e.message;
+    $('error').classList.add('visible');
+  }
+}
 
-                <div class="result-card" style="padding: 16px 28px;">
-                    <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted);">
-                        <span>Total Runs Above FAT: ${r.total_runs.toFixed(1)}</span>
-                        <span>Leverage Multiplier: ${r.leverage_mult.toFixed(3)}</span>
-                    </div>
-                </div>
-            `;
-        }
-    </script>
+function renderResult(r) {
+  const wrap = $('result-wrap');
+  const cls = r.bravs >= 0 ? 'pos' : 'neg';
+  const sign = r.bravs >= 0 ? '' : '';
+  const maxAbs = Math.max(...r.components.map(c => Math.abs(c.runs)), 8);
+
+  // Component bars
+  const compHTML = r.components.map(c => {
+    const pct = (Math.abs(c.runs) / maxAbs * 48).toFixed(1);
+    const barCls = c.runs >= 0 ? 'pos' : 'neg';
+    const valSign = c.runs >= 0 ? '+' : '';
+    return '<div class="comp-row">' +
+      '<span class="comp-name">' + formatCompName(c.name) + '</span>' +
+      '<div class="bar-track"><div class="bar-zero"></div>' +
+        '<div class="bar-fill ' + barCls + '" style="width:' + pct + '%"></div></div>' +
+      '<span class="comp-val ' + barCls + '">' + valSign + c.runs.toFixed(1) + '</span>' +
+    '</div>';
+  }).join('');
+
+  // Traditional stats
+  let tradHTML = '';
+  if (r.traditional.batting) {
+    const b = r.traditional.batting;
+    tradHTML += '<div class="trad-stats"><div class="section-title">Batting</div><div class="stat-grid">' +
+      statCell(b.G, 'G') + statCell(b.PA, 'PA') + statCell(b.AVG, 'AVG') +
+      statCell(b.OBP, 'OBP') + statCell(b.SLG, 'SLG') + statCell(b.OPS, 'OPS') +
+      statCell(b.HR, 'HR') + statCell(b.BB, 'BB') + statCell(b.K, 'K') + statCell(b.SB, 'SB') +
+    '</div></div>';
+  }
+  if (r.traditional.pitching) {
+    const p = r.traditional.pitching;
+    tradHTML += '<div class="trad-stats"><div class="section-title">Pitching</div><div class="stat-grid">' +
+      statCell(p.W + '-' + p.L, 'W-L') + statCell(p.IP, 'IP') + statCell(p.ERA, 'ERA') +
+      statCell(p.WHIP, 'WHIP') + statCell(p.K, 'K') + statCell(p.BB, 'BB') +
+      statCell(p.GS, 'GS') + statCell(p.SV, 'SV') +
+    '</div></div>';
+  }
+
+  wrap.innerHTML =
+    '<div class="card">' +
+      '<div class="player-header">' +
+        '<img class="player-photo" src="' + r.headshot + '" alt="" onerror="this.style.display=\'none\'">' +
+        '<div class="player-info">' +
+          '<div class="player-name">' + esc(r.player_name) + '</div>' +
+          '<div class="player-meta">' +
+            (r.team_logo ? '<img src="' + r.team_logo + '" alt="" onerror="this.style.display=\'none\'">' : '') +
+            '<span>' + esc(r.team) + '</span>' +
+            '<span class="sep">/</span>' +
+            '<span>' + r.season + '</span>' +
+            '<span class="sep">/</span>' +
+            '<span>' + r.position + '</span>' +
+            (r.number ? '<span class="sep">/</span><span>#' + r.number + '</span>' : '') +
+            (r.bats_throws ? '<span class="sep">/</span><span>' + r.bats_throws + '</span>' : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="bravs-block">' +
+          '<div class="bravs-number ' + cls + '">' + r.bravs.toFixed(1) + '</div>' +
+          '<div class="bravs-label">BRAVS</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="metrics">' +
+        metric(r.bravs_era_std.toFixed(1), 'Era-Std') +
+        metric(r.bravs_war_eq.toFixed(1), 'WAR Equiv') +
+        metric(r.ci90_lo.toFixed(1) + ' to ' + r.ci90_hi.toFixed(1), '90% CI') +
+        metric(r.rpw.toFixed(2), 'R/Win') +
+        metric(r.park_factor.toFixed(2), 'Park Fac') +
+      '</div>' +
+      '<div class="components-section">' +
+        '<div class="section-title">Component Decomposition (runs above FAT)</div>' +
+        compHTML +
+      '</div>' +
+      tradHTML +
+    '</div>' +
+    '<div class="sub-card">' +
+      '<span>Total runs above FAT: ' + r.total_runs.toFixed(1) + '</span>' +
+      '<span>Leverage multiplier: ' + r.leverage_mult.toFixed(3) + '</span>' +
+    '</div>';
+
+  wrap.classList.add('visible');
+}
+
+// --- Helpers ---
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function metric(val, label) {
+  return '<div class="metric"><div class="val">' + val + '</div><div class="lbl">' + label + '</div></div>';
+}
+function statCell(val, label) {
+  return '<div class="stat-cell"><div class="val">' + val + '</div><div class="lbl">' + label + '</div></div>';
+}
+function formatCompName(name) {
+  return name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+</script>
 </body>
 </html>
