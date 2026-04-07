@@ -1,0 +1,22 @@
+Rust Trout 2016:
+  BRAVS: 15.4
+  WAR-eq: 9.5
+  Era-Std: 15.0
+  CI: [12.9, 17.9]
+  RPW: 5.74
+  hitting               +82.4  [+71.6, +93.4]
+  baserunning            -1.1  [-2.7, +0.6]
+  fielding               +0.0  [-8.5, +8.4]
+  positional             +2.5  [+0.8, +4.2]
+  approach_quality       +0.7  [-2.3, +3.7]
+  durability             +1.2  [-1.2, +3.6]
+  leverage               +2.5  [+1.7, +3.4]
+
+Rust:   3.96 ms/call
+Python: 11.45 ms/call
+Speedup: 2.9x
+Rust 10k calls: 39568ms
+Python 1k calls: 11450ms
+Full season (750 players) estimate:
+  Rust:   2968ms
+  Python: 8588ms

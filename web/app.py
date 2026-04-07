@@ -9,6 +9,8 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 import requests
 from flask import Flask, render_template, jsonify, request as flask_request
 
@@ -16,6 +18,15 @@ from baseball_metric.core.model import compute_bravs
 from baseball_metric.core.types import PlayerSeason
 from baseball_metric.adjustments.era_adjustment import get_rpg
 from baseball_metric.adjustments.park_factors import get_park_factor
+
+# Try Rust engine for faster computation
+try:
+    from bravs_engine import compute_bravs_fast as _rust_compute
+    USE_RUST = True
+    logger_msg = "Rust engine loaded"
+except ImportError:
+    USE_RUST = False
+    logger_msg = "Rust engine not available, using Python"
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -416,19 +427,53 @@ def compute_player_bravs(player_id: int, season: int):
         season_games=season_length,
     )
 
-    result = compute_bravs(ps)
-
-    # Build response
-    components = []
-    for name, comp in sorted(result.components.items()):
-        components.append({
-            "name": name,
-            "runs": round(comp.runs_mean, 1),
-            "ci_lo": round(comp.ci_90[0], 1),
-            "ci_hi": round(comp.ci_90[1], 1),
-        })
-
-    ci90 = result.bravs_ci_90
+    # Use Rust engine if available, else Python
+    if USE_RUST:
+        rust_r = _rust_compute(
+            pa=ps.pa, ab=ps.ab, hits=ps.hits, doubles=ps.doubles, triples=ps.triples,
+            hr=ps.hr, bb=ps.bb, ibb=ps.ibb, hbp=ps.hbp, k=ps.k, sf=ps.sf,
+            sb=ps.sb, cs=ps.cs, gidp=ps.gidp, games=ps.games,
+            ip=ps.ip, er=ps.er, hits_allowed=ps.hits_allowed, hr_allowed=ps.hr_allowed,
+            bb_allowed=ps.bb_allowed, hbp_allowed=ps.hbp_allowed, k_pitching=ps.k_pitching,
+            games_pitched=ps.games_pitched, games_started=ps.games_started, saves=ps.saves,
+            inn_fielded=ps.inn_fielded,
+            uzr=ps.uzr if ps.uzr is not None else None,
+            drs=ps.drs if ps.drs is not None else None,
+            oaa=ps.oaa if ps.oaa is not None else None,
+            total_zone=ps.total_zone if ps.total_zone is not None else None,
+            framing_runs=ps.framing_runs if ps.framing_runs is not None else None,
+            blocking_runs=ps.blocking_runs if ps.blocking_runs is not None else None,
+            throwing_runs=ps.throwing_runs if ps.throwing_runs is not None else None,
+            catcher_pitches=ps.catcher_pitches,
+            avg_leverage_index=ps.avg_leverage_index,
+            position=ps.position, season=ps.season, park_factor=ps.park_factor,
+            league_rpg=ps.league_rpg, season_games=ps.season_games,
+        )
+        components = rust_r["components"]
+        bravs_val = rust_r["bravs"]
+        bravs_era_std = rust_r["bravs_era_std"]
+        bravs_war_eq = rust_r["bravs_war_eq"]
+        ci90 = (rust_r["ci90_lo"], rust_r["ci90_hi"])
+        total_runs = rust_r["total_runs"]
+        rpw_val = rust_r["rpw"]
+        lev_mult = rust_r["leverage_mult"]
+    else:
+        result = compute_bravs(ps)
+        components = []
+        for name, comp in sorted(result.components.items()):
+            components.append({
+                "name": name,
+                "runs": round(comp.runs_mean, 1),
+                "ci_lo": round(comp.ci_90[0], 1),
+                "ci_hi": round(comp.ci_90[1], 1),
+            })
+        ci90 = result.bravs_ci_90
+        bravs_val = round(result.bravs, 1)
+        bravs_era_std = round(result.bravs_era_standardized, 1)
+        bravs_war_eq = round(result.bravs_calibrated, 1)
+        total_runs = round(result.total_runs_mean, 1)
+        rpw_val = round(result.rpw, 2)
+        lev_mult = round(result.leverage_multiplier, 3)
 
     # Build traditional stats
     trad_stats = {}
@@ -470,16 +515,17 @@ def compute_player_bravs(player_id: int, season: int):
         "team_logo": TEAM_LOGO_URL.format(tid=team_id) if team_id else None,
         "bats_throws": f"{pinfo.get('batSide', {}).get('code', '?')}/{pinfo.get('pitchHand', {}).get('code', '?')}",
         "number": pinfo.get("primaryNumber", ""),
-        "bravs": round(result.bravs, 1),
-        "bravs_era_std": round(result.bravs_era_standardized, 1),
-        "bravs_war_eq": round(result.bravs_calibrated, 1),
+        "bravs": bravs_val,
+        "bravs_era_std": bravs_era_std,
+        "bravs_war_eq": bravs_war_eq,
         "ci90_lo": round(ci90[0], 1),
         "ci90_hi": round(ci90[1], 1),
-        "total_runs": round(result.total_runs_mean, 1),
-        "rpw": round(result.rpw, 2),
-        "leverage_mult": round(result.leverage_multiplier, 3),
+        "total_runs": total_runs,
+        "rpw": rpw_val,
+        "leverage_mult": lev_mult,
         "park_factor": round(pf.overall, 2),
         "components": components,
+        "engine": "rust" if USE_RUST else "python",
         "traditional": trad_stats,
     })
 
@@ -556,16 +602,22 @@ def award_race(award: str, season: int, league: str):
         _add_candidates(_fetch_leaders("plateAppearances", season, league_id, 8))
         _add_candidates(_fetch_leaders("homeRuns", season, league_id, 5))
 
-    # Compute BRAVS for each candidate
+    # Compute BRAVS for all candidates in parallel
     results = []
-    for cand in candidates[:10]:
-        try:
-            resp_data = compute_player_bravs_internal(cand["id"], season)
-            if resp_data:
-                resp_data["player_id"] = cand["id"]
-                results.append(resp_data)
-        except Exception as e:
-            logger.warning("Failed to compute BRAVS for %s: %s", cand["name"], e)
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        futures = {
+            pool.submit(compute_player_bravs_internal, cand["id"], season): cand
+            for cand in candidates[:12]
+        }
+        for future in as_completed(futures):
+            cand = futures[future]
+            try:
+                resp_data = future.result()
+                if resp_data:
+                    resp_data["player_id"] = cand["id"]
+                    results.append(resp_data)
+            except Exception as e:
+                logger.warning("Failed to compute BRAVS for %s: %s", cand["name"], e)
 
     results.sort(key=lambda x: x.get("bravs", 0), reverse=True)
 
@@ -615,5 +667,6 @@ def compare_players():
 
 if __name__ == "__main__":
     print("\n  BRAVS Web App")
+    print(f"  Engine: {'Rust (bravs_engine)' if USE_RUST else 'Python (fallback)'}")
     print("  http://localhost:5000\n")
     app.run(debug=True, port=5000)

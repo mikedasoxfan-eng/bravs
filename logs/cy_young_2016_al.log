@@ -1,0 +1,122 @@
+============================================================
+BRAVS Report: Rick Porcello (2016)
+============================================================
+Total BRAVS: 9.5 wins  [90% CI: 7.8 to 11.2]
+Era-std:     9.7 wins  (fixed RPW=5.9)
+WAR-equiv:   5.9 wins  [4.9 to 6.9]
+Total Runs Above FAT: 57.0
+Runs Per Win: 5.99
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  durability          :    +0.3  [-2.1, +2.6]
+  fielding            :    +0.0  [-8.2, +8.2]
+  leverage            :    +1.7  [+1.4, +2.0]
+  pitching            :   +54.9  [+49.1, +57.3]
+  positional          :    +0.0  [-1.7, +1.7]
+============================================================
+
+============================================================
+BRAVS Report: Justin Verlander (2016)
+============================================================
+Total BRAVS: 8.7 wins  [90% CI: 7.0 to 10.5]
+Era-std:     8.4 wins  (fixed RPW=5.9)
+WAR-equiv:   5.4 wins  [4.3 to 6.5]
+Total Runs Above FAT: 49.8
+Runs Per Win: 5.70
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  durability          :    +0.6  [-1.8, +2.9]
+  fielding            :    +0.0  [-8.2, +8.2]
+  leverage            :    +1.5  [+1.2, +1.8]
+  pitching            :   +47.6  [+42.1, +50.4]
+  positional          :    +0.0  [-1.7, +1.7]
+============================================================
+
+============================================================
+BRAVS Report: Corey Kluber (2016)
+============================================================
+Total BRAVS: 8.9 wins  [90% CI: 7.1 to 10.6]
+Era-std:     8.6 wins  (fixed RPW=5.9)
+WAR-equiv:   5.5 wins  [4.4 to 6.6]
+Total Runs Above FAT: 50.9
+Runs Per Win: 5.74
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  durability          :    +0.0  [-2.4, +2.3]
+  fielding            :    +0.0  [-8.2, +8.2]
+  leverage            :    +1.5  [+1.2, +1.8]
+  pitching            :   +49.3  [+43.8, +51.9]
+  positional          :    +0.0  [-1.7, +1.7]
+============================================================
+
+============================================================
+BRAVS Report: Chris Sale (2016)
+============================================================
+Total BRAVS: 9.4 wins  [90% CI: 7.7 to 11.2]
+Era-std:     9.4 wins  (fixed RPW=5.9)
+WAR-equiv:   5.8 wins  [4.8 to 6.9]
+Total Runs Above FAT: 55.3
+Runs Per Win: 5.87
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  durability          :    +0.0  [-2.4, +2.3]
+  fielding            :    +0.0  [-8.2, +8.2]
+  leverage            :    +1.7  [+1.4, +1.9]
+  pitching            :   +53.5  [+47.8, +56.1]
+  positional          :    +0.0  [-1.7, +1.7]
+============================================================
+
+============================================================
+BRAVS Report: Zach Britton (2016)
+============================================================
+Total BRAVS: 6.6 wins  [90% CI: 4.8 to 8.3]
+Era-std:     6.6 wins  (fixed RPW=5.9)
+WAR-equiv:   4.1 wins  [3.0 to 5.1]
+Total Runs Above FAT: 38.8
+Runs Per Win: 5.91
+Leverage Multiplier: 1.440
+
+Component Decomposition (runs):
+----------------------------------------
+  durability          :    +0.6  [-1.8, +2.9]
+  fielding            :    +0.0  [-8.2, +8.2]
+  leverage            :   +11.6  [+7.8, +15.4]
+  pitching            :   +26.5  [+23.5, +27.9]
+  positional          :    +0.0  [-1.7, +1.7]
+============================================================
+
+=====================================================================================
+  2016 AL Cy Young — BRAVS Rankings
+=====================================================================================
+Rank  Pitcher                W-L   ERA     IP    K   BRAVS  ErStd  WAReq            90% CI
+-------------------------------------------------------------------------------------
+   1. Rick Porcello               3.15  223.0  189     9.5    9.7    5.9  [  7.8,  11.2]
+   2. Chris Sale                  2.78  226.7  233     9.4    9.4    5.8  [  7.7,  11.2]
+   3. Corey Kluber                3.14  215.0  227     8.9    8.6    5.5  [  7.1,  10.6]
+   4. Justin Verlander            3.04  227.7  254     8.7    8.4    5.4  [  7.0,  10.5]
+   5. Zach Britton                0.54   67.0   74     6.6    6.6    4.1  [  4.8,   8.3]
+
+Pairwise P(row > col):
+                  Porcello        Sale      Kluber   Verlander     Britton
+      Porcello         ---       100%        100%        100%        100% 
+          Sale         0%          ---       100%        100%        100% 
+        Kluber         0%          0%          ---       100%        100% 
+     Verlander         0%          0%          0%          ---       100% 
+       Britton         0%          0%          0%          0%          ---
+
+=====================================================================================
+  Key Component Comparison: Porcello (winner) vs Verlander vs Kluber
+=====================================================================================
+Porcello       Pitching:  +54.9  Leverage:  +1.7  Durability:  +0.3  FIP: 3.21  post_FIP: 3.1
+Verlander      Pitching:  +47.6  Leverage:  +1.5  Durability:  +0.6  FIP: 3.31  post_FIP: 3.42
+Kluber         Pitching:  +49.3  Leverage:  +1.5  Durability:  +0.0  FIP: 3.17  post_FIP: 3.25
+Sale           Pitching:  +53.5  Leverage:  +1.7  Durability:  +0.0  FIP: 3.2  post_FIP: 3.19
+Britton        Pitching:  +26.5  Leverage: +11.6  Durability:  +0.6  FIP: 1.71  post_FIP: 1.8
