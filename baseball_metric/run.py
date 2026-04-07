@@ -278,6 +278,8 @@ def main() -> None:
                         help="Enable verbose logging")
     parser.add_argument("--seed", type=int, default=42,
                         help="Random seed for reproducibility")
+    parser.add_argument("--mcmc", action="store_true",
+                        help="Use MCMC posteriors (slower, captures skewness)")
 
     args = parser.parse_args()
 
@@ -288,17 +290,18 @@ def main() -> None:
 
     if args.notable_seasons or args.historical:
         results = run_notable_seasons()
-        print(f"\n{'='*80}")
+        print(f"\n{'='*90}")
         print(f"  All-Time BRAVS Leaderboard (Notable Seasons)")
-        print(f"{'='*80}")
+        print(f"{'='*90}")
         results.sort(key=lambda r: r.bravs, reverse=True)
         print(f"{'Rank':>4}  {'Player':<25} {'Year':>5} {'Pos':<4} "
-              f"{'BRAVS':>6} {'WAReq':>6}  {'90% CI':>16}")
-        print(f"{'-'*80}")
+              f"{'BRAVS':>6} {'ErStd':>6} {'WAReq':>6}  {'90% CI':>16}")
+        print(f"{'-'*90}")
         for i, r in enumerate(results, 1):
             ci = r.bravs_ci_90
             print(f"{i:>4}. {r.player.player_name:<25} {r.player.season:>5} "
-                  f"{r.player.position:<4} {r.bravs:>6.1f} {r.bravs_calibrated:>6.1f}"
+                  f"{r.player.position:<4} {r.bravs:>6.1f} "
+                  f"{r.bravs_era_standardized:>6.1f} {r.bravs_calibrated:>6.1f}"
                   f"  [{ci[0]:>5.1f}, {ci[1]:>5.1f}]")
 
     elif args.season:

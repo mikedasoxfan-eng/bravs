@@ -1,0 +1,22 @@
+MCMC Hitting for Trout 2016:
+  Mean: 11.0 runs
+  SD:   4.6 runs
+  90CI: [3.5, 18.5]
+  method: mcmc_metropolis_hastings
+  n_samples: 15000
+  burn_in: 5000
+  acceptance_rate: 0.579
+  post_woba_mean: 0.295
+  post_woba_sd: 0.0078
+  skewness: -0.031
+
+MCMC Hitting for Small Sample (50 PA):
+  Mean: -3.3 runs
+  90CI: [-4.0, -2.6]
+  method: mcmc_metropolis_hastings
+  n_samples: 15000
+  burn_in: 5000
+  acceptance_rate: 0.647
+  post_woba_mean: 0.2
+  post_woba_sd: 0.0096
+  skewness: 0.015

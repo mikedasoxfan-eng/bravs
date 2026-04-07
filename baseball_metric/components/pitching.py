@@ -28,6 +28,17 @@ from baseball_metric.utils.math_helpers import (
 # Source: analysis of FIP variance, ~1.5 per sqrt(IP)
 FIP_OBS_VARIANCE_PER_IP = 2.25
 
+# Batted ball quality adjustment constants
+# xwOBA against on contact measures quality of batted balls allowed
+# League average xwOBA on contact is ~.350
+LEAGUE_AVG_XWOBA_CONTACT = 0.350
+# Run value per point of xwOBA on contact, per ball in play
+# Derived from: wOBA_scale relationship, ~1.15 runs per .001 wOBA per 600 BIP
+XWOBA_CONTACT_RUN_VALUE = 1.15
+# Weight given to batted ball quality adjustment (0-1)
+# 0 = pure FIP, 1 = full batted ball credit
+BATTED_BALL_WEIGHT = 0.35
+
 
 def compute_pitching(
     player: PlayerSeason,
@@ -106,14 +117,36 @@ def compute_pitching(
 
     # Runs saved above FAT = (FAT_FIP - posterior_FIP) / 9.0 * IP
     runs_saved_per_9 = fat_era_per_9 - post_mean
-    total_runs_mean = runs_saved_per_9 / 9.0 * player.ip
+    fip_runs = runs_saved_per_9 / 9.0 * player.ip
 
-    # Variance propagation: var(total_runs) = (IP/9)^2 * post_var
-    total_runs_var = (player.ip / 9.0) ** 2 * post_var
+    # Step 4b: Batted ball quality adjustment (Statcast era)
+    # If xwOBA-against on contact is available, blend it with FIP
+    # This separates pitchers who give up loud contact from those who induce weak contact
+    bb_adjustment = 0.0
+    bb_adjustment_var = 0.0
+    if player.xwoba_against is not None and player.contact_rate is not None:
+        # Balls in play = IP * ~3.1 batters/IP * contact_rate (rough estimate)
+        est_bip = player.ip * 3.1 * player.contact_rate
+        # Run value of contact quality vs league average
+        xwoba_delta = LEAGUE_AVG_XWOBA_CONTACT - player.xwoba_against  # positive = better
+        bb_adjustment = xwoba_delta * XWOBA_CONTACT_RUN_VALUE * est_bip
+        # Observation variance for batted ball quality
+        bb_adjustment_var = 4.0  # moderate uncertainty on batted ball runs
+
+    # Blend FIP and batted ball quality
+    total_runs_mean = fip_runs * (1.0 - BATTED_BALL_WEIGHT) + (fip_runs + bb_adjustment) * BATTED_BALL_WEIGHT
+    # Simplifies to: fip_runs + bb_adjustment * BATTED_BALL_WEIGHT
+    total_runs_mean = fip_runs + bb_adjustment * BATTED_BALL_WEIGHT
+
+    # Variance propagation: var(total_runs) = (IP/9)^2 * post_var + bb_var
+    total_runs_var = (player.ip / 9.0) ** 2 * post_var + bb_adjustment_var * BATTED_BALL_WEIGHT ** 2
 
     # Step 5: Posterior samples
     fip_samples = normal_posterior_samples(post_mean, post_var, n_samples, rng)
     runs_samples = (fat_era_per_9 - fip_samples) / 9.0 * player.ip
+    if bb_adjustment != 0.0:
+        bb_samples = rng.normal(bb_adjustment, np.sqrt(max(bb_adjustment_var, 0.01)), n_samples)
+        runs_samples = runs_samples + bb_samples * BATTED_BALL_WEIGHT
 
     ci50 = credible_interval(runs_samples, 0.50)
     ci90 = credible_interval(runs_samples, 0.90)
@@ -132,5 +165,8 @@ def compute_pitching(
             "post_fip_sd": round(float(np.sqrt(post_var)), 3),
             "fat_era_per_9": round(fat_era_per_9, 2),
             "is_starter": player.games_started > player.games_pitched * 0.5,
+            "fip_runs": round(fip_runs, 1),
+            "bb_quality_adj": round(bb_adjustment * BATTED_BALL_WEIGHT, 1),
+            "xwoba_against": player.xwoba_against,
         },
     )

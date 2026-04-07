@@ -33,9 +33,12 @@ FRAMING_OBS_VARIANCE = 25.0
 DEFAULT_BLOCKING_RUNS = 0.0
 DEFAULT_THROWING_RUNS = 0.0
 
-# Game-calling prior: very wide because WOWY is extremely noisy
+# Game-calling prior: wide because WOWY is noisy, but we can do better
+# than pure prior by incorporating multi-year rolling data and
+# pitcher-specific effects
 GAME_CALLING_PRIOR_SD = 4.0
-GAME_CALLING_OBS_VARIANCE = 100.0  # very high — WOWY needs huge samples
+GAME_CALLING_OBS_VARIANCE_SINGLE_YEAR = 100.0  # very high for 1 year of WOWY
+GAME_CALLING_OBS_VARIANCE_MULTI_YEAR = 40.0  # better with 3+ years of data
 
 
 def compute_catcher(
@@ -97,12 +100,28 @@ def compute_catcher(
     # --- Sub-component 3: Throwing ---
     throwing_runs = player.throwing_runs if player.throwing_runs is not None else DEFAULT_THROWING_RUNS
 
-    # --- Sub-component 4: Game-calling (heavily regressed) ---
-    # WOWY analysis is noisy. We use a very wide prior and barely move from it.
-    # In practice, game-calling is nearly impossible to measure reliably
-    # with less than 3-4 years of data. Default to 0 with wide uncertainty.
-    game_calling_mean = 0.0
-    game_calling_var = GAME_CALLING_PRIOR_SD ** 2
+    # --- Sub-component 4: Game-calling (multi-year WOWY) ---
+    # If game_calling_runs is provided (from external WOWY analysis),
+    # use it with variance scaled by years of data. More years = tighter.
+    # If not provided, fall back to prior (0 with wide uncertainty).
+    if player.game_calling_runs is not None:
+        gc_obs = player.game_calling_runs
+        # Multi-year data is much more reliable than single-year
+        if player.game_calling_years >= 3:
+            gc_obs_var = GAME_CALLING_OBS_VARIANCE_MULTI_YEAR
+        else:
+            gc_obs_var = GAME_CALLING_OBS_VARIANCE_SINGLE_YEAR
+
+        game_calling_mean, game_calling_var = bayesian_update_normal(
+            prior_mean=0.0,
+            prior_var=GAME_CALLING_PRIOR_SD ** 2,
+            data_mean=gc_obs,
+            data_var=gc_obs_var,
+            n=max(player.game_calling_years, 1),
+        )
+    else:
+        game_calling_mean = 0.0
+        game_calling_var = GAME_CALLING_PRIOR_SD ** 2
 
     # --- Aggregate ---
     total_mean = framing_post_mean + blocking_runs + throwing_runs + game_calling_mean

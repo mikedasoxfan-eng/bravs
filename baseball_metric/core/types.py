@@ -94,6 +94,8 @@ class PlayerSeason:
     blocking_runs: float | None = None
     throwing_runs: float | None = None
     catcher_pitches: int = 0
+    game_calling_runs: float | None = None  # WOWY-based game-calling estimate
+    game_calling_years: int = 1  # years of WOWY data (more = more reliable)
 
     # Leverage / context
     avg_leverage_index: float = 1.0  # gmLI
@@ -108,6 +110,13 @@ class PlayerSeason:
     chase_rate: float | None = None  # O-Swing%
     zone_contact_rate: float | None = None  # Z-Contact%
     aqi_raw: float | None = None  # pre-computed AQI if available
+
+    # Pitching Statcast (if available — 2015+)
+    xwoba_against: float | None = None  # expected wOBA against on contact
+    contact_rate: float | None = None  # 1 - K% for the pitcher (rate balls in play)
+
+    # Multi-position support: dict of position -> games at that position
+    positions_played: dict[str, int] | None = None
 
     # Context
     league: str = "MLB"
@@ -158,14 +167,25 @@ class BRAVSResult:
     total_samples: NDArray[np.floating[object]] | None = None
 
     # Calibration factor: scales raw BRAVS to WAR-equivalent range.
-    # Derived from comparing BRAVS to consensus WAR for calibration seasons.
-    # Raw BRAVS is ~1.6x WAR on average due to AQI + dynamic RPW.
     WAR_CALIBRATION_FACTOR: float = 0.62
+
+    # Fixed modern RPW for era-standardized comparison
+    STANDARD_RPW: float = 5.90  # ~2023 run environment
 
     @property
     def bravs(self) -> float:
-        """Point estimate of BRAVS (wins above FAT)."""
+        """Point estimate of BRAVS (wins above FAT) — context-dependent."""
         return self.total_runs_mean / self.rpw
+
+    @property
+    def bravs_era_standardized(self) -> float:
+        """Era-standardized BRAVS using fixed modern RPW.
+
+        Removes the RPW effect that inflates dead-ball/pitcher's era seasons.
+        Gibson 1968 still gets credit for his runs saved, but each run
+        converts to wins at the same rate as a modern player.
+        """
+        return self.total_runs_mean / self.STANDARD_RPW
 
     @property
     def bravs_calibrated(self) -> float:
@@ -199,6 +219,8 @@ class BRAVSResult:
             f"BRAVS Report: {self.player.player_name} ({self.player.season})",
             f"{'='*60}",
             f"Total BRAVS: {self.bravs:.1f} wins  [90% CI: {ci90[0]:.1f} to {ci90[1]:.1f}]",
+            f"Era-std:     {self.bravs_era_standardized:.1f} wins  "
+            f"(fixed RPW={self.STANDARD_RPW})",
             f"WAR-equiv:   {self.bravs_calibrated:.1f} wins  "
             f"[{ci90[0]*cal:.1f} to {ci90[1]*cal:.1f}]",
             f"Total Runs Above FAT: {self.total_runs_mean:.1f}",
