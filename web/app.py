@@ -265,64 +265,86 @@ def compute_player_bravs(player_id: int, season: int):
             splits = group.get("splits", [])
             if not splits:
                 continue
-            # Use the last split (total or most recent team)
-            # Combine counting stats across teams
-            combined: dict[str, int | float] = {}
-            for split in splits:
-                s = split.get("stat", {})
-                team_obj = split.get("team", {})
-                team_name = team_obj.get("name", team_name)
-                team_abbrev = _get_team_abbrev(team_obj)
-                team_id = team_obj.get("id", team_id)
-                pos_obj = split.get("position", {})
-                if pos_obj.get("abbreviation"):
-                    position = pos_obj["abbreviation"]
 
-                for key in ["gamesPlayed", "plateAppearances", "atBats", "hits",
-                            "doubles", "triples", "homeRuns", "baseOnBalls",
-                            "intentionalWalks", "hitByPitch", "strikeOuts",
-                            "sacFlies", "sacBunts", "stolenBases", "caughtStealing",
-                            "groundIntoDoublePlay"]:
-                    combined[key] = combined.get(key, 0) + _safe_int(s.get(key))
+            # MLB API returns: total row (numTeams > 1) + per-team splits.
+            # Use the total row if it exists, otherwise use the single split.
+            total_split = None
+            team_splits = []
+            for split in splits:
+                if _safe_int(split.get("numTeams", 1)) > 1:
+                    total_split = split
+                else:
+                    team_splits.append(split)
+
+            chosen = total_split or (team_splits[0] if len(team_splits) == 1 else None)
+            if not chosen:
+                # No total row and multiple teams — pick the one with most PA
+                chosen = max(splits, key=lambda sp: _safe_int(sp.get("stat", {}).get("plateAppearances")))
+
+            s = chosen.get("stat", {})
+            team_obj = chosen.get("team", {})
+            # For traded players, get team from the last team split for display
+            if total_split and team_splits:
+                team_obj = team_splits[-1].get("team", team_obj)
+            team_name = team_obj.get("name", team_name)
+            team_abbrev = _get_team_abbrev(team_obj)
+            team_id = team_obj.get("id", team_id)
+            pos_obj = chosen.get("position", {})
+            if pos_obj.get("abbreviation"):
+                position = pos_obj["abbreviation"]
+
+            combined: dict[str, int | float] = {}
+            for key in ["gamesPlayed", "plateAppearances", "atBats", "hits",
+                        "doubles", "triples", "homeRuns", "baseOnBalls",
+                        "intentionalWalks", "hitByPitch", "strikeOuts",
+                        "sacFlies", "sacBunts", "stolenBases", "caughtStealing",
+                        "groundIntoDoublePlay"]:
+                combined[key] = _safe_int(s.get(key))
 
             h = combined
-            # Also grab rate stats from last split
-            if splits:
-                last_s = splits[-1].get("stat", {})
-                h["avg"] = last_s.get("avg", "")
-                h["obp"] = last_s.get("obp", "")
-                h["slg"] = last_s.get("slg", "")
-                h["ops"] = last_s.get("ops", "")
+            h["avg"] = s.get("avg", "")
+            h["obp"] = s.get("obp", "")
+            h["slg"] = s.get("slg", "")
+            h["ops"] = s.get("ops", "")
 
-    # Parse pitching stats
+    # Parse pitching stats — same total-row logic
     p: dict[str, object] = {}
     if pitching_data and "stats" in pitching_data:
         for group in pitching_data["stats"]:
             splits = group.get("splits", [])
             if not splits:
                 continue
-            combined_p: dict[str, object] = {}
+
+            total_split = None
+            team_splits = []
             for split in splits:
-                s = split.get("stat", {})
-                team_obj = split.get("team", {})
-                if not team_name:
-                    team_name = team_obj.get("name", "")
-                    team_abbrev = _get_team_abbrev(team_obj)
-                    team_id = team_obj.get("id", 0)
+                if _safe_int(split.get("numTeams", 1)) > 1:
+                    total_split = split
+                else:
+                    team_splits.append(split)
 
-                ip = _parse_ip(s.get("inningsPitched", 0))
-                combined_p["ip"] = _safe_float(combined_p.get("ip", 0)) + ip
+            chosen = total_split or (team_splits[0] if len(team_splits) == 1 else None)
+            if not chosen:
+                chosen = max(splits, key=lambda sp: _parse_ip(sp.get("stat", {}).get("inningsPitched", 0)))
 
-                for key in ["gamesPlayed", "gamesStarted", "earnedRuns", "hits",
-                            "homeRuns", "baseOnBalls", "hitBatsmen", "strikeOuts",
-                            "saves", "holds", "wins", "losses"]:
-                    combined_p[key] = _safe_int(combined_p.get(key, 0)) + _safe_int(s.get(key))
+            s = chosen.get("stat", {})
+            team_obj = chosen.get("team", {})
+            if not team_name:
+                if total_split and team_splits:
+                    team_obj = team_splits[-1].get("team", team_obj)
+                team_name = team_obj.get("name", "")
+                team_abbrev = _get_team_abbrev(team_obj)
+                team_id = team_obj.get("id", 0)
+
+            combined_p: dict[str, object] = {"ip": _parse_ip(s.get("inningsPitched", 0))}
+            for key in ["gamesPlayed", "gamesStarted", "earnedRuns", "hits",
+                        "homeRuns", "baseOnBalls", "hitBatsmen", "strikeOuts",
+                        "saves", "holds", "wins", "losses"]:
+                combined_p[key] = _safe_int(s.get(key))
 
             p = combined_p
-            if splits:
-                last_s = splits[-1].get("stat", {})
-                p["era"] = last_s.get("era", "")
-                p["whip"] = last_s.get("whip", "")
+            p["era"] = s.get("era", "")
+            p["whip"] = s.get("whip", "")
 
     if not h and not p:
         return jsonify({"error": f"No stats found for {season}"}), 404
@@ -442,60 +464,77 @@ def compute_player_bravs(player_id: int, season: int):
     })
 
 
+def _fetch_leaders(category: str, season: int, league_id: int, limit: int = 12) -> list[dict]:
+    """Fetch league leaders from the MLB Stats API leaders endpoint."""
+    data = _mlb_get(
+        f"{MLB_API}/stats/leaders",
+        {"leaderCategories": category, "season": season,
+         "leagueId": league_id, "limit": limit, "statGroup": "hitting"},
+    )
+    results = []
+    if data and "leagueLeaders" in data:
+        for group in data["leagueLeaders"]:
+            for leader in group.get("leaders", []):
+                person = leader.get("person", {})
+                pid = person.get("id")
+                if pid:
+                    results.append({
+                        "id": pid,
+                        "name": person.get("fullName", "Unknown"),
+                    })
+    return results
+
+
+def _fetch_pitching_leaders(category: str, season: int, league_id: int, limit: int = 12) -> list[dict]:
+    """Fetch pitching leaders."""
+    data = _mlb_get(
+        f"{MLB_API}/stats/leaders",
+        {"leaderCategories": category, "season": season,
+         "leagueId": league_id, "limit": limit, "statGroup": "pitching"},
+    )
+    results = []
+    if data and "leagueLeaders" in data:
+        for group in data["leagueLeaders"]:
+            for leader in group.get("leaders", []):
+                person = leader.get("person", {})
+                pid = person.get("id")
+                if pid:
+                    results.append({
+                        "id": pid,
+                        "name": person.get("fullName", "Unknown"),
+                    })
+    return results
+
+
 @app.route("/api/awards/<award>/<int:season>/<league>")
 def award_race(award: str, season: int, league: str):
     """Compute BRAVS for all top candidates in an award race.
 
-    Fetches the top qualified players for the season/league and ranks by BRAVS.
-    award: 'mvp' or 'cy_young'
-    league: 'AL' or 'NL'
+    Uses multiple leader categories to build a robust candidate pool:
+    - MVP: OPS leaders + PA leaders + HR leaders (deduped)
+    - Cy Young: ERA leaders + K leaders + IP leaders + SV leaders (deduped)
     """
     league_id = 103 if league.upper() == "AL" else 104
 
+    seen_ids: set[int] = set()
+    candidates: list[dict] = []
+
+    def _add_candidates(leaders: list[dict]) -> None:
+        for p in leaders:
+            if p["id"] not in seen_ids:
+                seen_ids.add(p["id"])
+                candidates.append(p)
+
     if award == "cy_young":
-        # Get top pitchers by IP
-        data = _mlb_get(
-            f"{MLB_API}/stats",
-            {"stats": "season", "season": season, "group": "pitching",
-             "gameType": "R", "leagueId": league_id, "limit": 15,
-             "sortStat": "inningsPitched", "order": "desc"},
-        )
-        if not data or "stats" not in data:
-            return jsonify({"error": "Could not fetch pitching leaders"}), 500
-
-        candidates = []
-        for group in data["stats"]:
-            for split in group.get("splits", []):
-                pid = split.get("player", {}).get("id")
-                pname = split.get("player", {}).get("fullName", "Unknown")
-                if not pid:
-                    continue
-                ip = _parse_ip(split.get("stat", {}).get("inningsPitched", 0))
-                if ip < 80:
-                    continue
-                candidates.append({"id": pid, "name": _display_name(pname), "ip": ip})
+        _add_candidates(_fetch_pitching_leaders("earnedRunAverage", season, league_id, 10))
+        _add_candidates(_fetch_pitching_leaders("strikeouts", season, league_id, 8))
+        _add_candidates(_fetch_pitching_leaders("inningsPitched", season, league_id, 8))
+        _add_candidates(_fetch_pitching_leaders("saves", season, league_id, 5))
     else:
-        # MVP: get top position players by PA
-        data = _mlb_get(
-            f"{MLB_API}/stats",
-            {"stats": "season", "season": season, "group": "hitting",
-             "gameType": "R", "leagueId": league_id, "limit": 15,
-             "sortStat": "plateAppearances", "order": "desc"},
-        )
-        if not data or "stats" not in data:
-            return jsonify({"error": "Could not fetch batting leaders"}), 500
-
-        candidates = []
-        for group in data["stats"]:
-            for split in group.get("splits", []):
-                pid = split.get("player", {}).get("id")
-                pname = split.get("player", {}).get("fullName", "Unknown")
-                if not pid:
-                    continue
-                pa = _safe_int(split.get("stat", {}).get("plateAppearances"))
-                if pa < 200:
-                    continue
-                candidates.append({"id": pid, "name": _display_name(pname), "pa": pa})
+        # MVP: combine OPS leaders (best performers) + PA leaders (everyday players)
+        _add_candidates(_fetch_leaders("onBasePlusSlugging", season, league_id, 12))
+        _add_candidates(_fetch_leaders("plateAppearances", season, league_id, 8))
+        _add_candidates(_fetch_leaders("homeRuns", season, league_id, 5))
 
     # Compute BRAVS for each candidate
     results = []
