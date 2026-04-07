@@ -29,6 +29,10 @@ from baseball_metric.utils.math_helpers import (
 # Source: Lichtman UZR methodology papers, stabilization ~4320 innings
 FIELDING_OBS_VARIANCE = 60.0  # variance per 1400-inning season
 
+# TotalZone is even noisier than modern metrics — used for pre-2002 historical data
+# Very high variance means the posterior only shifts slightly from prior
+TOTALZONE_OBS_VARIANCE = 150.0
+
 
 def compute_fielding(
     player: PlayerSeason,
@@ -73,7 +77,10 @@ def compute_fielding(
     if player.oaa is not None:
         estimates["OAA"] = player.oaa
 
-    if not estimates:
+    # Check for historical TotalZone data (pre-2002 fallback)
+    has_totalzone = player.total_zone is not None
+
+    if not estimates and not has_totalzone:
         # No defensive data available — return prior
         return ComponentResult(
             name="fielding",
@@ -85,11 +92,16 @@ def compute_fielding(
             metadata={"note": "no defensive metrics available, using prior"},
         )
 
-    # Ensemble average of available metrics
-    obs_fielding = ensemble_average(estimates, DEFAULT_FIELDING_WEIGHTS)
-
-    # Scale observation by playing time (full season = ~1400 innings fielded)
-    playing_time_fraction = min(player.inn_fielded / 1400.0, 1.0)
+    if estimates:
+        # Modern era: ensemble average of UZR/DRS/OAA
+        obs_fielding = ensemble_average(estimates, DEFAULT_FIELDING_WEIGHTS)
+        obs_variance = FIELDING_OBS_VARIANCE
+        source = "modern_ensemble"
+    else:
+        # Historical: TotalZone as noisy observation (much higher variance)
+        obs_fielding = player.total_zone  # type: ignore[assignment]
+        obs_variance = TOTALZONE_OBS_VARIANCE
+        source = "total_zone"
 
     # The observation is already in runs per season, so we need to account
     # for the fact that partial-season players have noisier estimates
@@ -100,7 +112,7 @@ def compute_fielding(
         prior_mean=PRIOR_FIELDING_MEAN,
         prior_var=PRIOR_FIELDING_SD ** 2,
         data_mean=obs_fielding,
-        data_var=FIELDING_OBS_VARIANCE,
+        data_var=obs_variance,
         n=effective_n,
     )
 
@@ -118,7 +130,8 @@ def compute_fielding(
         ci_90=ci90,
         samples=samples,
         metadata={
-            "available_metrics": list(estimates.keys()),
+            "source": source,
+            "available_metrics": list(estimates.keys()) if estimates else ["TotalZone"],
             "ensemble_value": round(obs_fielding, 1),
             "innings_fielded": player.inn_fielded,
             "shrinkage_pct": round((1.0 - post_var / (PRIOR_FIELDING_SD ** 2)) * 100, 1),

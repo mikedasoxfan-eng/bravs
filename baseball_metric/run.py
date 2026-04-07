@@ -54,7 +54,9 @@ NOTABLE_SEASONS: list[PlayerSeason] = [
         player_id="mays01", player_name="Willie Mays", season=1965, team="SF",
         position="CF", pa=638, ab=558, hits=177, singles=95, doubles=21,
         triples=3, hr=52, bb=76, ibb=0, hbp=0, k=71, sf=4, games=157,
-        sb=9, cs=4, uzr=None, drs=None, park_factor=0.93, league_rpg=4.03,
+        sb=9, cs=4, uzr=None, drs=None, inn_fielded=1350.0,
+        total_zone=12.0,  # TotalZone: elite CF defense
+        park_factor=0.93, league_rpg=4.03,
     ),
     PlayerSeason(
         player_id="aaron01", player_name="Hank Aaron", season=1971, team="ATL",
@@ -127,6 +129,7 @@ NOTABLE_SEASONS: list[PlayerSeason] = [
         position="SS", pa=706, ab=600, hits=182, singles=140, doubles=25,
         triples=4, hr=0, bb=89, ibb=6, hbp=2, k=36, sf=6, games=158,
         sb=43, cs=9, uzr=None, drs=None, oaa=None, inn_fielded=1380.0,
+        total_zone=20.0,  # TotalZone: elite SS defense, the Wizard
         park_factor=0.98, league_rpg=4.52,
     ),
     # --- Short season ---
@@ -134,7 +137,7 @@ NOTABLE_SEASONS: list[PlayerSeason] = [
         player_id="soto01", player_name="Juan Soto", season=2020, team="WSH",
         position="RF", pa=196, ab=153, hits=54, singles=24, doubles=12,
         triples=0, hr=13, bb=41, ibb=6, hbp=0, k=28, sf=2, games=47,
-        sb=6, cs=0, park_factor=0.98, league_rpg=4.65,
+        sb=6, cs=0, park_factor=0.98, league_rpg=4.65, season_games=60,
     ),
     # --- Controversial WAR case ---
     PlayerSeason(
@@ -285,16 +288,18 @@ def main() -> None:
 
     if args.notable_seasons or args.historical:
         results = run_notable_seasons()
-        print(f"\n{'='*70}")
+        print(f"\n{'='*80}")
         print(f"  All-Time BRAVS Leaderboard (Notable Seasons)")
-        print(f"{'='*70}")
+        print(f"{'='*80}")
         results.sort(key=lambda r: r.bravs, reverse=True)
-        print(f"{'Rank':>4}  {'Player':<25} {'Year':>5} {'Pos':<4} {'BRAVS':>6}  {'90% CI':>16}")
-        print(f"{'-'*70}")
+        print(f"{'Rank':>4}  {'Player':<25} {'Year':>5} {'Pos':<4} "
+              f"{'BRAVS':>6} {'WAReq':>6}  {'90% CI':>16}")
+        print(f"{'-'*80}")
         for i, r in enumerate(results, 1):
             ci = r.bravs_ci_90
             print(f"{i:>4}. {r.player.player_name:<25} {r.player.season:>5} "
-                  f"{r.player.position:<4} {r.bravs:>6.1f}  [{ci[0]:>5.1f}, {ci[1]:>5.1f}]")
+                  f"{r.player.position:<4} {r.bravs:>6.1f} {r.bravs_calibrated:>6.1f}"
+                  f"  [{ci[0]:>5.1f}, {ci[1]:>5.1f}]")
 
     elif args.season:
         run_season(args.season, args.player)

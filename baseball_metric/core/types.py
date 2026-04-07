@@ -87,6 +87,7 @@ class PlayerSeason:
     uzr: float | None = None
     drs: float | None = None
     oaa: float | None = None
+    total_zone: float | None = None  # TotalZone defensive runs (pre-2002 historical)
 
     # Catcher stats (if applicable)
     framing_runs: float | None = None
@@ -112,6 +113,14 @@ class PlayerSeason:
     league: str = "MLB"
     park_factor: float = 1.0  # multi-dimensional park factor (overall)
     league_rpg: float = 4.5  # league runs per game
+    season_games: int = 162  # actual games in the season (60 for 2020)
+
+    def __post_init__(self) -> None:
+        """Auto-compute singles if hits and extra-base hits are provided."""
+        if self.hits > 0 and self.singles == 0:
+            computed = self.hits - self.doubles - self.triples - self.hr
+            if computed >= 0:
+                self.singles = computed
 
     @property
     def is_pitcher(self) -> bool:
@@ -148,10 +157,20 @@ class BRAVSResult:
     # Posterior samples for total BRAVS (wins)
     total_samples: NDArray[np.floating[object]] | None = None
 
+    # Calibration factor: scales raw BRAVS to WAR-equivalent range.
+    # Derived from comparing BRAVS to consensus WAR for calibration seasons.
+    # Raw BRAVS is ~1.6x WAR on average due to AQI + dynamic RPW.
+    WAR_CALIBRATION_FACTOR: float = 0.62
+
     @property
     def bravs(self) -> float:
         """Point estimate of BRAVS (wins above FAT)."""
         return self.total_runs_mean / self.rpw
+
+    @property
+    def bravs_calibrated(self) -> float:
+        """WAR-equivalent calibrated BRAVS for direct comparison with fWAR/bWAR."""
+        return self.bravs * self.WAR_CALIBRATION_FACTOR
 
     @property
     def bravs_ci_50(self) -> tuple[float, float]:
@@ -174,11 +193,14 @@ class BRAVSResult:
     def summary(self) -> str:
         """Human-readable summary of the BRAVS result."""
         ci90 = self.bravs_ci_90
+        cal = self.WAR_CALIBRATION_FACTOR
         lines = [
             f"{'='*60}",
             f"BRAVS Report: {self.player.player_name} ({self.player.season})",
             f"{'='*60}",
             f"Total BRAVS: {self.bravs:.1f} wins  [90% CI: {ci90[0]:.1f} to {ci90[1]:.1f}]",
+            f"WAR-equiv:   {self.bravs_calibrated:.1f} wins  "
+            f"[{ci90[0]*cal:.1f} to {ci90[1]*cal:.1f}]",
             f"Total Runs Above FAT: {self.total_runs_mean:.1f}",
             f"Runs Per Win: {self.rpw:.2f}",
             f"Leverage Multiplier: {self.leverage_multiplier:.3f}",

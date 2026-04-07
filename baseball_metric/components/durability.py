@@ -16,10 +16,26 @@ from baseball_metric.utils.constants import (
     EXPECTED_APPEARANCES_RELIEVER,
     EXPECTED_GAMES_POSITION,
     EXPECTED_STARTS_PITCHER,
+    GAMES_PER_SEASON,
     MARGINAL_GAME_VALUE_PITCHER,
     MARGINAL_GAME_VALUE_POSITION,
 )
 from baseball_metric.utils.math_helpers import credible_interval
+
+
+def _prorate_expected(full_season_expected: int, season_games: int) -> int:
+    """Prorate expected games/starts for shortened seasons.
+
+    In a 60-game season (2020), a position player's expected games
+    should be ~57, not 155. This prevents penalizing players for
+    games that simply didn't exist.
+    """
+    if season_games >= GAMES_PER_SEASON:
+        return full_season_expected
+    # Scale expected proportionally to actual season length, with 95% factor
+    # (a healthy player should play ~95% of available games)
+    scale = (season_games * 0.95) / GAMES_PER_SEASON
+    return max(int(full_season_expected * scale), 1)
 
 
 def compute_durability(
@@ -31,13 +47,13 @@ def compute_durability(
 
     Durability value = (games_played - games_expected) × marginal_game_value
 
-    For position players: games_expected ≈ 155
-    For starting pitchers: games_expected ≈ 32 starts
-    For relievers: games_expected ≈ 65 appearances
+    For position players: games_expected ≈ 155 (prorated for short seasons)
+    For starting pitchers: games_expected ≈ 32 starts (prorated)
+    For relievers: games_expected ≈ 65 appearances (prorated)
 
-    The marginal game value represents what the team loses by having
-    to use FAT-level talent instead of the player. This is small per
-    game but accumulates meaningfully over a full season.
+    Expected games are prorated based on actual season length to avoid
+    penalizing players for games that didn't exist (e.g., 2020's 60-game
+    season).
 
     Args:
         player: PlayerSeason with games data.
@@ -53,15 +69,15 @@ def compute_durability(
     if player.is_pitcher:
         is_starter = player.games_started > player.games_pitched * 0.5
         if is_starter:
-            expected = EXPECTED_STARTS_PITCHER
+            expected = _prorate_expected(EXPECTED_STARTS_PITCHER, player.season_games)
             actual = player.games_started
             marginal = MARGINAL_GAME_VALUE_PITCHER * 2.0  # starts are worth more than appearances
         else:
-            expected = EXPECTED_APPEARANCES_RELIEVER
+            expected = _prorate_expected(EXPECTED_APPEARANCES_RELIEVER, player.season_games)
             actual = player.games_pitched
             marginal = MARGINAL_GAME_VALUE_PITCHER
     else:
-        expected = EXPECTED_GAMES_POSITION
+        expected = _prorate_expected(EXPECTED_GAMES_POSITION, player.season_games)
         actual = player.games
         marginal = MARGINAL_GAME_VALUE_POSITION
 
