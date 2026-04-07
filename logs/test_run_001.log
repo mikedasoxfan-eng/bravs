@@ -1,0 +1,185 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.0.2, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\logiu\Desktop\testing\baseball
+configfile: pyproject.toml
+plugins: anyio-4.12.1, cov-7.1.0
+collecting ... collected 116 items
+
+tests/test_hitting.py::TestHittingValues::test_trout_hitting_positive PASSED [  0%]
+tests/test_hitting.py::TestHittingValues::test_replacement_hitting_near_zero PASSED [  1%]
+tests/test_hitting.py::TestHittingValues::test_negative_hitter PASSED    [  2%]
+tests/test_hitting.py::TestHittingValues::test_ohtani_hitting_positive PASSED [  3%]
+tests/test_hitting.py::TestHittingEdgeCases::test_zero_pa_returns_zero PASSED [  4%]
+tests/test_hitting.py::TestHittingEdgeCases::test_one_pa PASSED          [  5%]
+tests/test_hitting.py::TestHittingShrinkage::test_shrinkage_with_small_sample PASSED [  6%]
+tests/test_hitting.py::TestHittingShrinkage::test_large_sample_less_shrinkage PASSED [  6%]
+tests/test_hitting.py::TestHittingParkFactor::test_park_factor_adjustment PASSED [  7%]
+tests/test_hitting.py::TestHittingParkFactor::test_pitcher_friendly_park_boosts_hitter PASSED [  8%]
+tests/test_hitting.py::TestHittingCredibleIntervals::test_credible_intervals_contain_mean PASSED [  9%]
+tests/test_hitting.py::TestHittingCredibleIntervals::test_ci_50_narrower_than_ci_90 PASSED [ 10%]
+tests/test_hitting.py::TestHittingCredibleIntervals::test_ci_lower_less_than_upper PASSED [ 11%]
+tests/test_hitting.py::TestHittingReproducibility::test_same_seed_same_result PASSED [ 12%]
+tests/test_hitting.py::TestHittingReproducibility::test_different_seed_different_samples PASSED [ 12%]
+tests/test_math_helpers.py::TestBayesianUpdateNormal::test_known_update PASSED [ 13%]
+tests/test_math_helpers.py::TestBayesianUpdateNormal::test_zero_n_returns_prior PASSED [ 14%]
+tests/test_math_helpers.py::TestBayesianUpdateNormal::test_negative_n_returns_prior PASSED [ 15%]
+tests/test_math_helpers.py::TestBayesianUpdateNormal::test_very_large_n_approaches_data PASSED [ 16%]
+tests/test_math_helpers.py::TestBayesianUpdateNormal::test_equal_weight PASSED [ 17%]
+tests/test_math_helpers.py::TestShrinkageFactor::test_zero_n_full_shrinkage PASSED [ 18%]
+tests/test_math_helpers.py::TestShrinkageFactor::test_large_n_near_one PASSED [ 18%]
+tests/test_math_helpers.py::TestShrinkageFactor::test_shrinkage_values[10-1.0-1.0-0.9090909090909091] PASSED [ 19%]
+tests/test_math_helpers.py::TestShrinkageFactor::test_shrinkage_values[1-1.0-1.0-0.5] PASSED [ 20%]
+tests/test_math_helpers.py::TestShrinkageFactor::test_shrinkage_values[100-0.5-0.5-0.9900990099009901] PASSED [ 21%]
+tests/test_math_helpers.py::TestShrinkageFactor::test_shrinkage_bounded_zero_one PASSED [ 22%]
+tests/test_math_helpers.py::TestComputeWOBA::test_trout_2016_woba PASSED [ 23%]
+tests/test_math_helpers.py::TestComputeWOBA::test_zero_denominator PASSED [ 24%]
+tests/test_math_helpers.py::TestComputeWOBA::test_all_hr PASSED          [ 25%]
+tests/test_math_helpers.py::TestComputeWOBA::test_all_outs PASSED        [ 25%]
+tests/test_math_helpers.py::TestFIP::test_degrom_2018_fip PASSED         [ 26%]
+tests/test_math_helpers.py::TestFIP::test_zero_ip_degenerate PASSED      [ 27%]
+tests/test_math_helpers.py::TestFIP::test_perfect_pitcher PASSED         [ 28%]
+tests/test_math_helpers.py::TestFIP::test_terrible_pitcher PASSED        [ 29%]
+tests/test_math_helpers.py::TestCredibleInterval::test_standard_normal_90ci PASSED [ 30%]
+tests/test_math_helpers.py::TestCredibleInterval::test_50ci_narrower_than_90ci PASSED [ 31%]
+tests/test_math_helpers.py::TestCredibleInterval::test_level_100_gives_full_range PASSED [ 31%]
+tests/test_math_helpers.py::TestDampedLeverage::test_sqrt_of_four PASSED [ 32%]
+tests/test_math_helpers.py::TestDampedLeverage::test_leverage_one_unchanged PASSED [ 33%]
+tests/test_math_helpers.py::TestDampedLeverage::test_damping_reduces_high_leverage PASSED [ 34%]
+tests/test_math_helpers.py::TestDampedLeverage::test_damping_increases_low_leverage PASSED [ 35%]
+tests/test_math_helpers.py::TestDampedLeverage::test_zero_leverage_clamped PASSED [ 36%]
+tests/test_math_helpers.py::TestPythagoreanRPW::test_standard_environment PASSED [ 37%]
+tests/test_math_helpers.py::TestPythagoreanRPW::test_higher_rpg_higher_rpw PASSED [ 37%]
+tests/test_math_helpers.py::TestWobaToRuns::test_league_average_is_zero PASSED [ 38%]
+tests/test_math_helpers.py::TestWobaToRuns::test_above_average_positive PASSED [ 39%]
+tests/test_math_helpers.py::TestWobaToRuns::test_below_average_negative PASSED [ 40%]
+tests/test_math_helpers.py::TestBetaBinomialPosterior::test_uniform_prior_update PASSED [ 41%]
+tests/test_math_helpers.py::TestBetaBinomialPosterior::test_zero_trials_returns_prior PASSED [ 42%]
+tests/test_math_helpers.py::TestEnsembleAverage::test_equal_weights PASSED [ 43%]
+tests/test_math_helpers.py::TestEnsembleAverage::test_missing_weight PASSED [ 43%]
+tests/test_math_helpers.py::TestEnsembleAverage::test_all_missing_returns_zero PASSED [ 44%]
+tests/test_math_helpers.py::TestEnsembleAverage::test_nan_value_ignored PASSED [ 45%]
+tests/test_math_helpers.py::TestNormalPosteriorSamples::test_sample_count PASSED [ 46%]
+tests/test_math_helpers.py::TestNormalPosteriorSamples::test_mean_close_to_parameter PASSED [ 47%]
+tests/test_math_helpers.py::TestNormalPosteriorSamples::test_reproducibility PASSED [ 48%]
+tests/test_model.py::TestStarPlayerBRAVS::test_trout_bravs_reasonable PASSED [ 49%]
+tests/test_model.py::TestStarPlayerBRAVS::test_degrom_bravs_reasonable PASSED [ 50%]
+tests/test_model.py::TestStarPlayerBRAVS::test_ohtani_two_way FAILED     [ 50%]
+tests/test_model.py::TestBaselineBRAVS::test_replacement_near_baseline FAILED [ 51%]
+tests/test_model.py::TestBaselineBRAVS::test_negative_value_player PASSED [ 52%]
+tests/test_model.py::TestUncertaintyBehavior::test_short_season_wider_intervals PASSED [ 53%]
+tests/test_model.py::TestUncertaintyBehavior::test_credible_interval_ordering PASSED [ 54%]
+tests/test_model.py::TestCatcherComponent::test_catcher_gets_catcher_component PASSED [ 55%]
+tests/test_model.py::TestCatcherComponent::test_non_catcher_no_catcher_component PASSED [ 56%]
+tests/test_model.py::TestComponentStructure::test_component_keys_present_position_player PASSED [ 56%]
+tests/test_model.py::TestComponentStructure::test_component_keys_present_pitcher PASSED [ 57%]
+tests/test_model.py::TestComponentStructure::test_component_keys_present_two_way PASSED [ 58%]
+tests/test_model.py::TestReproducibility::test_same_seed_identical_results PASSED [ 59%]
+tests/test_model.py::TestReproducibility::test_different_seed_varies PASSED [ 60%]
+tests/test_model.py::TestSummaryOutput::test_summary_contains_player_name PASSED [ 61%]
+tests/test_model.py::TestSummaryOutput::test_summary_contains_total_bravs PASSED [ 62%]
+tests/test_pitching.py::TestPitchingValues::test_degrom_pitching_positive PASSED [ 62%]
+tests/test_pitching.py::TestPitchingValues::test_degrom_metadata_contains_fip PASSED [ 63%]
+tests/test_pitching.py::TestPitchingValues::test_ohtani_pitching_positive PASSED [ 64%]
+tests/test_pitching.py::TestReplacementPitcher::test_replacement_pitcher_near_zero PASSED [ 65%]
+tests/test_pitching.py::TestPitchingEdgeCases::test_zero_ip_returns_zero PASSED [ 66%]
+tests/test_pitching.py::TestPitchingEdgeCases::test_fractional_ip PASSED [ 67%]
+tests/test_pitching.py::TestPitchingShrinkage::test_shrinkage_small_sample PASSED [ 68%]
+tests/test_pitching.py::TestPitchingShrinkage::test_large_sample_less_shrinkage PASSED [ 68%]
+tests/test_pitching.py::TestStarterVsReliever::test_starter_vs_reliever_metadata PASSED [ 69%]
+tests/test_pitching.py::TestPitchingIntervals::test_credible_intervals_contain_mean PASSED [ 70%]
+tests/test_pitching.py::TestPitchingIntervals::test_ci_ordering PASSED   [ 71%]
+tests/test_pitching.py::TestPitchingIntervals::test_reproducibility PASSED [ 72%]
+tests/test_validation.py::TestValidData::test_valid_player_passes PASSED [ 73%]
+tests/test_validation.py::TestValidData::test_valid_pitcher_passes PASSED [ 74%]
+tests/test_validation.py::TestValidData::test_zero_pa_pitcher_passes PASSED [ 75%]
+tests/test_validation.py::TestImpossibleStats::test_negative_stats_fail PASSED [ 75%]
+tests/test_validation.py::TestImpossibleStats::test_negative_hr_fails PASSED [ 76%]
+tests/test_validation.py::TestImpossibleStats::test_negative_k_fails PASSED [ 77%]
+tests/test_validation.py::TestImpossibleStats::test_hits_greater_than_ab_fails PASSED [ 78%]
+tests/test_validation.py::TestImpossibleStats::test_hr_greater_than_hits_fails PASSED [ 79%]
+tests/test_validation.py::TestImpossibleStats::test_ab_greater_than_pa_fails PASSED [ 80%]
+tests/test_validation.py::TestImpossibleStats::test_negative_games_fails PASSED [ 81%]
+tests/test_validation.py::TestImpossibleStats::test_negative_innings_fielded_fails PASSED [ 81%]
+tests/test_validation.py::TestImpossibleStats::test_missing_player_name_fails PASSED [ 82%]
+tests/test_validation.py::TestImpossibleStats::test_bad_season_fails PASSED [ 83%]
+tests/test_validation.py::TestImpossibleStats::test_negative_pitching_stats_fail PASSED [ 84%]
+tests/test_validation.py::TestSuspiciousOutliers::test_extreme_high_ba_warns PASSED [ 85%]
+tests/test_validation.py::TestSuspiciousOutliers::test_extreme_low_ba_warns PASSED [ 86%]
+tests/test_validation.py::TestSuspiciousOutliers::test_extreme_low_era_warns PASSED [ 87%]
+tests/test_validation.py::TestSuspiciousOutliers::test_extreme_high_era_warns PASSED [ 87%]
+tests/test_validation.py::TestSuspiciousOutliers::test_very_high_pa_warns PASSED [ 88%]
+tests/test_validation.py::TestSuspiciousOutliers::test_high_games_warns PASSED [ 89%]
+tests/test_validation.py::TestSuspiciousOutliers::test_high_ip_warns PASSED [ 90%]
+tests/test_validation.py::TestSuspiciousOutliers::test_singles_mismatch_warns PASSED [ 91%]
+tests/test_validation.py::TestParametrizedValidation::test_invalid_values[bb--1-True] PASSED [ 92%]
+tests/test_validation.py::TestParametrizedValidation::test_invalid_values[k--1-True] PASSED [ 93%]
+tests/test_validation.py::TestParametrizedValidation::test_invalid_values[hr--1-True] PASSED [ 93%]
+tests/test_validation.py::TestParametrizedValidation::test_invalid_values[games--1-True] PASSED [ 94%]
+tests/test_validation.py::TestParametrizedValidation::test_invalid_values[inn_fielded--50.0-True] PASSED [ 95%]
+tests/test_validation.py::TestParametrizedValidation::test_invalid_values[season-1500-True] PASSED [ 96%]
+tests/test_validation.py::TestParametrizedValidation::test_invalid_values[season-2100-True] PASSED [ 97%]
+tests/test_validation.py::TestParametrizedValidation::test_zero_values_valid[games-0] PASSED [ 98%]
+tests/test_validation.py::TestParametrizedValidation::test_zero_values_valid[pa-0] PASSED [ 99%]
+tests/test_validation.py::TestParametrizedValidation::test_zero_values_valid[ip-0.0] PASSED [100%]
+
+================================== FAILURES ===================================
+___________________ TestStarPlayerBRAVS.test_ohtani_two_way ___________________
+
+self = <tests.test_model.TestStarPlayerBRAVS object at 0x000002A32AC9F360>
+ohtani_2023 = PlayerSeason(player_id='ohtansh01', player_name='Shohei Ohtani', season=2023, team='LAA', position='DH', pa=599, ab=49...pitches_seen=0, chase_rate=None, zone_contact_rate=None, aqi_raw=None, league='MLB', park_factor=0.98, league_rpg=4.62)
+
+    def test_ohtani_two_way(self, ohtani_2023: PlayerSeason) -> None:
+        """Ohtani 2023 should have BOTH hitting AND pitching components.
+    
+        As a two-way player (599 PA + 132 IP), both should be present and
+        both should be meaningfully positive.  Total BRAVS should be 8-16 wins.
+        """
+        result = compute_bravs(ohtani_2023)
+    
+        # Both components must exist
+        assert "hitting" in result.components, "Two-way player must have hitting component"
+        assert "pitching" in result.components, "Two-way player must have pitching component"
+    
+        # Both should be positive
+        assert result.components["hitting"].runs_mean > 0.0, (
+            "Ohtani hitting should be positive"
+        )
+        assert result.components["pitching"].runs_mean > 0.0, (
+            "Ohtani pitching should be positive"
+        )
+    
+        # Total in range
+>       assert 8.0 <= result.bravs <= 16.0, (
+            f"Ohtani 2023 BRAVS ({result.bravs:.1f}) should be 8-16 wins"
+        )
+E       AssertionError: Ohtani 2023 BRAVS (16.9) should be 8-16 wins
+E       assert 16.88091265081143 <= 16.0
+E        +  where 16.88091265081143 = BRAVSResult(player=PlayerSeason(player_id='ohtansh01', player_name='Shohei Ohtani', season=2023, team='LAA', position='DH', pa=599, ab=497, hits=151, singles=73, doubles=26, triples=8, hr=44, bb=91, ibb=5, hbp=5, k=143, sf=6, sh=0, sb=20, cs=6, gidp=0, games=135, ip=132.0, er=46, hits_allowed=99, hr_allowed=18, bb_allowed=55, hbp_allowed=5, k_pitching=167, games_pitched=23, games_started=23, saves=0, holds=0, inn_fielded=0.0, uzr=None, drs=None, oaa=None, framing_runs=None, blocking_runs=None, throwing_runs=None, catcher_pitches=0, avg_leverage_index=1.0, extra_bases_taken=0, extra_base_opportunities=0, outs_on_bases=0, pitches_seen=0, chase_rate=None, zone_contact_rate=None, aqi_raw=None, league='MLB', park_factor=0.98, league_rpg=4.62), components={'hitting': ComponentResult(name='hitting', runs_mean=81.31643513832941, runs_var=35.87210954941828, ci_50=(77.25997895757837, 85.20932627684365), ci_90=(71.28973180246506, 91.15535197020799), samples=array([83.14148719, 75.08762403, 85.81113724, ..., 81.82701842,\n       88.05290266, 80.22128622], shape=(10000,)), metadata={'obs_woba': 0.439, 'obs_woba_adj': 0.448, 'post_woba_mean': 0.434, 'post_woba_sd': 0.0116, 'shrinkage': 0.891}), 'pitching': ComponentResult(name='pitching', runs_mean=22.480468241183246, runs_var=3.571543871786002, ci_50=(21.166270484325324, 23.732748763343263), ci_90=(19.269261666048834, 25.534577168090003), samples=array([22.14733058, 20.78125714, 25.26284309, ..., 21.26848277,\n       21.47687548, 20.25992723], shape=(10000,)), metadata={'obs_fip': 3.76, 'obs_fip_adj': 3.83, 'post_fip_mean': 3.84, 'post_fip_sd': 0.129, 'fat_era_per_9': 5.38, 'is_starter': True}), 'baserunning': ComponentResult(name='baserunning', runs_mean=4.065205499999999, runs_var=0.8970024999999998, ci_50=(3.4387314406399447, 4.713958469251428), ci_90=(2.4967532745439343, 5.653825075921494), samples=array([2.49472009, 4.90926957, 4.01024326, ..., 5.83447615, 4.42633149,\n       3.32570359], shape=(10000,)), metadata={'sb_runs': 0.9, 'advance_runs': 0.0, 'oob_runs': -0.0, 'gidp_runs': 3.7, 'raw_total': 4.5}), 'fielding': ComponentResult(name='fielding', runs_mean=0.0, runs_var=25.0, ci_50=(-3.4, 3.4), ci_90=(-8.2, 8.2), samples=array([-5.05713806, -0.23698725, -6.73182865, ...,  7.63308686,\n       -4.55221024, -1.92785051], shape=(10000,)), metadata={'note': 'no fielding data (DH/P or < 50 innings)'}), 'positional': ComponentResult(name='positional', runs_mean=-14.583333333333334, runs_var=1.0, ci_50=(-15.272712910947996, -13.93508906159333), ci_90=(-16.23382992605194, -12.980134692169857), samples=array([-15.48310151, -15.84150582, -14.25071704, ..., -14.1848415 ,\n       -13.22506195, -13.18785737], shape=(10000,)), metadata={'position': 'DH', 'adj_per_162': -17.5, 'games_fraction': 0.833}), 'approach_quality': ComponentResult(name='approach_quality', runs_mean=5.115149999999999, runs_var=3.5999999999999996, ci_50=(3.8478814885282087, 6.36415436924363), ci_90=(1.9721288439343319, 8.261065810046503), samples=array([6.57551522, 1.61658564, 4.66043153, ..., 3.77746898, 4.70762101,\n       7.352874  ], shape=(10000,)), metadata={'source': 'proxy_model', 'obs_aqi_runs': 8.5, 'post_aqi_mean': 5.1, 'post_aqi_sd': 1.9}), 'durability': ComponentResult(name='durability', runs_mean=-2.6460000000000004, runs_var=2.0, ci_50=(-3.600285579915295, -1.675596836599242), ci_90=(-4.988500351287381, -0.31537601637214957), samples=array([-1.53913457, -3.08621673, -0.4855481 , ..., -4.78048755,\n       -1.61660649, -4.38704462], shape=(10000,)), metadata={'games_actual': 23, 'games_expected': 32, 'games_delta': -9, 'marginal_value_per_game_wins': 0.03}), 'leverage': ComponentResult(name='leverage', runs_mean=3.494142027201435, runs_var=0.06594387323741556, ci_50=(3.319321833195805, 3.6627938446728927), ci_90=(3.0682362851261025, 3.9102069641373047), samples=array([3.02923485, 3.66287831, 3.57745414, ..., 3.75923682, 3.94437018,\n       3.88643009], shape=(10000,)), metadata={'raw_gmLI': 1.0, 'damped_multiplier': 1.031, 'adjustment_pct': 3.1})}, total_runs_mean=99.09684751422341, total_runs_var=72.26582640464558, rpw=5.870348929828745, leverage_multiplier=1.0309278350515465, total_samples=array([ 95.30891379,  86.89290489, 101.85401546, ..., 105.13444095,\n       103.21422214,  95.54346862], shape=(10000,))).bravs
+
+tests\test_model.py:72: AssertionError
+______________ TestBaselineBRAVS.test_replacement_near_baseline _______________
+
+self = <tests.test_model.TestBaselineBRAVS object at 0x000002A32AC75E50>
+replacement_player = PlayerSeason(player_id='replac01', player_name='Replacement Player', season=2023, team='AAA', position='LF', pa=400, a... pitches_seen=0, chase_rate=None, zone_contact_rate=None, aqi_raw=None, league='MLB', park_factor=1.0, league_rpg=4.62)
+
+    def test_replacement_near_baseline(self, replacement_player: PlayerSeason) -> None:
+        """A FAT-calibrated player should be near 0 BRAVS (within +/- 2 wins)."""
+        result = compute_bravs(replacement_player)
+    
+>       assert -2.0 <= result.bravs <= 2.0, (
+            f"Replacement player BRAVS ({result.bravs:.1f}) should be within +/- 2"
+        )
+E       AssertionError: Replacement player BRAVS (-3.2) should be within +/- 2
+E       assert -2.0 <= -3.2405561862834147
+E        +  where -3.2405561862834147 = BRAVSResult(player=PlayerSeason(player_id='replac01', player_name='Replacement Player', season=2023, team='AAA', position='LF', pa=400, ab=365, hits=82, singles=55, doubles=15, triples=2, hr=10, bb=25, ibb=1, hbp=4, k=110, sf=4, sh=2, sb=0, cs=0, gidp=0, games=100, ip=0.0, er=0, hits_allowed=0, hr_allowed=0, bb_allowed=0, hbp_allowed=0, k_pitching=0, games_pitched=0, games_started=0, saves=0, holds=0, inn_fielded=0.0, uzr=None, drs=None, oaa=None, framing_runs=None, blocking_runs=None, throwing_runs=None, catcher_pitches=0, avg_leverage_index=1.0, extra_bases_taken=0, extra_base_opportunities=0, outs_on_bases=0, pitches_seen=0, chase_rate=None, zone_contact_rate=None, aqi_raw=None, league='MLB', park_factor=1.0, league_rpg=4.62), components={'hitting': ComponentResult(name='hitting', runs_mean=2.12117610938877, runs_var=22.719766797307045, ci_50=(-1.1070969734124687, 5.219278274617688), ci_90=(-5.858433442910497, 9.951338437530337), samples=array([ 3.57361789, -2.83593481,  5.69822099, ...,  2.52751656,\n        7.48229819,  1.24961738], shape=(10000,)), metadata={'obs_woba': 0.277, 'obs_woba_adj': 0.277, 'post_woba_mean': 0.283, 'post_woba_sd': 0.0138, 'shrinkage': 0.845}), 'baserunning': ComponentResult(name='baserunning', runs_mean=2.093142857142857, runs_var=0.5714285714285714, ci_50=(1.5922387338330166, 2.618813474553101), ci_90=(0.8715190057343375, 3.377604753515756), samples=array([2.22639577, 2.77281632, 0.98021088, ..., 2.57792922, 2.49457348,\n       2.98134493], shape=(10000,)), metadata={'sb_runs': 0.0, 'advance_runs': 0.0, 'oob_runs': -0.0, 'gidp_runs': 2.4, 'raw_total': 2.4}), 'fielding': ComponentResult(name='fielding', runs_mean=0.0, runs_var=25.0, ci_50=(-3.4, 3.4), ci_90=(-8.2, 8.2), samples=array([-8.29100324,  4.45603496, -0.29016003, ...,  9.34044251,\n        1.90647853, -3.90402397], shape=(10000,)), metadata={'note': 'no fielding data (DH/P or < 50 innings)'}), 'positional': ComponentResult(name='positional', runs_mean=-4.62962962962963, runs_var=1.0, ci_50=(-5.305881987063132, -3.9638834408338064), ci_90=(-6.294714620276303, -2.9844139538818446), samples=array([-5.64105724, -4.67702708, -5.97599536, ..., -3.10301226,\n       -5.54007168, -5.01519973], shape=(10000,)), metadata={'position': 'LF', 'adj_per_162': -7.5, 'games_fraction': 0.617}), 'approach_quality': ComponentResult(name='approach_quality', runs_mean=-2.7441176470588244, runs_var=4.235294117647059, ci_50=(-4.162849113303487, -1.4100419418970622), ci_90=(-6.1408116122640894, 0.5552379368843262), samples=array([-4.59582527, -5.33341527, -2.05959896, ..., -1.92402821,\n        0.05118181,  0.12774819], shape=(10000,)), metadata={'source': 'proxy_model', 'obs_aqi_runs': -5.2, 'post_aqi_mean': -2.7, 'post_aqi_sd': 2.06}), 'durability': ComponentResult(name='durability', runs_mean=-16.17, runs_var=2.0, ci_50=(-17.11456617913197, -15.239047108725666), ci_90=(-18.512669653227604, -13.82517279908157), samples=array([-15.08150803, -18.77767591, -16.50892714, ..., -17.16704856,\n       -16.47375417, -14.50209901], shape=(10000,)), metadata={'games_actual': 100, 'games_expected': 155, 'games_delta': -55, 'marginal_value_per_game_wins': 0.03}), 'leverage': ComponentResult(name='leverage', runs_mean=0.045470143901220866, runs_var=0.05024321451561776, ci_50=(-0.10578218561463475, 0.19927707771965758), ci_90=(-0.3258114121455298, 0.4148693197543507), samples=array([ 0.22090607, -0.02430332,  0.38789739, ..., -0.29284181,\n        0.20862693, -0.2304819 ], shape=(10000,)), metadata={'raw_gmLI': 1.0, 'damped_multiplier': 1.031, 'adjustment_pct': 3.1})}, total_runs_mean=-19.299198813528964, total_runs_var=55.458102780790234, rpw=5.955520504541279, leverage_multiplier=1.0309278350515465, total_samples=array([-27.58847406, -24.4195051 , -17.76835223, ...,  -8.04104254,\n        -9.87066692, -19.29309411], shape=(10000,))).bravs
+
+tests\test_model.py:88: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_model.py::TestStarPlayerBRAVS::test_ohtani_two_way - AssertionError: Ohtani 2023 BRAVS (16.9) should be 8-16 wins
+assert 16.88091265081143 <= 16.0
+ +  where 16.88091265081143 = BRAVSResult(player=PlayerSeason(player_id='ohtansh01', player_name='Shohei Ohtani', season=2023, team='LAA', position='DH', pa=599, ab=497, hits=151, singles=73, doubles=26, triples=8, hr=44, bb=91, ibb=5, hbp=5, k=143, sf=6, sh=0, sb=20, cs=6, gidp=0, games=135, ip=132.0, er=46, hits_allowed=99, hr_allowed=18, bb_allowed=55, hbp_allowed=5, k_pitching=167, games_pitched=23, games_started=23, saves=0, holds=0, inn_fielded=0.0, uzr=None, drs=None, oaa=None, framing_runs=None, blocking_runs=None, throwing_runs=None, catcher_pitches=0, avg_leverage_index=1.0, extra_bases_taken=0, extra_base_opportunities=0, outs_on_bases=0, pitches_seen=0, chase_rate=None, zone_contact_rate=None, aqi_raw=None, league='MLB', park_factor=0.98, league_rpg=4.62), components={'hitting': ComponentResult(name='hitting', runs_mean=81.31643513832941, runs_var=35.87210954941828, ci_50=(77.25997895757837, 85.20932627684365), ci_90=(71.28973180246506, 91.15535197020799), samples=array([83.14148719, 75.08762403, 85.81113724, ..., 81.82701842,\n       88.05290266, 80.22128622], shape=(10000,)), metadata={'obs_woba': 0.439, 'obs_woba_adj': 0.448, 'post_woba_mean': 0.434, 'post_woba_sd': 0.0116, 'shrinkage': 0.891}), 'pitching': ComponentResult(name='pitching', runs_mean=22.480468241183246, runs_var=3.571543871786002, ci_50=(21.166270484325324, 23.732748763343263), ci_90=(19.269261666048834, 25.534577168090003), samples=array([22.14733058, 20.78125714, 25.26284309, ..., 21.26848277,\n       21.47687548, 20.25992723], shape=(10000,)), metadata={'obs_fip': 3.76, 'obs_fip_adj': 3.83, 'post_fip_mean': 3.84, 'post_fip_sd': 0.129, 'fat_era_per_9': 5.38, 'is_starter': True}), 'baserunning': ComponentResult(name='baserunning', runs_mean=4.065205499999999, runs_var=0.8970024999999998, ci_50=(3.4387314406399447, 4.713958469251428), ci_90=(2.4967532745439343, 5.653825075921494), samples=array([2.49472009, 4.90926957, 4.01024326, ..., 5.83447615, 4.42633149,\n       3.32570359], shape=(10000,)), metadata={'sb_runs': 0.9, 'advance_runs': 0.0, 'oob_runs': -0.0, 'gidp_runs': 3.7, 'raw_total': 4.5}), 'fielding': ComponentResult(name='fielding', runs_mean=0.0, runs_var=25.0, ci_50=(-3.4, 3.4), ci_90=(-8.2, 8.2), samples=array([-5.05713806, -0.23698725, -6.73182865, ...,  7.63308686,\n       -4.55221024, -1.92785051], shape=(10000,)), metadata={'note': 'no fielding data (DH/P or < 50 innings)'}), 'positional': ComponentResult(name='positional', runs_mean=-14.583333333333334, runs_var=1.0, ci_50=(-15.272712910947996, -13.93508906159333), ci_90=(-16.23382992605194, -12.980134692169857), samples=array([-15.48310151, -15.84150582, -14.25071704, ..., -14.1848415 ,\n       -13.22506195, -13.18785737], shape=(10000,)), metadata={'position': 'DH', 'adj_per_162': -17.5, 'games_fraction': 0.833}), 'approach_quality': ComponentResult(name='approach_quality', runs_mean=5.115149999999999, runs_var=3.5999999999999996, ci_50=(3.8478814885282087, 6.36415436924363), ci_90=(1.9721288439343319, 8.261065810046503), samples=array([6.57551522, 1.61658564, 4.66043153, ..., 3.77746898, 4.70762101,\n       7.352874  ], shape=(10000,)), metadata={'source': 'proxy_model', 'obs_aqi_runs': 8.5, 'post_aqi_mean': 5.1, 'post_aqi_sd': 1.9}), 'durability': ComponentResult(name='durability', runs_mean=-2.6460000000000004, runs_var=2.0, ci_50=(-3.600285579915295, -1.675596836599242), ci_90=(-4.988500351287381, -0.31537601637214957), samples=array([-1.53913457, -3.08621673, -0.4855481 , ..., -4.78048755,\n       -1.61660649, -4.38704462], shape=(10000,)), metadata={'games_actual': 23, 'games_expected': 32, 'games_delta': -9, 'marginal_value_per_game_wins': 0.03}), 'leverage': ComponentResult(name='leverage', runs_mean=3.494142027201435, runs_var=0.06594387323741556, ci_50=(3.319321833195805, 3.6627938446728927), ci_90=(3.0682362851261025, 3.9102069641373047), samples=array([3.02923485, 3.66287831, 3.57745414, ..., 3.75923682, 3.94437018,\n       3.88643009], shape=(10000,)), metadata={'raw_gmLI': 1.0, 'damped_multiplier': 1.031, 'adjustment_pct': 3.1})}, total_runs_mean=99.09684751422341, total_runs_var=72.26582640464558, rpw=5.870348929828745, leverage_multiplier=1.0309278350515465, total_samples=array([ 95.30891379,  86.89290489, 101.85401546, ..., 105.13444095,\n       103.21422214,  95.54346862], shape=(10000,))).bravs
+FAILED tests/test_model.py::TestBaselineBRAVS::test_replacement_near_baseline - AssertionError: Replacement player BRAVS (-3.2) should be within +/- 2
+assert -2.0 <= -3.2405561862834147
+ +  where -3.2405561862834147 = BRAVSResult(player=PlayerSeason(player_id='replac01', player_name='Replacement Player', season=2023, team='AAA', position='LF', pa=400, ab=365, hits=82, singles=55, doubles=15, triples=2, hr=10, bb=25, ibb=1, hbp=4, k=110, sf=4, sh=2, sb=0, cs=0, gidp=0, games=100, ip=0.0, er=0, hits_allowed=0, hr_allowed=0, bb_allowed=0, hbp_allowed=0, k_pitching=0, games_pitched=0, games_started=0, saves=0, holds=0, inn_fielded=0.0, uzr=None, drs=None, oaa=None, framing_runs=None, blocking_runs=None, throwing_runs=None, catcher_pitches=0, avg_leverage_index=1.0, extra_bases_taken=0, extra_base_opportunities=0, outs_on_bases=0, pitches_seen=0, chase_rate=None, zone_contact_rate=None, aqi_raw=None, league='MLB', park_factor=1.0, league_rpg=4.62), components={'hitting': ComponentResult(name='hitting', runs_mean=2.12117610938877, runs_var=22.719766797307045, ci_50=(-1.1070969734124687, 5.219278274617688), ci_90=(-5.858433442910497, 9.951338437530337), samples=array([ 3.57361789, -2.83593481,  5.69822099, ...,  2.52751656,\n        7.48229819,  1.24961738], shape=(10000,)), metadata={'obs_woba': 0.277, 'obs_woba_adj': 0.277, 'post_woba_mean': 0.283, 'post_woba_sd': 0.0138, 'shrinkage': 0.845}), 'baserunning': ComponentResult(name='baserunning', runs_mean=2.093142857142857, runs_var=0.5714285714285714, ci_50=(1.5922387338330166, 2.618813474553101), ci_90=(0.8715190057343375, 3.377604753515756), samples=array([2.22639577, 2.77281632, 0.98021088, ..., 2.57792922, 2.49457348,\n       2.98134493], shape=(10000,)), metadata={'sb_runs': 0.0, 'advance_runs': 0.0, 'oob_runs': -0.0, 'gidp_runs': 2.4, 'raw_total': 2.4}), 'fielding': ComponentResult(name='fielding', runs_mean=0.0, runs_var=25.0, ci_50=(-3.4, 3.4), ci_90=(-8.2, 8.2), samples=array([-8.29100324,  4.45603496, -0.29016003, ...,  9.34044251,\n        1.90647853, -3.90402397], shape=(10000,)), metadata={'note': 'no fielding data (DH/P or < 50 innings)'}), 'positional': ComponentResult(name='positional', runs_mean=-4.62962962962963, runs_var=1.0, ci_50=(-5.305881987063132, -3.9638834408338064), ci_90=(-6.294714620276303, -2.9844139538818446), samples=array([-5.64105724, -4.67702708, -5.97599536, ..., -3.10301226,\n       -5.54007168, -5.01519973], shape=(10000,)), metadata={'position': 'LF', 'adj_per_162': -7.5, 'games_fraction': 0.617}), 'approach_quality': ComponentResult(name='approach_quality', runs_mean=-2.7441176470588244, runs_var=4.235294117647059, ci_50=(-4.162849113303487, -1.4100419418970622), ci_90=(-6.1408116122640894, 0.5552379368843262), samples=array([-4.59582527, -5.33341527, -2.05959896, ..., -1.92402821,\n        0.05118181,  0.12774819], shape=(10000,)), metadata={'source': 'proxy_model', 'obs_aqi_runs': -5.2, 'post_aqi_mean': -2.7, 'post_aqi_sd': 2.06}), 'durability': ComponentResult(name='durability', runs_mean=-16.17, runs_var=2.0, ci_50=(-17.11456617913197, -15.239047108725666), ci_90=(-18.512669653227604, -13.82517279908157), samples=array([-15.08150803, -18.77767591, -16.50892714, ..., -17.16704856,\n       -16.47375417, -14.50209901], shape=(10000,)), metadata={'games_actual': 100, 'games_expected': 155, 'games_delta': -55, 'marginal_value_per_game_wins': 0.03}), 'leverage': ComponentResult(name='leverage', runs_mean=0.045470143901220866, runs_var=0.05024321451561776, ci_50=(-0.10578218561463475, 0.19927707771965758), ci_90=(-0.3258114121455298, 0.4148693197543507), samples=array([ 0.22090607, -0.02430332,  0.38789739, ..., -0.29284181,\n        0.20862693, -0.2304819 ], shape=(10000,)), metadata={'raw_gmLI': 1.0, 'damped_multiplier': 1.031, 'adjustment_pct': 3.1})}, total_runs_mean=-19.299198813528964, total_runs_var=55.458102780790234, rpw=5.955520504541279, leverage_multiplier=1.0309278350515465, total_samples=array([-27.58847406, -24.4195051 , -17.76835223, ...,  -8.04104254,\n        -9.87066692, -19.29309411], shape=(10000,))).bravs
+======================== 2 failed, 114 passed in 0.49s ========================

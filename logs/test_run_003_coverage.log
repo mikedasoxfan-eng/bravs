@@ -1,0 +1,174 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.0.2, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\logiu\Desktop\testing\baseball
+configfile: pyproject.toml
+plugins: anyio-4.12.1, cov-7.1.0
+collecting ... collected 116 items
+
+tests/test_hitting.py::TestHittingValues::test_trout_hitting_positive PASSED [  0%]
+tests/test_hitting.py::TestHittingValues::test_replacement_hitting_near_zero PASSED [  1%]
+tests/test_hitting.py::TestHittingValues::test_negative_hitter PASSED    [  2%]
+tests/test_hitting.py::TestHittingValues::test_ohtani_hitting_positive PASSED [  3%]
+tests/test_hitting.py::TestHittingEdgeCases::test_zero_pa_returns_zero PASSED [  4%]
+tests/test_hitting.py::TestHittingEdgeCases::test_one_pa PASSED          [  5%]
+tests/test_hitting.py::TestHittingShrinkage::test_shrinkage_with_small_sample PASSED [  6%]
+tests/test_hitting.py::TestHittingShrinkage::test_large_sample_less_shrinkage PASSED [  6%]
+tests/test_hitting.py::TestHittingParkFactor::test_park_factor_adjustment PASSED [  7%]
+tests/test_hitting.py::TestHittingParkFactor::test_pitcher_friendly_park_boosts_hitter PASSED [  8%]
+tests/test_hitting.py::TestHittingCredibleIntervals::test_credible_intervals_contain_mean PASSED [  9%]
+tests/test_hitting.py::TestHittingCredibleIntervals::test_ci_50_narrower_than_ci_90 PASSED [ 10%]
+tests/test_hitting.py::TestHittingCredibleIntervals::test_ci_lower_less_than_upper PASSED [ 11%]
+tests/test_hitting.py::TestHittingReproducibility::test_same_seed_same_result PASSED [ 12%]
+tests/test_hitting.py::TestHittingReproducibility::test_different_seed_different_samples PASSED [ 12%]
+tests/test_math_helpers.py::TestBayesianUpdateNormal::test_known_update PASSED [ 13%]
+tests/test_math_helpers.py::TestBayesianUpdateNormal::test_zero_n_returns_prior PASSED [ 14%]
+tests/test_math_helpers.py::TestBayesianUpdateNormal::test_negative_n_returns_prior PASSED [ 15%]
+tests/test_math_helpers.py::TestBayesianUpdateNormal::test_very_large_n_approaches_data PASSED [ 16%]
+tests/test_math_helpers.py::TestBayesianUpdateNormal::test_equal_weight PASSED [ 17%]
+tests/test_math_helpers.py::TestShrinkageFactor::test_zero_n_full_shrinkage PASSED [ 18%]
+tests/test_math_helpers.py::TestShrinkageFactor::test_large_n_near_one PASSED [ 18%]
+tests/test_math_helpers.py::TestShrinkageFactor::test_shrinkage_values[10-1.0-1.0-0.9090909090909091] PASSED [ 19%]
+tests/test_math_helpers.py::TestShrinkageFactor::test_shrinkage_values[1-1.0-1.0-0.5] PASSED [ 20%]
+tests/test_math_helpers.py::TestShrinkageFactor::test_shrinkage_values[100-0.5-0.5-0.9900990099009901] PASSED [ 21%]
+tests/test_math_helpers.py::TestShrinkageFactor::test_shrinkage_bounded_zero_one PASSED [ 22%]
+tests/test_math_helpers.py::TestComputeWOBA::test_trout_2016_woba PASSED [ 23%]
+tests/test_math_helpers.py::TestComputeWOBA::test_zero_denominator PASSED [ 24%]
+tests/test_math_helpers.py::TestComputeWOBA::test_all_hr PASSED          [ 25%]
+tests/test_math_helpers.py::TestComputeWOBA::test_all_outs PASSED        [ 25%]
+tests/test_math_helpers.py::TestFIP::test_degrom_2018_fip PASSED         [ 26%]
+tests/test_math_helpers.py::TestFIP::test_zero_ip_degenerate PASSED      [ 27%]
+tests/test_math_helpers.py::TestFIP::test_perfect_pitcher PASSED         [ 28%]
+tests/test_math_helpers.py::TestFIP::test_terrible_pitcher PASSED        [ 29%]
+tests/test_math_helpers.py::TestCredibleInterval::test_standard_normal_90ci PASSED [ 30%]
+tests/test_math_helpers.py::TestCredibleInterval::test_50ci_narrower_than_90ci PASSED [ 31%]
+tests/test_math_helpers.py::TestCredibleInterval::test_level_100_gives_full_range PASSED [ 31%]
+tests/test_math_helpers.py::TestDampedLeverage::test_sqrt_of_four PASSED [ 32%]
+tests/test_math_helpers.py::TestDampedLeverage::test_leverage_one_unchanged PASSED [ 33%]
+tests/test_math_helpers.py::TestDampedLeverage::test_damping_reduces_high_leverage PASSED [ 34%]
+tests/test_math_helpers.py::TestDampedLeverage::test_damping_increases_low_leverage PASSED [ 35%]
+tests/test_math_helpers.py::TestDampedLeverage::test_zero_leverage_clamped PASSED [ 36%]
+tests/test_math_helpers.py::TestPythagoreanRPW::test_standard_environment PASSED [ 37%]
+tests/test_math_helpers.py::TestPythagoreanRPW::test_higher_rpg_higher_rpw PASSED [ 37%]
+tests/test_math_helpers.py::TestWobaToRuns::test_league_average_is_zero PASSED [ 38%]
+tests/test_math_helpers.py::TestWobaToRuns::test_above_average_positive PASSED [ 39%]
+tests/test_math_helpers.py::TestWobaToRuns::test_below_average_negative PASSED [ 40%]
+tests/test_math_helpers.py::TestBetaBinomialPosterior::test_uniform_prior_update PASSED [ 41%]
+tests/test_math_helpers.py::TestBetaBinomialPosterior::test_zero_trials_returns_prior PASSED [ 42%]
+tests/test_math_helpers.py::TestEnsembleAverage::test_equal_weights PASSED [ 43%]
+tests/test_math_helpers.py::TestEnsembleAverage::test_missing_weight PASSED [ 43%]
+tests/test_math_helpers.py::TestEnsembleAverage::test_all_missing_returns_zero PASSED [ 44%]
+tests/test_math_helpers.py::TestEnsembleAverage::test_nan_value_ignored PASSED [ 45%]
+tests/test_math_helpers.py::TestNormalPosteriorSamples::test_sample_count PASSED [ 46%]
+tests/test_math_helpers.py::TestNormalPosteriorSamples::test_mean_close_to_parameter PASSED [ 47%]
+tests/test_math_helpers.py::TestNormalPosteriorSamples::test_reproducibility PASSED [ 48%]
+tests/test_model.py::TestStarPlayerBRAVS::test_trout_bravs_reasonable PASSED [ 49%]
+tests/test_model.py::TestStarPlayerBRAVS::test_degrom_bravs_reasonable PASSED [ 50%]
+tests/test_model.py::TestStarPlayerBRAVS::test_ohtani_two_way PASSED     [ 50%]
+tests/test_model.py::TestBaselineBRAVS::test_replacement_near_baseline PASSED [ 51%]
+tests/test_model.py::TestBaselineBRAVS::test_negative_value_player PASSED [ 52%]
+tests/test_model.py::TestUncertaintyBehavior::test_short_season_wider_intervals PASSED [ 53%]
+tests/test_model.py::TestUncertaintyBehavior::test_credible_interval_ordering PASSED [ 54%]
+tests/test_model.py::TestCatcherComponent::test_catcher_gets_catcher_component PASSED [ 55%]
+tests/test_model.py::TestCatcherComponent::test_non_catcher_no_catcher_component PASSED [ 56%]
+tests/test_model.py::TestComponentStructure::test_component_keys_present_position_player PASSED [ 56%]
+tests/test_model.py::TestComponentStructure::test_component_keys_present_pitcher PASSED [ 57%]
+tests/test_model.py::TestComponentStructure::test_component_keys_present_two_way PASSED [ 58%]
+tests/test_model.py::TestReproducibility::test_same_seed_identical_results PASSED [ 59%]
+tests/test_model.py::TestReproducibility::test_different_seed_varies PASSED [ 60%]
+tests/test_model.py::TestSummaryOutput::test_summary_contains_player_name PASSED [ 61%]
+tests/test_model.py::TestSummaryOutput::test_summary_contains_total_bravs PASSED [ 62%]
+tests/test_pitching.py::TestPitchingValues::test_degrom_pitching_positive PASSED [ 62%]
+tests/test_pitching.py::TestPitchingValues::test_degrom_metadata_contains_fip PASSED [ 63%]
+tests/test_pitching.py::TestPitchingValues::test_ohtani_pitching_positive PASSED [ 64%]
+tests/test_pitching.py::TestReplacementPitcher::test_replacement_pitcher_near_zero PASSED [ 65%]
+tests/test_pitching.py::TestPitchingEdgeCases::test_zero_ip_returns_zero PASSED [ 66%]
+tests/test_pitching.py::TestPitchingEdgeCases::test_fractional_ip PASSED [ 67%]
+tests/test_pitching.py::TestPitchingShrinkage::test_shrinkage_small_sample PASSED [ 68%]
+tests/test_pitching.py::TestPitchingShrinkage::test_large_sample_less_shrinkage PASSED [ 68%]
+tests/test_pitching.py::TestStarterVsReliever::test_starter_vs_reliever_metadata PASSED [ 69%]
+tests/test_pitching.py::TestPitchingIntervals::test_credible_intervals_contain_mean PASSED [ 70%]
+tests/test_pitching.py::TestPitchingIntervals::test_ci_ordering PASSED   [ 71%]
+tests/test_pitching.py::TestPitchingIntervals::test_reproducibility PASSED [ 72%]
+tests/test_validation.py::TestValidData::test_valid_player_passes PASSED [ 73%]
+tests/test_validation.py::TestValidData::test_valid_pitcher_passes PASSED [ 74%]
+tests/test_validation.py::TestValidData::test_zero_pa_pitcher_passes PASSED [ 75%]
+tests/test_validation.py::TestImpossibleStats::test_negative_stats_fail PASSED [ 75%]
+tests/test_validation.py::TestImpossibleStats::test_negative_hr_fails PASSED [ 76%]
+tests/test_validation.py::TestImpossibleStats::test_negative_k_fails PASSED [ 77%]
+tests/test_validation.py::TestImpossibleStats::test_hits_greater_than_ab_fails PASSED [ 78%]
+tests/test_validation.py::TestImpossibleStats::test_hr_greater_than_hits_fails PASSED [ 79%]
+tests/test_validation.py::TestImpossibleStats::test_ab_greater_than_pa_fails PASSED [ 80%]
+tests/test_validation.py::TestImpossibleStats::test_negative_games_fails PASSED [ 81%]
+tests/test_validation.py::TestImpossibleStats::test_negative_innings_fielded_fails PASSED [ 81%]
+tests/test_validation.py::TestImpossibleStats::test_missing_player_name_fails PASSED [ 82%]
+tests/test_validation.py::TestImpossibleStats::test_bad_season_fails PASSED [ 83%]
+tests/test_validation.py::TestImpossibleStats::test_negative_pitching_stats_fail PASSED [ 84%]
+tests/test_validation.py::TestSuspiciousOutliers::test_extreme_high_ba_warns PASSED [ 85%]
+tests/test_validation.py::TestSuspiciousOutliers::test_extreme_low_ba_warns PASSED [ 86%]
+tests/test_validation.py::TestSuspiciousOutliers::test_extreme_low_era_warns PASSED [ 87%]
+tests/test_validation.py::TestSuspiciousOutliers::test_extreme_high_era_warns PASSED [ 87%]
+tests/test_validation.py::TestSuspiciousOutliers::test_very_high_pa_warns PASSED [ 88%]
+tests/test_validation.py::TestSuspiciousOutliers::test_high_games_warns PASSED [ 89%]
+tests/test_validation.py::TestSuspiciousOutliers::test_high_ip_warns PASSED [ 90%]
+tests/test_validation.py::TestSuspiciousOutliers::test_singles_mismatch_warns PASSED [ 91%]
+tests/test_validation.py::TestParametrizedValidation::test_invalid_values[bb--1-True] PASSED [ 92%]
+tests/test_validation.py::TestParametrizedValidation::test_invalid_values[k--1-True] PASSED [ 93%]
+tests/test_validation.py::TestParametrizedValidation::test_invalid_values[hr--1-True] PASSED [ 93%]
+tests/test_validation.py::TestParametrizedValidation::test_invalid_values[games--1-True] PASSED [ 94%]
+tests/test_validation.py::TestParametrizedValidation::test_invalid_values[inn_fielded--50.0-True] PASSED [ 95%]
+tests/test_validation.py::TestParametrizedValidation::test_invalid_values[season-1500-True] PASSED [ 96%]
+tests/test_validation.py::TestParametrizedValidation::test_invalid_values[season-2100-True] PASSED [ 97%]
+tests/test_validation.py::TestParametrizedValidation::test_zero_values_valid[games-0] PASSED [ 98%]
+tests/test_validation.py::TestParametrizedValidation::test_zero_values_valid[pa-0] PASSED [ 99%]
+tests/test_validation.py::TestParametrizedValidation::test_zero_values_valid[ip-0.0] PASSED [100%]
+
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.14.2-final-0 _______________
+
+Name                                                 Stmts   Miss  Cover   Missing
+----------------------------------------------------------------------------------
+baseball_metric\__init__.py                              4      0   100%
+baseball_metric\__main__.py                              2      2     0%   3-5
+baseball_metric\adjustments\__init__.py                  0      0   100%
+baseball_metric\adjustments\era_adjustment.py           21     11    48%   38-50, 82
+baseball_metric\adjustments\league_adjustment.py        10      2    80%   46, 48
+baseball_metric\adjustments\park_factors.py             25     25     0%   12-66
+baseball_metric\adjustments\run_to_win.py               11      1    91%   42
+baseball_metric\analysis\__init__.py                     0      0   100%
+baseball_metric\analysis\backtesting.py                 41     41     0%   8-143
+baseball_metric\analysis\bias_detection.py              95     95     0%   9-262
+baseball_metric\analysis\comparison.py                  91     91     0%   8-226
+baseball_metric\analysis\sensitivity.py                 72     72     0%   9-211
+baseball_metric\analysis\stability.py                   79     79     0%   9-220
+baseball_metric\components\__init__.py                   0      0   100%
+baseball_metric\components\baserunning.py               34      3    91%   67, 74-75
+baseball_metric\components\catcher.py                   32      3    91%   65, 68, 82
+baseball_metric\components\durability.py                28      4    86%   51, 60-62
+baseball_metric\components\fielding.py                  28     12    57%   53, 70, 72, 74, 89-113
+baseball_metric\components\hitting.py                   28      0   100%
+baseball_metric\components\leverage.py                  22      1    95%   73
+baseball_metric\components\novel_component.py           50      8    84%   58, 74, 77, 104, 120-122, 127
+baseball_metric\components\pitching.py                  28      0   100%
+baseball_metric\components\positional.py                17      1    94%   39
+baseball_metric\core\__init__.py                         0      0   100%
+baseball_metric\core\model.py                           73      0   100%
+baseball_metric\core\posterior.py                       19      4    79%   45, 57, 78-80
+baseball_metric\core\types.py                          120      8    93%   29, 33, 36, 122, 162-163, 171-172
+baseball_metric\data\__init__.py                         0      0   100%
+baseball_metric\data\sources.py                         38     38     0%   7-96
+baseball_metric\data\synthetic.py                       67     67     0%   13-231
+baseball_metric\data\validation.py                      58      0   100%
+baseball_metric\run.py                                  94     94     0%   10-309
+baseball_metric\utils\__init__.py                        0      0   100%
+baseball_metric\utils\constants.py                      50      0   100%
+baseball_metric\utils\math_helpers.py                   66      0   100%
+baseball_metric\visualization\__init__.py                0      0   100%
+baseball_metric\visualization\comparison_plots.py       51     51     0%   3-138
+baseball_metric\visualization\leaderboards.py           30     30     0%   3-96
+baseball_metric\visualization\player_cards.py           62     62     0%   3-163
+baseball_metric\visualization\sensitivity_plots.py      24     24     0%   3-81
+baseball_metric\visualization\uncertainty_viz.py        93     93     0%   3-226
+----------------------------------------------------------------------------------
+TOTAL                                                 1563    922    41%
+============================= 116 passed in 0.61s =============================

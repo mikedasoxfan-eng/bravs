@@ -1,0 +1,605 @@
+baseball_metric.core.model INFO: Computing BRAVS for Mike Trout (2016)
+baseball_metric.core.model DEBUG:   Hitting: 79.9 runs
+baseball_metric.core.model DEBUG:   Baserunning: -1.0 runs
+baseball_metric.core.model DEBUG:   Fielding: -0.0 runs
+baseball_metric.core.model DEBUG:   Positional: 2.5 runs
+baseball_metric.core.model DEBUG:   AQI: 10.6 runs
+baseball_metric.core.model DEBUG:   Durability: 1.2 runs
+baseball_metric.core.model INFO:   BRAVS: 17.2 wins [15.0, 19.5]
+baseball_metric.core.model INFO: Computing BRAVS for Barry Bonds (2004)
+baseball_metric.core.model DEBUG:   Hitting: 144.3 runs
+baseball_metric.core.model DEBUG:   Baserunning: 2.3 runs
+baseball_metric.core.model DEBUG:   Fielding: 0.0 runs
+baseball_metric.core.model DEBUG:   Positional: -6.8 runs
+baseball_metric.core.model DEBUG:   AQI: 37.5 runs
+baseball_metric.core.model DEBUG:   Durability: -2.4 runs
+baseball_metric.core.model INFO:   BRAVS: 29.8 wins [27.6, 32.0]
+baseball_metric.core.model INFO: Computing BRAVS for Babe Ruth (1927)
+baseball_metric.core.model DEBUG:   Hitting: 117.1 runs
+baseball_metric.core.model DEBUG:   Baserunning: 2.6 runs
+baseball_metric.core.model DEBUG:   Fielding: 0.0 runs
+baseball_metric.core.model DEBUG:   Positional: -7.0 runs
+baseball_metric.core.model DEBUG:   AQI: 18.2 runs
+baseball_metric.core.model DEBUG:   Durability: -1.2 runs
+baseball_metric.core.model INFO:   BRAVS: 17.4 wins [15.6, 19.3]
+baseball_metric.data.validation WARNING: Validation warnings for Willie Mays (1965): 1B + 2B + 3B + HR != H — recomputing singles
+baseball_metric.core.model INFO: Computing BRAVS for Willie Mays (1965)
+baseball_metric.core.model DEBUG:   Hitting: 91.9 runs
+baseball_metric.core.model DEBUG:   Baserunning: 3.4 runs
+baseball_metric.core.model DEBUG:   Fielding: 0.0 runs
+baseball_metric.core.model DEBUG:   Positional: 2.4 runs
+baseball_metric.core.model DEBUG:   AQI: 9.6 runs
+baseball_metric.core.model DEBUG:   Durability: 0.6 runs
+baseball_metric.core.model INFO:   BRAVS: 26.4 wins [23.1, 29.6]
+baseball_metric.data.validation WARNING: Validation warnings for Hank Aaron (1971): 1B + 2B + 3B + HR != H — recomputing singles
+baseball_metric.core.model INFO: Computing BRAVS for Hank Aaron (1971)
+baseball_metric.core.model DEBUG:   Hitting: 70.3 runs
+baseball_metric.core.model DEBUG:   Baserunning: 3.2 runs
+baseball_metric.core.model DEBUG:   Fielding: 0.0 runs
+baseball_metric.core.model DEBUG:   Positional: -6.4 runs
+baseball_metric.core.model DEBUG:   AQI: 9.8 runs
+baseball_metric.core.model DEBUG:   Durability: -4.7 runs
+baseball_metric.core.model INFO:   BRAVS: 14.0 wins [11.5, 16.6]
+baseball_metric.core.model INFO: Computing BRAVS for Shohei Ohtani (2023)
+baseball_metric.core.model DEBUG:   Hitting: 81.3 runs
+baseball_metric.core.model DEBUG:   Pitching: 22.5 runs
+baseball_metric.core.model DEBUG:   Baserunning: 4.1 runs
+baseball_metric.core.model DEBUG:   Fielding: 0.0 runs
+baseball_metric.core.model DEBUG:   Positional: -14.6 runs
+baseball_metric.core.model DEBUG:   AQI: 5.1 runs
+baseball_metric.core.model DEBUG:   Durability: -2.6 runs
+baseball_metric.core.model INFO:   BRAVS: 16.9 wins [14.5, 19.3]
+baseball_metric.core.model INFO: Computing BRAVS for Pedro Martinez (2000)
+baseball_metric.core.model DEBUG:   Pitching: 81.2 runs
+baseball_metric.core.model DEBUG:   Fielding: 0.0 runs
+baseball_metric.core.model DEBUG:   Positional: 0.0 runs
+baseball_metric.core.model DEBUG:   Durability: -0.9 runs
+baseball_metric.core.model INFO:   BRAVS: 11.3 wins [10.0, 12.6]
+baseball_metric.core.model INFO: Computing BRAVS for Bob Gibson (1968)
+baseball_metric.core.model DEBUG:   Pitching: 95.0 runs
+baseball_metric.core.model DEBUG:   Fielding: 0.0 runs
+baseball_metric.core.model DEBUG:   Positional: 0.0 runs
+baseball_metric.core.model DEBUG:   Durability: 0.6 runs
+baseball_metric.core.model INFO:   BRAVS: 28.1 wins [25.2, 31.0]
+baseball_metric.core.model INFO: Computing BRAVS for Jacob deGrom (2018)
+baseball_metric.core.model DEBUG:   Pitching: 78.8 runs
+baseball_metric.core.model DEBUG:   Fielding: 0.0 runs
+baseball_metric.core.model DEBUG:   Positional: 0.0 runs
+baseball_metric.core.model DEBUG:   Durability: 0.0 runs
+baseball_metric.core.model INFO:   BRAVS: 15.1 wins [13.3, 16.9]
+baseball_metric.core.model INFO: Computing BRAVS for Sandy Koufax (1966)
+baseball_metric.core.model DEBUG:   Pitching: 91.9 runs
+baseball_metric.core.model DEBUG:   Fielding: 0.0 runs
+baseball_metric.core.model DEBUG:   Positional: 0.0 runs
+baseball_metric.core.model DEBUG:   Durability: 2.6 runs
+baseball_metric.core.model INFO:   BRAVS: 24.5 wins [21.9, 27.0]
+baseball_metric.core.model INFO: Computing BRAVS for Roger Clemens (1997)
+baseball_metric.core.model DEBUG:   Pitching: 79.3 runs
+baseball_metric.core.model DEBUG:   Fielding: 0.0 runs
+baseball_metric.core.model DEBUG:   Positional: 0.0 runs
+baseball_metric.core.model DEBUG:   Durability: 0.6 runs
+baseball_metric.core.model INFO:   BRAVS: 12.8 wins [11.3, 14.4]
+baseball_metric.core.model INFO: Computing BRAVS for Justin Verlander (2011)
+baseball_metric.core.model DEBUG:   Pitching: 59.7 runs
+baseball_metric.core.model DEBUG:   Fielding: 0.0 runs
+baseball_metric.core.model DEBUG:   Positional: 0.0 runs
+baseball_metric.core.model DEBUG:   Durability: 0.6 runs
+baseball_metric.core.model INFO:   BRAVS: 12.2 wins [10.2, 14.1]
+baseball_metric.data.validation WARNING: Validation warnings for Edgar Martinez (1995): 1B + 2B + 3B + HR != H — recomputing singles
+baseball_metric.core.model INFO: Computing BRAVS for Edgar Martinez (1995)
+baseball_metric.core.model DEBUG:   Hitting: 92.0 runs
+baseball_metric.core.model DEBUG:   Baserunning: 4.2 runs
+baseball_metric.core.model DEBUG:   Fielding: 0.0 runs
+baseball_metric.core.model DEBUG:   Positional: -15.7 runs
+baseball_metric.core.model DEBUG:   AQI: 14.7 runs
+baseball_metric.core.model DEBUG:   Durability: -2.9 runs
+baseball_metric.core.model INFO:   BRAVS: 14.7 wins [12.6, 16.8]
+baseball_metric.core.model INFO: Computing BRAVS for Mariano Rivera (2004)
+baseball_metric.core.model DEBUG:   Pitching: 22.2 runs
+baseball_metric.core.model DEBUG:   Fielding: 0.0 runs
+baseball_metric.core.model DEBUG:   Positional: 0.0 runs
+baseball_metric.core.model DEBUG:   Durability: 1.3 runs
+baseball_metric.core.model INFO:   BRAVS: 4.9 wins [3.5, 6.4]
+baseball_metric.data.validation WARNING: Validation warnings for Ozzie Smith (1987): 1B + 2B + 3B + HR != H — recomputing singles
+baseball_metric.core.model INFO: Computing BRAVS for Ozzie Smith (1987)
+baseball_metric.core.model DEBUG:   Hitting: 28.4 runs
+baseball_metric.core.model DEBUG:   Baserunning: 7.2 runs
+baseball_metric.core.model DEBUG:   Fielding: 0.0 runs
+baseball_metric.core.model DEBUG:   Positional: 7.3 runs
+baseball_metric.core.model DEBUG:   AQI: 15.1 runs
+baseball_metric.core.model DEBUG:   Durability: 0.9 runs
+baseball_metric.core.model INFO:   BRAVS: 11.6 wins [8.9, 14.4]
+baseball_metric.data.validation WARNING: Validation warnings for Juan Soto (2020): 1B + 2B + 3B + HR != H — recomputing singles
+baseball_metric.core.model INFO: Computing BRAVS for Juan Soto (2020)
+baseball_metric.core.model DEBUG:   Hitting: 24.9 runs
+baseball_metric.core.model DEBUG:   Baserunning: 1.7 runs
+baseball_metric.core.model DEBUG:   Fielding: 0.0 runs
+baseball_metric.core.model DEBUG:   Positional: -2.2 runs
+baseball_metric.core.model DEBUG:   AQI: 2.2 runs
+baseball_metric.core.model DEBUG:   Durability: -31.8 runs
+baseball_metric.core.model INFO:   BRAVS: -0.7 wins [-2.6, 1.1]
+baseball_metric.data.validation WARNING: Validation warnings for Larry Walker (1997): 1B + 2B + 3B + HR != H — recomputing singles
+baseball_metric.core.model INFO: Computing BRAVS for Larry Walker (1997)
+baseball_metric.core.model DEBUG:   Hitting: 65.7 runs
+baseball_metric.core.model DEBUG:   Baserunning: 6.3 runs
+baseball_metric.core.model DEBUG:   Fielding: 0.0 runs
+baseball_metric.core.model DEBUG:   Positional: -7.1 runs
+baseball_metric.core.model DEBUG:   AQI: 8.1 runs
+baseball_metric.core.model DEBUG:   Durability: -0.6 runs
+baseball_metric.core.model INFO:   BRAVS: 10.7 wins [8.8, 12.6]
+baseball_metric.data.validation WARNING: Validation warnings for Mike Piazza (1997): 1B + 2B + 3B + HR != H — recomputing singles
+baseball_metric.core.model INFO: Computing BRAVS for Mike Piazza (1997)
+baseball_metric.core.model DEBUG:   Hitting: 81.5 runs
+baseball_metric.core.model DEBUG:   Baserunning: 3.9 runs
+baseball_metric.core.model DEBUG:   Fielding: 0.0 runs
+baseball_metric.core.model DEBUG:   Catcher: -3.5 runs
+baseball_metric.core.model DEBUG:   Positional: 11.7 runs
+baseball_metric.core.model DEBUG:   AQI: 7.9 runs
+baseball_metric.core.model DEBUG:   Durability: -0.9 runs
+baseball_metric.core.model INFO:   BRAVS: 16.8 wins [14.3, 19.3]
+baseball_metric.data.validation WARNING: Validation warnings for Aaron Judge (2022): 1B + 2B + 3B + HR != H — recomputing singles
+baseball_metric.core.model INFO: Computing BRAVS for Aaron Judge (2022)
+baseball_metric.core.model DEBUG:   Hitting: 77.5 runs
+baseball_metric.core.model DEBUG:   Baserunning: 5.3 runs
+baseball_metric.core.model DEBUG:   Fielding: 3.1 runs
+baseball_metric.core.model DEBUG:   Positional: -7.3 runs
+baseball_metric.core.model DEBUG:   AQI: 6.5 runs
+baseball_metric.core.model DEBUG:   Durability: 0.6 runs
+baseball_metric.core.model INFO:   BRAVS: 16.4 wins [14.1, 18.7]
+baseball_metric.core.model INFO: Computing BRAVS for Mookie Betts (2018)
+baseball_metric.core.model DEBUG:   Hitting: 75.3 runs
+baseball_metric.core.model DEBUG:   Baserunning: 6.2 runs
+baseball_metric.core.model DEBUG:   Fielding: 5.7 runs
+baseball_metric.core.model DEBUG:   Positional: -6.3 runs
+baseball_metric.core.model DEBUG:   AQI: 8.3 runs
+baseball_metric.core.model DEBUG:   Durability: -5.6 runs
+baseball_metric.core.model INFO:   BRAVS: 15.1 wins [12.9, 17.2]
+baseball_metric.data.validation WARNING: Validation warnings for Harold Baines (1985): 1B + 2B + 3B + HR != H — recomputing singles
+baseball_metric.core.model INFO: Computing BRAVS for Harold Baines (1985)
+baseball_metric.core.model DEBUG:   Hitting: 30.1 runs
+baseball_metric.core.model DEBUG:   Baserunning: 1.9 runs
+baseball_metric.core.model DEBUG:   Fielding: 0.0 runs
+baseball_metric.core.model DEBUG:   Positional: -7.4 runs
+baseball_metric.core.model DEBUG:   AQI: 2.7 runs
+baseball_metric.core.model DEBUG:   Durability: 1.5 runs
+baseball_metric.core.model INFO:   BRAVS: 5.5 wins [3.0, 8.2]
+baseball_metric.core.model INFO: Computing BRAVS for Walter Johnson (1913)
+baseball_metric.core.model DEBUG:   Pitching: 118.1 runs
+baseball_metric.core.model DEBUG:   Fielding: 0.0 runs
+baseball_metric.core.model DEBUG:   Positional: 0.0 runs
+baseball_metric.core.model DEBUG:   Durability: 1.2 runs
+baseball_metric.core.model INFO:   BRAVS: 23.0 wins [21.1, 25.0]
+============================================================
+BRAVS Report: Mike Trout (2016)
+============================================================
+Total BRAVS: 17.2 wins  [90% CI: 15.0 to 19.5]
+Total Runs Above FAT: 98.7
+Runs Per Win: 5.74
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  approach_quality    :   +10.9  [+7.7, +13.4]
+  baserunning         :    -1.1  [-2.6, +0.6]
+  durability          :    +1.2  [-1.2, +3.5]
+  fielding            :    -0.1  [-5.1, +5.1]
+  hitting             :   +82.4  [+69.1, +90.4]
+  leverage            :    +2.9  [+2.5, +3.2]
+  positional          :    +2.5  [+0.8, +4.1]
+============================================================
+
+============================================================
+BRAVS Report: Barry Bonds (2004)
+============================================================
+Total BRAVS: 29.8 wins  [90% CI: 27.6 to 32.0]
+Total Runs Above FAT: 173.5
+Runs Per Win: 5.82
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  approach_quality    :   +36.0  [+34.6, +40.4]
+  baserunning         :    +2.2  [+0.8, +3.9]
+  durability          :    -2.3  [-4.7, -0.0]
+  fielding            :    +0.0  [-8.2, +8.2]
+  hitting             :  +138.6  [+134.1, +154.3]
+  leverage            :    +5.5  [+5.1, +5.9]
+  positional          :    -6.5  [-8.5, -5.2]
+============================================================
+
+============================================================
+BRAVS Report: Babe Ruth (1927)
+============================================================
+Total BRAVS: 17.4 wins  [90% CI: 15.6 to 19.3]
+Total Runs Above FAT: 117.7
+Runs Per Win: 6.76
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  approach_quality    :   +16.0  [+15.3, +21.1]
+  baserunning         :    +2.3  [+1.0, +4.3]
+  durability          :    -1.0  [-3.5, +1.2]
+  fielding            :    +0.0  [-8.2, +8.2]
+  hitting             :  +102.9  [+106.2, +127.7]
+  leverage            :    +3.7  [+3.4, +4.1]
+  positional          :    -6.1  [-8.7, -5.3]
+============================================================
+
+============================================================
+BRAVS Report: Willie Mays (1965)
+============================================================
+Total BRAVS: 26.4 wins  [90% CI: 23.1 to 29.6]
+Total Runs Above FAT: 132.0
+Runs Per Win: 5.00
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  approach_quality    :   +11.4  [+6.7, +12.4]
+  baserunning         :    +4.0  [+1.8, +5.0]
+  durability          :    +0.7  [-1.8, +2.9]
+  fielding            :    +0.0  [-8.2, +8.2]
+  hitting             :  +109.2  [+81.5, +102.1]
+  leverage            :    +3.9  [+3.4, +4.3]
+  positional          :    +2.9  [+0.8, +4.1]
+============================================================
+
+============================================================
+BRAVS Report: Hank Aaron (1971)
+============================================================
+Total BRAVS: 14.0 wins  [90% CI: 11.5 to 16.6]
+Total Runs Above FAT: 80.3
+Runs Per Win: 5.74
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  approach_quality    :   +10.5  [+6.9, +12.6]
+  baserunning         :    +3.4  [+1.7, +4.8]
+  durability          :    -5.1  [-7.0, -2.4]
+  fielding            :    +0.0  [-8.2, +8.2]
+  hitting             :   +75.6  [+60.1, +80.3]
+  leverage            :    +2.8  [+2.3, +3.2]
+  positional          :    -6.9  [-8.1, -4.8]
+============================================================
+
+============================================================
+BRAVS Report: Shohei Ohtani (2023)
+============================================================
+Total BRAVS: 16.9 wins  [90% CI: 14.5 to 19.3]
+Total Runs Above FAT: 99.1
+Runs Per Win: 5.87
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  approach_quality    :    +5.1  [+2.0, +8.3]
+  baserunning         :    +4.1  [+2.5, +5.7]
+  durability          :    -2.6  [-5.0, -0.3]
+  fielding            :    +0.0  [-8.2, +8.2]
+  hitting             :   +81.3  [+71.3, +91.2]
+  leverage            :    +3.5  [+3.1, +3.9]
+  pitching            :   +22.5  [+19.3, +25.5]
+  positional          :   -14.6  [-16.2, -13.0]
+============================================================
+
+============================================================
+BRAVS Report: Pedro Martinez (2000)
+============================================================
+Total BRAVS: 11.3 wins  [90% CI: 10.0 to 12.6]
+Total Runs Above FAT: 74.6
+Runs Per Win: 6.61
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  durability          :    -0.8  [-3.2, +1.4]
+  fielding            :    +0.0  [-8.2, +8.2]
+  leverage            :    +2.3  [+2.0, +2.5]
+  pitching            :   +73.0  [+77.2, +85.3]
+  positional          :    +0.0  [-1.7, +1.7]
+============================================================
+
+============================================================
+BRAVS Report: Bob Gibson (1968)
+============================================================
+Total BRAVS: 28.1 wins  [90% CI: 25.2 to 31.0]
+Total Runs Above FAT: 133.2
+Runs Per Win: 4.74
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  durability          :    +0.8  [-1.8, +2.9]
+  fielding            :    +0.0  [-8.2, +8.2]
+  leverage            :    +4.0  [+3.6, +4.4]
+  pitching            :  +128.3  [+90.2, +99.8]
+  positional          :    +0.0  [-1.7, +1.7]
+============================================================
+
+============================================================
+BRAVS Report: Jacob deGrom (2018)
+============================================================
+Total BRAVS: 15.1 wins  [90% CI: 13.3 to 16.9]
+Total Runs Above FAT: 84.5
+Runs Per Win: 5.59
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  durability          :    +0.0  [-2.4, +2.3]
+  fielding            :    +0.0  [-8.2, +8.2]
+  leverage            :    +2.5  [+2.2, +2.8]
+  pitching            :   +81.8  [+74.8, +82.9]
+  positional          :    +0.0  [-1.7, +1.7]
+============================================================
+
+============================================================
+BRAVS Report: Sandy Koufax (1966)
+============================================================
+Total BRAVS: 24.5 wins  [90% CI: 21.9 to 27.0]
+Total Runs Above FAT: 120.7
+Runs Per Win: 4.93
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  durability          :    +3.3  [+0.3, +5.0]
+  fielding            :    +0.0  [-8.2, +8.2]
+  leverage            :    +3.5  [+3.2, +3.9]
+  pitching            :  +113.7  [+87.0, +96.9]
+  positional          :    +0.0  [-1.7, +1.7]
+============================================================
+
+============================================================
+BRAVS Report: Roger Clemens (1997)
+============================================================
+Total BRAVS: 12.8 wins  [90% CI: 11.3 to 14.4]
+Total Runs Above FAT: 79.9
+Runs Per Win: 6.22
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  durability          :    +0.6  [-1.8, +2.9]
+  fielding            :    +0.0  [-8.2, +8.2]
+  leverage            :    +2.4  [+2.1, +2.6]
+  pitching            :   +76.8  [+74.9, +83.8]
+  positional          :    +0.0  [-1.7, +1.7]
+============================================================
+
+============================================================
+BRAVS Report: Justin Verlander (2011)
+============================================================
+Total BRAVS: 12.2 wins  [90% CI: 10.2 to 14.1]
+Total Runs Above FAT: 67.2
+Runs Per Win: 5.52
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  durability          :    +0.6  [-1.8, +2.9]
+  fielding            :    +0.0  [-8.2, +8.2]
+  leverage            :    +2.0  [+1.7, +2.3]
+  pitching            :   +64.4  [+55.4, +64.1]
+  positional          :    +0.0  [-1.7, +1.7]
+============================================================
+
+============================================================
+BRAVS Report: Edgar Martinez (1995)
+============================================================
+Total BRAVS: 14.7 wins  [90% CI: 12.6 to 16.8]
+Total Runs Above FAT: 91.2
+Runs Per Win: 6.21
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  approach_quality    :   +14.0  [+11.8, +17.6]
+  baserunning         :    +4.0  [+2.6, +5.8]
+  durability          :    -2.8  [-5.3, -0.6]
+  fielding            :    +0.0  [-8.2, +8.2]
+  hitting             :   +86.7  [+81.6, +102.2]
+  leverage            :    +3.2  [+2.8, +3.6]
+  positional          :   -14.9  [-17.3, -14.0]
+============================================================
+
+============================================================
+BRAVS Report: Mariano Rivera (2004)
+============================================================
+Total BRAVS: 4.9 wins  [90% CI: 3.5 to 6.4]
+Total Runs Above FAT: 31.2
+Runs Per Win: 6.35
+Leverage Multiplier: 1.402
+
+Component Decomposition (runs):
+----------------------------------------
+  durability          :    +1.3  [-1.0, +3.6]
+  fielding            :    +0.0  [-8.2, +8.2]
+  leverage            :    +8.6  [+5.2, +11.8]
+  pitching            :   +21.3  [+19.8, +24.6]
+  positional          :    +0.0  [-1.7, +1.7]
+============================================================
+
+============================================================
+BRAVS Report: Ozzie Smith (1987)
+============================================================
+Total BRAVS: 11.6 wins  [90% CI: 8.9 to 14.4]
+Total Runs Above FAT: 65.0
+Runs Per Win: 5.58
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  approach_quality    :   +16.2  [+12.2, +17.9]
+  baserunning         :    +7.8  [+5.6, +9.0]
+  durability          :    +0.9  [-1.5, +3.2]
+  fielding            :    +0.0  [-8.2, +8.2]
+  hitting             :   +30.6  [+17.5, +39.2]
+  leverage            :    +1.7  [+1.2, +2.2]
+  positional          :    +7.9  [+5.6, +9.0]
+============================================================
+
+============================================================
+BRAVS Report: Juan Soto (2020)
+============================================================
+Total BRAVS: -0.7 wins  [90% CI: -2.6 to 1.1]
+Total Runs Above FAT: -4.2
+Runs Per Win: 5.90
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  approach_quality    :    +2.2  [-2.0, +6.3]
+  baserunning         :    +1.7  [+0.9, +2.5]
+  durability          :   -31.5  [-34.1, -29.4]
+  fielding            :    +0.0  [-8.2, +8.2]
+  hitting             :   +24.7  [+19.7, +30.0]
+  leverage            :    +0.9  [+0.6, +1.2]
+  positional          :    -2.2  [-3.8, -0.5]
+============================================================
+
+============================================================
+BRAVS Report: Larry Walker (1997)
+============================================================
+Total BRAVS: 10.7 wins  [90% CI: 8.8 to 12.6]
+Total Runs Above FAT: 72.5
+Runs Per Win: 6.77
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  approach_quality    :    +7.9  [+5.2, +11.0]
+  baserunning         :    +6.1  [+4.8, +7.8]
+  durability          :    -0.6  [-2.9, +1.8]
+  fielding            :    +0.0  [-8.2, +8.2]
+  hitting             :   +63.6  [+55.5, +75.7]
+  leverage            :    +2.4  [+2.0, +2.8]
+  positional          :    -6.9  [-8.7, -5.4]
+============================================================
+
+============================================================
+BRAVS Report: Mike Piazza (1997)
+============================================================
+Total BRAVS: 16.8 wins  [90% CI: 14.3 to 19.3]
+Total Runs Above FAT: 100.2
+Runs Per Win: 5.96
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  approach_quality    :    +7.6  [+5.0, +10.8]
+  baserunning         :    +3.8  [+2.4, +5.5]
+  catcher             :    -3.3  [-10.2, +3.3]
+  durability          :    -0.9  [-3.2, +1.4]
+  fielding            :    +0.0  [-8.2, +8.2]
+  hitting             :   +79.0  [+71.2, +91.7]
+  leverage            :    +2.7  [+2.2, +3.1]
+  positional          :   +11.4  [+10.1, +13.4]
+============================================================
+
+============================================================
+BRAVS Report: Aaron Judge (2022)
+============================================================
+Total BRAVS: 16.4 wins  [90% CI: 14.1 to 18.7]
+Total Runs Above FAT: 95.6
+Runs Per Win: 5.84
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  approach_quality    :    +7.1  [+3.6, +9.4]
+  baserunning         :    +5.7  [+3.6, +7.0]
+  durability          :    +0.6  [-1.8, +2.9]
+  fielding            :    +3.3  [-2.0, +8.2]
+  hitting             :   +83.7  [+66.6, +88.2]
+  leverage            :    +3.1  [+2.7, +3.5]
+  positional          :    -7.8  [-8.9, -5.6]
+============================================================
+
+============================================================
+BRAVS Report: Mookie Betts (2018)
+============================================================
+Total BRAVS: 15.1 wins  [90% CI: 12.9 to 17.2]
+Total Runs Above FAT: 89.8
+Runs Per Win: 5.96
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  approach_quality    :    +8.6  [+5.3, +11.1]
+  baserunning         :    +6.4  [+4.7, +7.8]
+  durability          :    -5.8  [-7.9, -3.2]
+  fielding            :    +6.0  [+0.2, +11.3]
+  hitting             :   +77.1  [+65.1, +85.2]
+  leverage            :    +3.0  [+2.7, +3.4]
+  positional          :    -6.5  [-8.0, -4.7]
+============================================================
+
+============================================================
+BRAVS Report: Harold Baines (1985)
+============================================================
+Total BRAVS: 5.5 wins  [90% CI: 3.0 to 8.2]
+Total Runs Above FAT: 31.8
+Runs Per Win: 5.73
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  approach_quality    :    +2.8  [-0.3, +5.5]
+  baserunning         :    +2.0  [+0.3, +3.6]
+  durability          :    +1.6  [-0.9, +3.8]
+  fielding            :    +0.0  [-8.2, +8.2]
+  hitting             :   +31.1  [+19.4, +40.6]
+  leverage            :    +1.1  [+0.7, +1.6]
+  positional          :    -7.9  [-9.1, -5.8]
+============================================================
+
+============================================================
+BRAVS Report: Walter Johnson (1913)
+============================================================
+Total BRAVS: 23.0 wins  [90% CI: 21.1 to 25.0]
+Total Runs Above FAT: 129.5
+Runs Per Win: 5.62
+Leverage Multiplier: 1.031
+
+Component Decomposition (runs):
+----------------------------------------
+  durability          :    +1.2  [-1.2, +3.5]
+  fielding            :    +0.0  [-8.2, +8.2]
+  leverage            :    +3.8  [+3.5, +4.2]
+  pitching            :  +124.3  [+113.0, +123.3]
+  positional          :    +0.0  [-1.7, +1.7]
+============================================================
+
+
+======================================================================
+  All-Time BRAVS Leaderboard (Notable Seasons)
+======================================================================
+Rank  Player                     Year Pos   BRAVS            90% CI
+----------------------------------------------------------------------
+   1. Barry Bonds                2004 LF     29.8  [ 27.6,  32.0]
+   2. Bob Gibson                 1968 P      28.1  [ 25.2,  31.0]
+   3. Willie Mays                1965 CF     26.4  [ 23.1,  29.6]
+   4. Sandy Koufax               1966 P      24.5  [ 21.9,  27.0]
+   5. Walter Johnson             1913 P      23.0  [ 21.1,  25.0]
+   6. Babe Ruth                  1927 RF     17.4  [ 15.6,  19.3]
+   7. Mike Trout                 2016 CF     17.2  [ 15.0,  19.5]
+   8. Shohei Ohtani              2023 DH     16.9  [ 14.5,  19.3]
+   9. Mike Piazza                1997 C      16.8  [ 14.3,  19.3]
+  10. Aaron Judge                2022 RF     16.4  [ 14.1,  18.7]
+  11. Jacob deGrom               2018 P      15.1  [ 13.3,  16.9]
+  12. Mookie Betts               2018 RF     15.1  [ 12.9,  17.2]
+  13. Edgar Martinez             1995 DH     14.7  [ 12.6,  16.8]
+  14. Hank Aaron                 1971 RF     14.0  [ 11.5,  16.6]
+  15. Roger Clemens              1997 P      12.8  [ 11.3,  14.4]
+  16. Justin Verlander           2011 P      12.2  [ 10.2,  14.1]
+  17. Ozzie Smith                1987 SS     11.6  [  8.9,  14.4]
+  18. Pedro Martinez             2000 P      11.3  [ 10.0,  12.6]
+  19. Larry Walker               1997 RF     10.7  [  8.8,  12.6]
+  20. Harold Baines              1985 RF      5.5  [  3.0,   8.2]
+  21. Mariano Rivera             2004 P       4.9  [  3.5,   6.4]
+  22. Juan Soto                  2020 RF     -0.7  [ -2.6,   1.1]
+
+Completed in 0.11s
