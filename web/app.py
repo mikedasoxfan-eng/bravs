@@ -252,13 +252,36 @@ def compute_player_bravs(player_id: int, season: int):
         f"{MLB_API}/people/{player_id}/stats",
         {"stats": "season", "season": season, "group": "pitching", "gameType": "R"},
     )
+    # Fetch fielding stats to determine actual position played that season
+    fielding_data = _mlb_get(
+        f"{MLB_API}/people/{player_id}/stats",
+        {"stats": "season", "season": season, "group": "fielding", "gameType": "R"},
+    )
+
+    # Determine position from fielding data (most innings), NOT from player info
+    # (player info shows current position, which may differ from historical)
+    position = "DH"
+    if fielding_data and "stats" in fielding_data:
+        best_inn = 0.0
+        for group in fielding_data["stats"]:
+            for split in group.get("splits", []):
+                pos_obj = split.get("position", {})
+                pos_abbr = pos_obj.get("abbreviation", "")
+                if pos_abbr in ("P", "DH", ""):
+                    continue
+                inn = _parse_ip(split.get("stat", {}).get("innings", 0))
+                if inn > best_inn:
+                    best_inn = inn
+                    position = pos_abbr
+    if position == "DH":
+        # Fallback: check if they pitched more than hit
+        position = pinfo.get("primaryPosition", {}).get("abbreviation", "DH")
 
     # Parse hitting stats (combine if traded mid-season)
     h: dict[str, object] = {}
     team_name = ""
     team_abbrev = "UNK"
     team_id = 0
-    position = pinfo.get("primaryPosition", {}).get("abbreviation", "DH")
 
     if hitting_data and "stats" in hitting_data:
         for group in hitting_data["stats"]:
@@ -289,9 +312,6 @@ def compute_player_bravs(player_id: int, season: int):
             team_name = team_obj.get("name", team_name)
             team_abbrev = _get_team_abbrev(team_obj)
             team_id = team_obj.get("id", team_id)
-            pos_obj = chosen.get("position", {})
-            if pos_obj.get("abbreviation"):
-                position = pos_obj["abbreviation"]
 
             combined: dict[str, int | float] = {}
             for key in ["gamesPlayed", "plateAppearances", "atBats", "hits",
