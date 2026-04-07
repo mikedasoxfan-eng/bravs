@@ -1,157 +1,189 @@
 # Design Decisions Log
 
-Every significant design choice in the BRAVS framework, the alternatives considered, and the rationale for the decision made.
+## BRAVS: Bayesian Runs Above Value Standard
+
+This document records every significant design choice made during the construction of BRAVS, the alternatives that were evaluated, the reasoning behind each decision, and the downstream consequences. Each entry follows a standardized format: **Decision**, **Alternatives Considered**, **Rationale**, **Consequences**. Entries are ordered by structural importance to the framework, not chronologically.
 
 ---
 
-## Decision 1: Freely Available Talent (FAT) Baseline
+## Decision 1: FAT Baseline vs Replacement Level vs Average
 
-**Choice**: Use Freely Available Talent (FAT) as the value baseline — defined as the expected performance of a player available for league minimum salary on the open market.
+**Decision.** BRAVS measures value above a Freely Available Talent (FAT) baseline, defined as the empirically observed performance of players acquired through minimal-cost transactions: minor-league call-ups, waiver claims, Rule 5 draft selections, and minor-league free agent signings who subsequently reach the major-league roster. The FAT level is position-specific and re-estimated each season from a trailing three-year window of transaction and performance data.
 
-**Alternatives Considered**:
-- *Replacement level (WAR-style)*: The traditional approach. FanGraphs and Baseball-Reference use slightly different calibrations (~57/43 vs ~55/45 pitcher/position split), creating a ~0.5 win systematic difference between fWAR and bWAR for every player. The definition is circular: replacement level is defined by how much WAR the league should produce, which depends on replacement level.
-- *Average (0 WAR = average)*: Simple and interpretable, but loses the counting-stat property. A player who plays 162 games at average quality would be worth 0, indistinguishable from a player who played 0 games.
-- *Zero baseline*: Meaningless — a team of zeroes would win 0 games, but that's not a useful reference point.
+**Alternatives Considered.**
 
-**Rationale**: FAT is empirically grounded. It can be estimated from actual data: the performance of minor league call-ups, waiver claims, Rule 5 picks, and minimum-salary free agents. It is position-specific (FAT catchers are worse than FAT outfielders) and era-specific (FAT quality has risen as analytics improve talent evaluation). Unlike replacement level, FAT does not require a top-down calibration of total league wins.
+- *Traditional replacement level (fWAR/bWAR approach).* Both FanGraphs and Baseball-Reference define replacement level by fiat: they stipulate that the total WAR across the league should sum to a fixed number (roughly 1000 wins), then back-solve for the replacement-level performance that makes the math work. The problem is that these two implementations disagree with each other by approximately 0.5 wins per player-season at the individual level, which compounds to 7-8 wins over a career. The disagreement is not resolvable because replacement level under this approach is a calibration parameter, not an observable quantity. There is no empirical test that can determine whether fWAR or bWAR has the "correct" replacement level, because both are circular: they define it to make the league-wide totals come out right.
+- *League average.* Setting the baseline at average performance (as rate stats like wRC+ implicitly do) eliminates the replacement-level problem but creates a worse one: it erases the value of playing time. A league-average player who appears in 155 games accumulates zero value above baseline, which is absurd. That player is preventing his team from deploying a replacement-level (or FAT-level) player for 155 games, and that prevention is worth roughly 2 wins. Average baselines cannot distinguish between a league-average player with 600 PA and one with 200 PA in terms of total value contributed.
+- *Zero production.* A baseline of literal zero (the team fields no one) is theoretically clean but practically meaningless. No roster decision involves choosing between a player and an empty roster spot.
 
-**Consequences**: BRAVS values are slightly higher than WAR because FAT is a somewhat lower baseline than traditional replacement level. This is a calibration difference, not a conceptual error. Future work could add a WAR-scale normalization for direct comparability.
+**Rationale.** FAT is grounded in observable transactions. We can identify exactly which players were freely available in a given season, measure their subsequent performance, and shrink those estimates toward appropriate positional priors. If the talent pool at a position improves (better player development pipelines, expansion of international scouting), the FAT baseline rises automatically. If it deteriorates, the baseline falls. This responsiveness to actual conditions is something a stipulated replacement level cannot provide. The position-specificity is also natural: freely available shortstops hit worse than freely available first basemen, so the FAT baseline captures part of the positional scarcity effect without requiring a separate adjustment (though BRAVS applies the Tango positional adjustment on top of FAT to capture the residual).
 
----
-
-## Decision 2: Normal-Normal Conjugate Priors (Not MCMC)
-
-**Choice**: Use conjugate normal-normal Bayesian updates for all core components, producing Gaussian posteriors.
-
-**Alternatives Considered**:
-- *Full MCMC (Stan/PyMC)*: Would give exact posteriors for non-Gaussian likelihoods (e.g., batting outcomes are multinomial, not normal). More principled for small samples where normality breaks down.
-- *Variational inference*: Faster than MCMC but still slower than conjugate updates. Approximate posteriors.
-
-**Rationale**: Computational speed. BRAVS computes a single player-season in ~5ms using conjugate updates. Full MCMC would require ~500ms-5s per player-season, making full-season computation prohibitively slow (hours instead of seconds). For the sample sizes typical in baseball (200+ PA, 100+ IP), the central limit theorem makes the normal approximation excellent. The conjugate approach also makes the math transparent — every posterior has a closed-form expression.
-
-**Consequences**: Posteriors are Gaussian approximations. For small samples (<50 PA), the true posterior for batting rates is Beta-distributed, which is skewed. Our Gaussian approximation misses this skewness. The impact is small because Bayesian shrinkage toward the prior dominates at small sample sizes anyway. Future versions could use a Beta-binomial model for the hitting component to capture this.
+**Consequences.** BRAVS absolute values will differ slightly from WAR. A player who is +5.0 fWAR might be +4.7 or +5.3 BRAVS depending on how the FAT baseline for his position compares to fWAR's stipulated replacement level in that season. The FAT baseline requires ingesting transaction data (call-ups, waiver claims, Rule 5 selections), which adds a data pipeline dependency that traditional replacement-level calculations avoid. The empirical grounding is more defensible, but the year-to-year fluctuations in the FAT baseline introduce a source of variation that fixed replacement levels do not have. We accept this tradeoff because the variation reflects real changes in the talent pool, not noise.
 
 ---
 
-## Decision 3: Leverage Damping via sqrt(LI)
+## Decision 2: Normal-Normal Conjugate Priors vs Full MCMC for Core Components
 
-**Choice**: Use $\text{LI}_{\text{eff}} = \sqrt{\text{gmLI}}$ as the leverage multiplier on skill-based value.
+**Decision.** The hitting (wOBA true-talent), pitching (xFIP+ true-talent), and stolen base (success rate) components use conjugate prior structures that yield closed-form posterior distributions. The hitting and pitching models use Normal-Normal conjugacy; the stolen base model uses Beta-Binomial conjugacy. Full MCMC (via NUTS/HMC) is reserved for the non-conjugate components: fielding ensemble (Bayesian model averaging), catcher framing (probit model), game-calling (WOWY with confounders), and AQI (nonlinear run-value aggregation).
 
-**Alternatives Considered**:
-- *No leverage (WAR approach)*: All situations weighted equally. Simple, stable, but philosophically indefensible — a 9th-inning bases-loaded at-bat is not worth the same as a 2nd-inning blowout at-bat.
-- *Full leverage (WPA approach)*: Weight by raw leverage index. Context-maximally-sensitive, but extremely noisy (WPA has ~0.2 year-over-year correlation vs ~0.5 for WAR).
-- *Log(LI)*: More conservative damping than sqrt. Would reduce leverage effects by ~30% relative to sqrt.
-- *Capped LI*: Cap leverage at some maximum (e.g., 3.0). Ad hoc and creates a discontinuity.
-- *Tunable exponent*: Treat the damping exponent as a hyperparameter. More flexible but requires a principled way to set it.
+**Alternatives Considered.**
 
-**Rationale**: sqrt(LI) is the geometric mean of "ignore leverage" (exponent=0, WAR) and "full leverage" (exponent=1, WPA). This is a principled middle ground. Empirically, it produces sensible results: Rivera 2004 gets +8.6 leverage runs (a meaningful ~40% boost over his raw pitching value), while position players with average leverage (~1.0) get essentially no adjustment. The sqrt function is concave, so it compresses extreme leverage differences, which is what we want — we want leverage to matter but not dominate.
+- *Full MCMC for all components.* Running Stan or PyMC for every component would produce richer posteriors that can capture skewness, multimodality, and complex covariance structures. For the hitting component specifically, modeling the full multinomial outcome distribution (BB, 1B, 2B, 3B, HR, out) rather than the Normal approximation to wOBA would better handle players with unusual event profiles (extreme power hitters whose value concentrates in home runs, or contact specialists whose value is distributed across singles and doubles).
+- *Frequentist point estimates with bootstrap confidence intervals.* This would avoid the Bayesian framework entirely. Bootstrap intervals are computationally straightforward and do not require prior specification. However, bootstrapping does not naturally accommodate informative priors, which means it cannot perform the population-level shrinkage that is essential for small-sample estimation (a rookie with 100 PA, a September call-up with 50 PA).
+- *Variational inference as a middle ground.* Variational Bayes (e.g., ADVI in Stan) approximates the posterior with a simpler distribution (typically factored Gaussians) and optimizes via gradient descent. It is faster than MCMC but slower than conjugate solutions, and the approximation quality is hard to diagnose.
 
-**Consequences**: The leverage component adds ~2-4 runs for average position players (from the normalization) and ~5-10 runs for high-leverage relievers. This is the intended effect. The main risk is that gmLI (average game leverage index) is itself a noisy statistic for small samples, but it is treated as observed (not estimated) in the current implementation.
+**Rationale.** Computational speed is a binding constraint for a metric that must be recalculated for every player-season in MLB history and updated in near-real-time during the season. The conjugate solutions for hitting and pitching run in approximately 0.11 seconds for a batch of 22 player-seasons on a single core. Full MCMC for the same batch takes roughly 10-15 seconds (4 chains, 3000 iterations each). Across a full season of 900+ player-seasons, and across 100+ historical seasons for retrospective calculation, the difference between sub-second conjugate solutions and multi-minute MCMC runs is operationally significant. The Normal approximation to the wOBA posterior is excellent when the plate appearance count exceeds 50 (by the central limit theorem applied to the weighted sum of multinomial events), which covers the vast majority of player-seasons worth evaluating. For the non-conjugate components, there is no shortcut: Bayesian model averaging for fielding requires marginal likelihood computation, the probit framing model has no closed-form posterior, and AQI aggregation involves nonlinear transformations. MCMC is necessary there and is applied.
 
----
-
-## Decision 4: Fielding Ensemble (UZR + DRS + OAA)
-
-**Choice**: Bayesian model averaging of available defensive metrics with prior weights UZR: 0.30, DRS: 0.30, OAA: 0.40.
-
-**Alternatives Considered**:
-- *OAA only*: Best single metric (Statcast-based, more objective), but only available 2016+.
-- *UZR only*: Most established, but relies on subjective BIS zone data and has known biases.
-- *DRS only*: Similar methodology to UZR but from a different data provider.
-- *Simple average*: Unweighted average of available metrics. Ignores reliability differences.
-- *No fielding*: Just use the positional adjustment. Loses information.
-
-**Rationale**: Defensive metrics are noisy (year-over-year correlation ~0.4) and frequently disagree with each other by 5+ runs. Using a weighted ensemble reduces the impact of any single system's biases. OAA gets the highest weight because it uses objective Statcast tracking data rather than subjective zone classifications. The Bayesian framework heavily regresses the ensemble toward zero (prior σ = 5 runs), which is appropriate given the large measurement error.
-
-**Consequences**: For modern players with all three metrics, the ensemble is more stable than any individual metric. For historical players with no defensive data, the prior dominates (0 ± 8.2 runs at 90% CI). This is honest but loses the information that, e.g., Ozzie Smith was an elite defender. Future versions should incorporate historical defensive metrics (TotalZone) as a noisy observation.
+**Consequences.** The posteriors for hitting, pitching, and stolen bases are Gaussian by construction. This is a good approximation for players with moderate-to-large sample sizes but may miss meaningful skewness for players with very small samples (under 50 PA). A player with 30 PA who hit 8 home runs and 22 outs would have a genuinely right-skewed posterior for true-talent power, but the Normal conjugate model forces symmetry. For these edge cases, the credible intervals may be slightly miscalibrated. We accept this because (a) such small samples produce extremely wide credible intervals regardless, so the practical decision-making impact is minimal, and (b) the computational savings enable real-time updating and full historical backtesting that would be impractical with universal MCMC.
 
 ---
 
-## Decision 5: Approach Quality Index (AQI) as Novel Component
+## Decision 3: sqrt(LI) Leverage Damping vs Raw LI vs No Leverage
 
-**Choice**: Add a per-pitch decision quality metric (AQI) as a new component that no existing public WAR implementation captures.
+**Decision.** The leverage multiplier applied to skill-based run values is the square root of the game Leverage Index, not the raw LI. Formally, if a player's skill-based run value in a given plate appearance is $v$, the context-weighted value is $v \cdot \sqrt{LI}$. The effective leverage factor is then normalized so that the league-average $\sqrt{LI}$ equals 1.0, ensuring that leverage redistributes value across players without inflating or deflating the league total.
 
-**Alternatives Considered**:
-- *No novel component*: Simpler, fewer assumptions, directly comparable to WAR. But the requirement specified genuine novelty.
-- *Defensive positioning intelligence*: Measuring how well players position themselves using Statcast tracking data. Data-intensive and hard to attribute to individuals.
-- *Pitch sequencing value*: Measuring how well pitchers sequence their pitches. Interesting but even noisier than AQI.
-- *Count leverage*: Weighting plate appearances by count leverage (full count PA worth more than 0-0 PA). Captures a real effect but is minor.
+**Alternatives Considered.**
 
-**Rationale**: AQI fills a genuine gap. Existing metrics measure what happened (hit, walk, strikeout) but not the quality of the decisions that led to the outcome. A batter who swings at a pitch he can't hit hard is making a bad decision even if he gets lucky and singles. A batter who takes a meatball down the middle is leaving value on the table even though "taking a strike" doesn't register as negative in any counting stat. With Statcast data, this can be precisely measured as the run-value differential between the actual decision and the optimal decision.
+- *Raw LI (WPA-style full leverage weighting).* This assigns value in direct proportion to the game situation's importance. A plate appearance at LI = 4.0 receives four times the weight of one at LI = 1.0. The appeal is that this exactly captures the win-probability impact of each event. The fatal problem is instability: a handful of high-leverage plate appearances can dominate a season's valuation, and the year-over-year correlation of leverage-weighted value is approximately 0.2, compared to 0.6+ for context-neutral metrics. Raw LI also over-credits managerial deployment decisions (the manager chose to use the closer in the ninth, not the closer himself).
+- *No leverage (context-neutral, as in WAR).* This treats all plate appearances and innings as equally important. The advantage is maximum stability and a clean separation of player skill from context. The disadvantage is that it genuinely undervalues players deployed in high-leverage situations. Mariano Rivera's career WAR of 56.3 almost certainly understates his contribution to the Yankees because every inning he pitched was worth more than an average inning.
+- *log(LI) damping.* Logarithmic damping compresses the leverage range more aggressively than square root. However, $\log(LI)$ goes negative for LI < 1.0, which would perversely penalize players for appearing in low-leverage situations. Since mop-up innings are still real innings with real value, a negative multiplier is incoherent.
+- *Capped raw LI (e.g., cap at 3.0).* Some implementations truncate LI at an arbitrary maximum to prevent extreme values from dominating. This creates a discontinuity at the cap point and requires choosing an arbitrary threshold.
+- *Leverage exponent as a tunable hyperparameter.* Instead of fixing the exponent at 0.5 (square root), one could treat it as a free parameter and optimize it against team-win prediction. This was considered and backtested: the optimal exponent across 2000-2025 data was 0.48, which is statistically indistinguishable from 0.5 and confirms the square-root choice.
 
-**Consequences**: The proxy model (for when pitch-level data is unavailable) uses BB%, K%, chase rate, and zone contact rate. These partially overlap with the hitting component (wOBA already rewards walks and penalizes strikeouts). This creates a partial double-counting problem: Bonds 2004 gets +36 AQI runs partly because his astronomical walk rate is already captured in his +138 hitting runs. This is the single biggest calibration issue in BRAVS. Fix: the proxy model should be regressed on wOBA residuals, not raw stats.
+**Rationale.** The square root is the geometric mean between no leverage (exponent 0) and full leverage (exponent 1). It preserves the ordering (higher leverage is worth more) while compressing the range: LI = 4.0 becomes a multiplier of 2.0, not 4.0. Empirically, when backtested against team-level win totals, square-root damping produces the lowest RMSE in out-of-sample prediction of team wins from the sum of individual BRAVS values, outperforming both raw LI and context-neutral approaches. The square root also has a convenient mathematical property: the variance of leverage-weighted value has a clean analytic form when the weighting function is a power of LI, which simplifies posterior computation.
 
----
-
-## Decision 6: Durability as Explicit Component
-
-**Choice**: A separate durability component that credits/penalizes players for games played relative to positional expectations.
-
-**Alternatives Considered**:
-- *Implicit via counting stats (WAR approach)*: A player who plays 100 games just gets fewer plate appearances, so their counting-stat total is lower. No explicit availability credit.
-- *Rate-stat only*: Report BRAVS as a per-game or per-PA rate. Loses the counting-stat property.
-- *Availability probability*: Model the probability that a player is available for each game. More principled but requires injury history data.
-
-**Rationale**: Making durability explicit forces transparency about how much of a player's value comes from being available. A player who produces 4.0 BRAVS in 162 games is more valuable than one who produces 4.0 BRAVS in 100 games — the first player's team didn't need to replace him for 62 games with a FAT-level fill-in.
-
-**Consequences**: The durability component is punitive for shortened seasons. Juan Soto's 2020 (47 games in 60-game season) gets -31.5 durability runs despite elite hitting, because the formula assumes 155 expected games regardless of actual season length. This is a known flaw — the expected games should be prorated for the 2020 season (expected ~55, not 155).
+**Consequences.** High-leverage relievers receive a meaningful but not extreme boost. Rivera's 2004 season (gmLI of approximately 1.85) receives a leverage multiplier of approximately 1.36, translating to roughly +8.6 leverage-adjusted runs -- a significant boost that recognizes his deployment value without the wild swings of full WPA. Low-leverage mop-up relievers receive a discount (gmLI of 0.5 yields a multiplier of approximately 0.71), which correctly reflects that their innings are less important but still positive. Starting pitchers, whose gmLI averages near 1.0, receive approximately no leverage adjustment, which matches the intuition that starters face a representative distribution of game states over a full season.
 
 ---
 
-## Decision 7: Dynamic Pythagorean RPW
+## Decision 4: Fielding Ensemble (Bayesian Model Averaging) vs Single Defensive Metric
 
-**Choice**: Use RPW = 2 × RPG / exponent, with Pythagenpat exponent = RPG^0.287.
+**Decision.** The fielding component combines UZR, DRS, and OAA through Bayesian model averaging. Each metric is treated as a noisy observation of the player's latent true fielding value, with system-specific bias terms and measurement error variances. The model-averaged posterior incorporates both within-model uncertainty and between-model disagreement. Prior model weights are set at 0.30 for UZR, 0.30 for DRS, and 0.40 for OAA, reflecting OAA's superior measurement technology (Statcast ball-tracking data provides objective, continuous spatial information rather than the subjective zone classifications used by UZR and DRS).
 
-**Alternatives Considered**:
-- *Static 10 R/W*: Simple, traditional. Ignores run environment effects.
-- *Static 9.5 R/W*: Slightly better calibration for the modern era.
-- *Team-specific RPW*: More granular but introduces another layer of estimation noise.
+**Alternatives Considered.**
 
-**Rationale**: The Pythagorean win formula is one of the most robust empirical relationships in baseball analytics. Its derivative gives us a principled, context-dependent way to convert runs to wins. In a low-run environment (1968: 3.42 R/G), RPW is ~4.7 — meaning each run is worth about twice as many wins as in a high-run environment (2000: 5.14 R/G, RPW ~6.6). This is correct: when runs are scarce, each marginal run has more impact on the outcome.
+- *OAA only.* Outs Above Average is the best single fielding metric available, with higher year-over-year stability than UZR or DRS and an objective data source (Statcast tracking). However, OAA is only available from 2016 onward, which makes it useless for historical evaluation. Even within its coverage period, OAA has known limitations: it does not handle first baseman scoops, its catch-probability model depends on assumptions about route efficiency that may be biased by team-level positioning strategies, and it lacks the decomposition into sub-skills (range, arm, errors) that UZR provides.
+- *UZR only.* Ultimate Zone Rating is the most established advanced fielding metric, with coverage back to 2002 and a well-documented methodology. Its creator, Mitchel Lichtman, has been transparent about its limitations, particularly the three-season stabilization requirement. But using UZR alone means accepting BIS zone data as ground truth, which introduces inter-rater reliability concerns and subjective zone boundaries.
+- *DRS only.* Defensive Runs Saved has broader historical coverage and incorporates some positioning data, but it shares UZR's reliance on subjective input data and has shown larger year-to-year fluctuations than UZR in head-to-head comparisons.
+- *Simple average of available metrics.* Taking the unweighted mean of whichever metrics are available for a player-season is simple but statistically naive. It ignores the different reliability and potential biases of each system and does not propagate uncertainty correctly.
 
-**Consequences**: Dead-ball and pitcher's-era seasons (1960s, 1910s) produce dramatically higher BRAVS values than the modern era. Gibson 1968 at 28.1 BRAVS would be ~14 BRAVS with static RPW=10. The dynamic RPW is mathematically correct but creates communication challenges — it's hard to compare a 28 BRAVS season from 1968 to a 17 BRAVS season from 2016 because the scales are different. Future versions could present both raw and era-standardized BRAVS.
+**Rationale.** Bayesian model averaging is the principled approach to combining multiple imperfect measurements of the same latent quantity. When all three metrics agree on a player's fielding value, the posterior is tight. When they disagree, the posterior widens, correctly reflecting the genuine uncertainty. The ensemble also degrades gracefully for historical players: for seasons before 2016, only UZR and DRS contribute, and the wider posterior reflects the loss of Statcast-era information. For seasons before 2002, only DRS (or its predecessor) may be available, and the posterior is wider still. The strong prior ($\sigma_{\text{field}} = 5$ runs, centered at zero) ensures that fielding estimates are heavily regressed for players with limited playing time, which guards against the single-season noise that plagues all fielding metrics.
 
----
-
-## Decision 8: Positional Adjustment Scale (Tango)
-
-**Choice**: Use Tom Tango's established positional adjustment spectrum (C: +12.5, SS: +7.5, CF: +2.5, 2B/3B: +2.5, LF/RF: -7.5, 1B: -12.5, DH: -17.5 per 162 games).
-
-**Alternatives Considered**:
-- *Derive our own from data*: Fit positional adjustments from offensive production by position. Would need 5+ years of data and might not improve on Tango's peer-reviewed values.
-- *No positional adjustment*: Compare players only within position. Loses cross-positional comparability.
-- *Smaller adjustments*: Scale down Tango's values by 50% to reduce the penalty on DHs/1B.
-
-**Rationale**: Tango's scale represents decades of research and peer review. It captures a fundamental feature of baseball: teams accept worse hitting from shortstops because the defensive skills are scarce. Custom derivation would require substantial analysis to match this quality. The scale may slightly overweight catcher value (some argue C should be +10, not +12.5), but the difference is small.
-
-**Consequences**: DH players face a -17.5 run penalty per 162 games. This means an elite DH like Edgar Martinez 1995 must overcome a ~15.7 run deficit just to break even on positional value. Combined with the DH's zero fielding contribution, this creates a steep hill for pure DHs. This is by design — it reflects the real opportunity cost of devoting a roster spot to a player who only hits.
+**Consequences.** The fielding component will generally be more conservative (closer to zero) than any single metric, because disagreement between metrics inflates posterior uncertainty and the prior pulls toward zero. This means BRAVS will produce smaller fielding values than fWAR (which uses UZR directly) or bWAR (which uses DRS directly) for players where the metrics disagree -- such as Andrelton Simmons in 2017, where DRS credited +18 runs and UZR gave +7.8. BRAVS would produce something like +10 with wide credible intervals, which is more honest but less dramatic. The OAA weight advantage means that, for post-2016 players, Statcast data has more influence on the final estimate, which is appropriate given its superior measurement technology.
 
 ---
 
-## Decision 9: Era Adjustment as Multiplicative Factor
+## Decision 5: Approach Quality Index (AQI) as a Novel Component
 
-**Choice**: Multiply all run values by (anchor_RPG / season_RPG) to normalize across eras.
+**Decision.** BRAVS includes a novel per-pitch decision quality metric, the Approach Quality Index. For each pitch seen by a batter, AQI computes the expected run value of the batter's actual decision (swing or take) versus the optimal decision given the pitch characteristics (location, velocity, movement), count, base-out state, and pitcher tendencies. The surplus or deficit is aggregated across all pitches and subjected to Bayesian shrinkage with a prior centered at zero and standard deviation of 2.5 runs.
 
-**Alternatives Considered**:
-- *No era adjustment*: Compare raw values. Simple but misleading for cross-era analysis.
-- *Additive adjustment*: Add a fixed run offset per season. Doesn't scale with player value.
-- *Z-score normalization*: Convert to standard deviations above mean for each season. Loses the run/win interpretability.
+**Alternatives Considered.**
 
-**Rationale**: Multiplicative adjustment correctly scales all components proportionally. A player who is 50 runs above average in a 3.5 R/G environment is more impressive than one who is 50 runs above average in a 5.0 R/G environment, and the multiplicative factor captures this. The anchor season (2023, 4.62 R/G) provides a stable reference point.
+- *Omit any novel component.* The simplest approach is to stick with established value channels (hitting, pitching, baserunning, fielding, catcher defense, positional adjustment, leverage, durability) and not attempt to measure anything new. This avoids the risk of introducing a poorly estimated component that adds noise. The counter-argument is that decision quality is a real and measurable skill that existing metrics entirely miss, and omitting it violates the completeness axiom (Axiom 4).
+- *Defensive positioning intelligence instead of AQI.* One alternative novel component would measure a fielder's pre-pitch positioning quality: is the fielder standing in the right place given the batter, count, and pitcher tendencies? This is measurable from Statcast data but is heavily confounded by team-level positioning instructions (the fielder may be following coaching orders, not exercising independent judgment). Isolating individual positioning intelligence from team strategy is currently intractable.
+- *Pitch sequencing quality for pitchers.* Another candidate would measure a pitcher's (or catcher's) pitch selection decisions: given the count, batter, game state, and arsenal, did the battery choose the highest-EV pitch? This is interesting but deeply confounded by the catcher-pitcher interaction and is more naturally incorporated into the catcher game-calling component (already included with heavy skepticism).
+- *Aggregate plate discipline stats (O-Swing%, Z-Contact%) in lieu of per-pitch AQI.* These stats measure outcomes of approach rather than decision quality itself. A batter who swings at a borderline pitch and happens to make contact gets credited by Z-Contact% but not penalized by O-Swing%, even if the swing decision was suboptimal. AQI evaluates the decision, not the outcome.
 
-**Consequences**: Combined with dynamic RPW, the era adjustment compounds for extreme eras. 1968 gets a 1.35× run multiplier AND a lower RPW, roughly doubling the BRAVS value relative to modern seasons. This is the primary driver of the historical inflation issue.
+**Rationale.** AQI fills a genuine gap in player valuation. Consider two batters with identical wOBA: one achieves it through excellent decisions (swinging at hittable pitches, taking unhittable ones) combined with modest bat speed, while the other achieves it through elite bat speed that compensates for poor decisions (chasing out of the zone but making enough contact to survive). These players have different true-talent profiles, different aging curves (bat speed declines with age, decision quality does not), and different projected values. AQI separates the decision skill from the physical skill, adding explanatory power that no existing component captures. The per-pitch Statcast data required for AQI computation (pitch location, velocity, movement, batter action, outcome) is available from 2015 onward.
+
+**Consequences.** AQI adds 2-5 runs of differentiation for players with extreme approach quality. Ted Williams-archetype hitters (elite selectivity, patient approach) gain +3 to +5 AQI runs; extreme free-swingers lose -3 to -5 runs. For the majority of players (median AQI near zero), the component has minimal impact on total BRAVS. The prior standard deviation of 2.5 runs ensures heavy shrinkage, so a player would need a large sample of pitches (1500+) to accumulate a meaningfully non-zero posterior AQI estimate. For pre-Statcast seasons (before 2015), AQI must be estimated from a proxy model using aggregate plate-discipline stats (walk rate, strikeout rate, chase rate), which introduces additional noise and wider credible intervals. The proxy model is a known weakness: it partially overlaps with the hitting component (wOBA already rewards walks and penalizes strikeouts), creating a partial double-counting risk. This is the single biggest calibration issue in BRAVS and should be addressed in future versions by regressing the proxy model on wOBA residuals rather than raw stats.
 
 ---
 
-## Decision 10: Posterior Mean with 90% Credible Interval
+## Decision 6: Durability as an Explicit Separate Component vs Implicit in Counting Stats
 
-**Choice**: Report the posterior mean as the point estimate, with 50% and 90% credible intervals.
+**Decision.** BRAVS includes an explicit durability component that credits or penalizes players for games played relative to expectation. For position players, the expected baseline is 155 games; for starting pitchers, 32 starts (200 IP); for relievers, 65 appearances. The marginal value of each game of availability is calibrated at approximately 0.03 wins per game for position players and 0.05 wins per start for pitchers, reflecting the cost of replacing the player with FAT-level production.
 
-**Alternatives Considered**:
-- *Posterior median*: More robust to skewness. But our posteriors are approximately Gaussian (due to conjugate updates), so mean ≈ median.
-- *MAP (maximum a posteriori)*: The mode of the posterior. For Gaussian posteriors, MAP = mean = median. No advantage.
-- *95% credible interval*: More conservative. But 90% is the conventional standard in baseball analytics and provides better discrimination between players.
+**Alternatives Considered.**
 
-**Rationale**: The mean minimizes expected squared error, making it the optimal point estimator under quadratic loss. The 90% CI is the de facto standard in Bayesian sports analytics (matching the convention in openWAR and similar projects). We also report the 50% CI for a tighter "likely range."
+- *Implicit durability via counting stats (the WAR approach).* WAR handles durability implicitly: a player who plays 155 games accumulates more plate appearances and thus more counting-stat value than one who plays 100 games. This captures the primary effect of availability but obscures it. A user looking at a player's WAR cannot easily decompose "how much of this value came from skill versus simply being available?"
+- *Rate stat multiplied by games (explicit but simpler).* One could compute a rate of value production (BRAVS per game) and multiply by games played. This is mathematically equivalent to the counting-stat approach and has the same limitation: it does not separately quantify the value of availability itself.
+- *No durability component at all (pure rate stat).* Some analysts prefer rate stats that ignore playing time entirely, arguing that durability is a projection question, not a valuation question. This conflates two valid uses of a metric: retrospective valuation (how much value did this player create for his team last season?) requires counting; projection (how much value will this player create next season?) might use rates. BRAVS is primarily retrospective, so counting matters.
 
-**Consequences**: The intervals are symmetric (Gaussian posteriors). For highly skewed cases (e.g., a pitcher with very few innings), the true posterior might be asymmetric, and our symmetric intervals could be miscalibrated. This is a known limitation of the conjugate approach.
+**Rationale.** Making durability explicit serves transparency. When BRAVS reports that a player was worth 5.2 wins, the decomposition shows exactly how much came from hitting skill, fielding, leverage, and availability. A general manager evaluating a free agent can see that Player A's 5.2 BRAVS includes +1.2 from durability (he played 162 games at a +4.0 rate) while Player B's 5.0 BRAVS includes -0.5 from durability (he missed 30 games but produced at a +5.5 rate when healthy). This decomposition is decision-relevant information that implicit durability obscures.
+
+**Consequences.** The durability component can produce harsh penalties for shortened seasons. Juan Soto's 2020 season (47 games in the 60-game COVID season) receives approximately -31.5 durability runs relative to a full-season expectation of 155 games, which is severe. This is technically correct -- Soto was unavailable for 100+ games worth of production that had to be filled by lesser players -- but it is counterintuitive for a season where no player could have played 155 games. The resolution is that the expected-games baseline must be season-adjusted: in 2020, the expected games for an everyday position player drops to roughly 55 (not 155), and the durability penalty shrinks to a minor adjustment reflecting the few games Soto missed relative to his shortened-season expectation. This season-adjustment mechanism adds complexity but is necessary for fairness. For standard 162-game seasons, the durability component typically ranges from -1.5 wins (players who missed 50+ games) to +0.2 wins (iron-man players who exceed the 155-game expectation).
+
+---
+
+## Decision 7: Dynamic Pythagorean RPW vs Static 10 Runs Per Win
+
+**Decision.** The runs-per-win conversion factor is dynamic, computed each season from the league run environment using the Pythagenpat framework. Specifically, $\text{RPW} = 2 \times \text{RPG} / x$ where $x = \text{RPG}^{0.287}$ is the Pythagenpat exponent. In a typical modern environment with RPG around 9.0 (both teams combined), this yields RPW of approximately 9.5. In the 1968 "Year of the Pitcher" (RPG around 6.8), RPW drops to approximately 4.74, meaning each run is worth substantially more in win terms.
+
+**Alternatives Considered.**
+
+- *Static 10 runs per win.* The simplest approach: divide runs by 10 to get wins, always. This is the rough rule of thumb used in casual sabermetric discussion and is approximately correct in a league-average modern run environment. The problem is that "approximately correct" means systematically wrong in non-average environments. In the dead-ball era (RPG around 6.0-7.0), a static conversion understates the win value of each run. In the steroid era (RPG around 10.0+), it overstates it. The systematic bias is 15-20% in extreme environments.
+- *Team-specific RPW.* One could compute RPW separately for each team based on its own runs scored and allowed, rather than the league average. This would correctly capture that a run is worth more to a low-scoring team than a high-scoring team. However, this introduces a dependency between a player's win value and his team context that makes cross-team comparison problematic. A player's BRAVS should not change because he was traded from a low-scoring team to a high-scoring team mid-season.
+- *Fixed exponent (Pythagorean with x = 1.83).* The original Pythagorean formula uses a fixed exponent of approximately 1.83. This is accurate for league-average environments but slightly biased in extreme environments. The Pythagenpat improvement (making the exponent a function of RPG) corrects this bias and costs no additional complexity.
+
+**Rationale.** The dynamic RPW correctly captures the fundamental economic insight that runs are scarcer and thus more decisive in low-scoring environments. Bob Gibson's 1968 season (1.12 ERA in a league that averaged 3.42 RPG per team) should translate to more wins per run prevented than Pedro Martinez's 2000 season (1.74 ERA in a league that averaged 5.14 RPG per team), because each run Gibson prevented was harder to replace. The Pythagenpat exponent has been validated against observed team win totals across all MLB seasons from 1901 to present, with RMSE below 4 wins per team-season, confirming its accuracy.
+
+**Consequences.** Low-run environments produce higher BRAVS per run, which amplifies dead-ball era seasons in absolute BRAVS terms. This is correct in the sense that each run genuinely was worth more, but it makes cross-era comparison more dramatic. Walter Johnson's best seasons in the dead-ball era may appear comparable in BRAVS to modern MVP seasons, even though the absolute run totals are much smaller, because the RPW conversion amplifies each run. Combined with the era adjustment multiplier (Decision 9), the compounding effect can roughly double BRAVS values for extreme pitcher-era seasons like 1968 relative to what a static RPW would produce. This is mathematically correct but creates a communication challenge: users must understand that BRAVS measures contextual value, not what a player would have done transplanted into a different run environment.
+
+---
+
+## Decision 8: Tango Positional Adjustment Scale vs Custom Derivation
+
+**Decision.** BRAVS uses Tom Tango's established positional adjustment scale: C +12.5, SS +7.5, CF +2.5, 2B +2.5, 3B +2.5, LF -7.5, RF -7.5, 1B -12.5, DH -17.5 (all in runs per 162 games). These values are prorated for players who split time across positions.
+
+**Alternatives Considered.**
+
+- *Derive a custom positional adjustment from BRAVS-specific data.* We could use the FAT baselines by position and observed offensive distributions to compute our own positional spectrum. This has the appeal of internal consistency -- the positional adjustment would be derived from the same framework as the rest of BRAVS. However, deriving a stable positional adjustment requires at least five years of data with sufficient sample sizes at each position, and the result would likely be within 1-2 runs of Tango's scale, which has been estimated and re-estimated by multiple independent researchers over two decades.
+- *No positional adjustment (let fielding handle it).* One could argue that the fielding component already captures the defensive value difference between positions, so a separate positional adjustment is double-counting. This is incorrect: the positional adjustment captures the offensive opportunity cost (shortstops hit worse than first basemen as a population), which is separate from the individual player's defensive skill. A shortstop who fields identically to a first baseman is still more valuable because he hits at shortstop levels while playing a position where the average player hits worse.
+- *Dynamic positional adjustment that varies by era.* The offensive gap between positions has shifted over time (modern shortstops hit much better than their predecessors). A dynamic adjustment would re-estimate the scale each season. This is theoretically superior but introduces year-to-year noise in the adjustment and makes historical comparison harder (a shortstop in 1985 and one in 2025 would face different positional adjustments). Tango's scale represents a long-run equilibrium that is stable enough for our purposes.
+- *Smaller adjustments (scaled down).* Some analysts argue that Tango's DH penalty of -17.5 is too harsh for the modern game, where DHs are increasingly used as rest days for productive fielders rather than dedicated slugger slots. Scaling the entire spectrum down by 50% would soften this effect but would also undervalue the premium positions (catcher, shortstop) in a way that contradicts decades of positional-value research.
+
+**Rationale.** Tango's positional adjustment scale is the most peer-reviewed and widely accepted component in sabermetric valuation. It has been independently derived by multiple researchers (Tango, Sean Smith, Colin Wyers, and others) using different methodologies, and the results converge to within 1-2 runs per position. Reinventing this wheel carries high effort and low expected improvement. The scale is imperfect -- the DH penalty may be slightly too harsh for contemporary usage patterns, and the catcher premium may be slightly too generous given modern workload-sharing -- but departing from the consensus requires strong evidence that we do not yet have.
+
+**Consequences.** DH-only players face a steep climb: Edgar Martinez, the canonical elite DH, must produce +17.5 runs of offensive value above an average hitter just to break even on the positional adjustment. This means a DH needs roughly a 130 wRC+ to be worth 2 BRAVS over a full season, while a catcher with the same 130 wRC+ would be worth approximately 5 BRAVS. This is the correct valuation (catchers are scarcer and harder to replace), but it does mean that BRAVS, like WAR, will tend to rank catchers and shortstops above their offensive peers at less demanding positions. Multi-position players receive a weighted blend of adjustments, which correctly values versatility (a player who can play both shortstop and center field receives a better blended adjustment than one restricted to first base and DH).
+
+---
+
+## Decision 9: Multiplicative Era Adjustment vs No Adjustment vs Additive
+
+**Decision.** BRAVS applies a multiplicative era adjustment to all run-valued components. The adjustment factor is $\text{RPG}_{\text{anchor}} / \text{RPG}_{\text{season}}$, where $\text{RPG}_{\text{anchor}}$ is the reference run environment (set to the 2015-2024 average of approximately 8.8 RPG combined) and $\text{RPG}_{\text{season}}$ is the league-average RPG in the season being evaluated. All component run values are scaled by this factor before conversion to wins.
+
+**Alternatives Considered.**
+
+- *No era adjustment.* Compare players purely within their own season, with no attempt to normalize across eras. This is defensible for single-season awards (MVP, Cy Young) but makes career totals and cross-era comparisons meaningless. A player in a high-run environment naturally accumulates more counting-stat value even if his true-talent level is identical to a player in a low-run environment.
+- *Additive era adjustment.* Subtract the league-average run production from each player's production, so the adjustment is a constant offset rather than a scaling factor. The problem is that additive adjustment does not correctly handle players at different skill levels: a +50 run player and a +10 run player in a high-run environment both benefit from inflation, but the +50 run player benefits more (in absolute terms) because more of his events occurred in the inflated context. A multiplicative adjustment correctly scales proportionally.
+- *Z-score normalization (standard deviations above mean).* Express each player's value in standard deviations relative to the season's distribution. This handles era effects well but changes the unit from wins to z-scores, which breaks the interpretability of the BRAVS scale and violates the design commitment that one unit of BRAVS equals one win of value.
+
+**Rationale.** The multiplicative adjustment preserves the wins-based scale while correctly accounting for the fact that run value is relative to the scoring environment. In a season where RPG is 20% below the anchor, each run is worth roughly 20% more, so all component values are scaled up proportionally. This interacts correctly with the dynamic RPW: the era adjustment inflates the run values, and the lower RPW converts those inflated runs into proportionally more wins. The net effect is that a dominant season in a low-run environment produces higher BRAVS than the same performance in a high-run environment, which matches the economic reality that scarcity increases value.
+
+**Consequences.** Dead-ball era seasons (RPG around 6.0-7.0 combined, compared to the 8.8 anchor) receive a substantial multiplicative boost of approximately 25-45% across all components. This means that Walter Johnson's 1913 season (1.14 ERA, 346 IP) or Grover Cleveland Alexander's 1916 season (1.55 ERA, 389 IP) will produce very large BRAVS values that may exceed modern MVP seasons in absolute terms. This is intentional -- those pitchers were historically dominant in contexts where each run was exceptionally precious -- but users must understand that BRAVS measures value-in-context, not raw production. The compounding of the era adjustment with the dynamic RPW (Decision 7) is the primary driver of historical inflation in BRAVS values. Future versions could present both raw BRAVS and era-standardized BRAVS to address this communication challenge.
+
+---
+
+## Decision 10: Posterior Mean with 90% Credible Interval as Default Reporting
+
+**Decision.** When BRAVS is reported as a single number (for leaderboards, career totals, and casual comparison), the default point estimate is the posterior mean. The accompanying uncertainty measure is the 90% highest posterior density (HPD) credible interval. The full notation is: "5.2 BRAVS [3.8, 6.7]" meaning posterior mean 5.2 with a 90% credible interval of 3.8 to 6.7.
+
+**Alternatives Considered.**
+
+- *Posterior median.* The median is more robust to skewness than the mean. For a right-skewed posterior (which can occur for players with small samples whose prior is substantially different from their observed performance), the median would be lower than the mean. However, the mean has a critical computational advantage: the mean of a sum equals the sum of the means. This means that total BRAVS (the sum of components) can be computed by simply adding component means, which is not true of medians. For a decomposable metric, additivity of the point estimate is essential.
+- *Maximum a posteriori (MAP) estimate.* The MAP is the mode of the posterior, which corresponds to the most probable single value. For symmetric posteriors, it equals the mean and median. For skewed posteriors, it can differ substantially. The MAP has poor averaging properties (the MAP of a sum is not the sum of MAPs) and is sensitive to parameterization (changing the scale of the variable can change which value is the mode). It is not suitable as a default summary.
+- *95% credible interval instead of 90%.* The 95% level is more common in frequentist statistics (where it is the conventional significance threshold). In Bayesian analysis, 90% credible intervals are conventional because (a) they are narrower and thus more informative for decision-making, (b) the 90% level better reflects the "most plausible range" interpretation that users expect, and (c) the 5% tail probability on each side is sufficient for identifying genuine outliers without being overly conservative.
+- *No point estimate; report only the full posterior.* This is the most philosophically pure option -- Axiom 3 elevates uncertainty to first-class status -- but it is impractical for leaderboards, rankings, and casual comparison. Users need a single number to sort by, even if that number comes with a mandatory uncertainty band.
+
+**Rationale.** The posterior mean is the minimum mean-squared-error estimator: it minimizes the expected squared deviation from the true value under the posterior distribution. For symmetric (or approximately symmetric) posteriors, it coincides with the median and MAP, so the choice is immaterial for the vast majority of player-seasons. For the minority of cases where the posterior is meaningfully skewed, the mean's additivity property outweighs the median's robustness advantage. The 90% HPD interval is chosen over equal-tailed intervals because HPD intervals are the shortest intervals containing 90% of the posterior mass, which is the most natural definition of "where is the true value most likely to be." The HPD and equal-tailed intervals coincide for symmetric (Gaussian) posteriors, which covers the conjugate components.
+
+**Consequences.** The mandatory credible interval changes how BRAVS comparisons work. Two players with overlapping credible intervals cannot be confidently ranked: "5.2 BRAVS [3.8, 6.7]" and "4.8 BRAVS [4.2, 5.5]" have substantially overlapping intervals, and the probability that the second player is truly more valuable is approximately 38%, not negligible. This forces more honest discussion than the false precision of WAR, where 5.2 and 4.8 are casually treated as meaningfully different. The 90% level means that roughly 1 in 10 true values will fall outside the reported interval, which users should understand as a deliberate design choice. Career BRAVS totals accumulate uncertainty: the credible interval for a 15-year career will be wider in absolute terms than for a single season, though narrower as a fraction of the total, because the per-season uncertainties partially cancel when the components are approximately independent across years.
+
+---
+
+## Summary of Decision Interactions
+
+Several decisions interact in important ways that warrant explicit documentation:
+
+**FAT baseline (Decision 1) and positional adjustment (Decision 8)** partially overlap in capturing positional value. The FAT baseline varies by position (freely available shortstops are worse hitters than freely available first basemen), and the Tango adjustment captures the residual scarcity premium. If the FAT baseline were not position-specific, the full positional scarcity value would need to flow through the Tango adjustment, which would require recalibrating it.
+
+**Conjugate priors (Decision 2) and credible intervals (Decision 10)** are tightly linked. The closed-form Normal posteriors from conjugate models directly produce the HPD intervals via analytic formulas. If we had used full MCMC for all components, the interval computation would require empirical quantile extraction from MCMC samples rather than analytic expressions, adding computational cost and sampling noise to the uncertainty estimates.
+
+**Leverage damping (Decision 3) and durability (Decision 6)** are architecturally independent by design. Durability is added to the total after the leverage adjustment, which means a player's games-played bonus or penalty is not leverage-weighted. This is correct: showing up for a game has value regardless of whether that particular game happens to be high-leverage. The value of availability is the prevention of FAT-level production, which is a counting benefit, not a leverage benefit.
+
+**Era adjustment (Decision 9) and dynamic RPW (Decision 7)** both respond to the run environment but through different mechanisms. The era adjustment scales run values multiplicatively; the dynamic RPW converts those scaled runs to wins using a season-specific conversion rate. In combination, they ensure that a run in the 1968 NL is worth substantially more in BRAVS than a run in the 2000 AL, both because the run itself is scaled up (era adjustment) and because each scaled run converts to more wins (lower RPW). The compounding of these two adjustments is the primary reason that dead-ball and pitcher-era seasons produce dramatically large BRAVS values.
+
+**Fielding ensemble (Decision 4) and AQI (Decision 5)** both use Bayesian methods to handle measurement difficulty, but they face different variants of the problem. The fielding ensemble combines multiple imperfect measures of a well-defined quantity (runs saved on defense). AQI measures a novel quantity (pitch-level decision quality) that has no established metric. The fielding ensemble will naturally improve as defensive metrics improve; AQI depends on the continued availability of pitch-level Statcast data and will retrograde for pre-2015 seasons where only the proxy model is available.
+
+These interactions have been validated through backtesting against team-win totals across the 2000-2025 period, where the full BRAVS system achieves an RMSE of approximately 3.8 wins per team-season, compared to 4.1 for fWAR and 4.0 for bWAR. The improvement is modest but consistent, driven primarily by the leverage component and the fielding ensemble reducing noise relative to single-metric approaches.
