@@ -1,0 +1,5 @@
+AQI Orthogonality Verification
+Correlation: r = -0.026, p = 0.9309
+N = 14
+Regression: AQI = -0.0010 * Hitting + -0.05
+Status: PASS

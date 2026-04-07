@@ -1,0 +1,14 @@
+Rust (10k samples): 3.82 ms/call
+Rust (2k fast):     3.94 ms/call
+Python (2k fast):   4.86 ms/call
+Rust fast speedup over Python fast: 1.2x
+Rust fast speedup over Rust normal: 1.0x
+
+Full season (750 players) estimate:
+  Rust fast:   2958ms (3.0s)
+  Rust normal: 2865ms (2.9s)
+  Python fast: 3645ms (3.6s)
+
+Award race (12 players):
+  Rust fast:   47ms
+  Python fast: 58ms

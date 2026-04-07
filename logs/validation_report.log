@@ -1,0 +1,84 @@
+BRAVS Validation Report
+Generated: 2026-04-07 19:42:43
+==========================================================================================
+
+Player                     Year Pos   BRAVS  ErStd  WAReq   fWAR    Diff
+------------------------------------------------------------------------------------------
+Mike Trout                 2016 CF     15.2   14.8    9.4   10.5   -1.08
+Barry Bonds                2004 LF     23.8   23.5   14.8   10.6   +4.18
+Jacob deGrom               2018 P      15.1   14.3    9.4    9.6   -0.23
+Aaron Judge                2022 RF     14.9   14.7    9.2   11.4   -2.18
+Shohei Ohtani              2023 DH     15.8   15.7    9.8   10.0   -0.21
+Pedro Martinez             2000 P      11.3   12.6    7.0   11.7   -4.70
+Roger Clemens              1997 P      12.8   13.5    8.0   10.4   -2.44
+Justin Verlander           2011 P      12.2   11.4    7.5    8.2   -0.65
+Babe Ruth                  1927 RF     14.9   17.0    9.2   12.9   -3.68
+Willie Mays                1965 CF     25.1   21.3   15.6   10.0   +5.58
+Hank Aaron                 1971 RF     12.1   11.7    7.5    5.1   +2.38
+Bob Gibson                 1968 P      28.1   22.6   17.4   11.2   +6.23
+Sandy Koufax               1966 P      24.5   20.5   15.2    9.8   +5.37
+Mariano Rivera             2004 P       4.9    5.3    3.0    4.3   -1.25
+Ozzie Smith                1987 SS     10.7   10.1    6.6    5.3   +1.34
+Larry Walker               1997 RF      9.3   10.7    5.8    9.3   -3.53
+Mike Piazza                1997 C      15.4   15.5    9.5    6.3   +3.24
+Edgar Martinez             1995 DH     12.3   13.0    7.6    7.0   +0.64
+Harold Baines              1985 RF      5.1    4.9    3.1    2.8   +0.33
+Mookie Betts               2018 RF     13.4   13.6    8.3   10.9   -2.58
+Juan Soto                  2020 RF      3.9    3.9    2.4    4.9   -2.48
+Pedro Martinez             1999 P      13.5   14.9    8.3    9.8   -1.46
+Greg Maddux                1995 P      11.1   11.6    6.9    9.0   -2.11
+Clayton Kershaw            2014 P      16.6   14.8   10.3    7.2   +3.10
+Randy Johnson              2001 P      14.3   15.4    8.8   10.2   -1.35
+Gerrit Cole                2019 P      10.4   11.0    6.5    7.4   -0.94
+
+==========================================================================================
+SUMMARY STATISTICS
+==========================================================================================
+  N benchmarks:          26
+  Pearson correlation:   0.5851
+  Mean Absolute Error:   2.43 wins
+  RMSE:                  2.96 wins
+  Mean Bias (BRAVS-fWAR):+0.06 wins
+  Computation time:      0.20s
+
+------------------------------------------------------------------------------------------
+BIGGEST POSITIVE DIVERGENCES (BRAVS overvalues vs fWAR)
+------------------------------------------------------------------------------------------
+  Bob Gibson                 1968  WAReq=  17.4  fWAR=  11.2  diff=+6.23
+  Willie Mays                1965  WAReq=  15.6  fWAR=  10.0  diff=+5.58
+  Sandy Koufax               1966  WAReq=  15.2  fWAR=   9.8  diff=+5.37
+  Barry Bonds                2004  WAReq=  14.8  fWAR=  10.6  diff=+4.18
+  Mike Piazza                1997  WAReq=   9.5  fWAR=   6.3  diff=+3.24
+
+------------------------------------------------------------------------------------------
+BIGGEST NEGATIVE DIVERGENCES (BRAVS undervalues vs fWAR)
+------------------------------------------------------------------------------------------
+  Juan Soto                  2020  WAReq=   2.4  fWAR=   4.9  diff=-2.48
+  Mookie Betts               2018  WAReq=   8.3  fWAR=  10.9  diff=-2.58
+  Larry Walker               1997  WAReq=   5.8  fWAR=   9.3  diff=-3.53
+  Babe Ruth                  1927  WAReq=   9.2  fWAR=  12.9  diff=-3.68
+  Pedro Martinez             2000  WAReq=   7.0  fWAR=  11.7  diff=-4.70
+
+------------------------------------------------------------------------------------------
+SYSTEMATIC BIASES BY POSITION GROUP
+------------------------------------------------------------------------------------------
+  Catcher               n= 1  mean bias=+3.24 wins
+  DH                    n= 2  mean bias=+0.22 wins
+  Pitcher               n=12  mean bias=-0.04 wins
+  Position Player       n=11  mean bias=-0.15 wins
+
+------------------------------------------------------------------------------------------
+SYSTEMATIC BIASES BY ERA
+------------------------------------------------------------------------------------------
+  Expansion (1947-1968)           n= 3  mean bias=+5.73 wins
+  Modern (1969-1992)              n= 3  mean bias=+1.35 wins
+  Post-Steroid (2006-2014)        n= 2  mean bias=+1.22 wins
+  Pre-Integration (1920-1946)     n= 1  mean bias=-3.68 wins
+  Statcast (2015+)                n= 7  mean bias=-1.38 wins
+  Steroid (1993-2005)             n=10  mean bias=-0.88 wins
+
+==========================================================================================
+END OF REPORT
+==========================================================================================
+
+Report saved to C:\Users\logiu\Desktop\testing\baseball\logs\validation_report.log

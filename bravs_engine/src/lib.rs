@@ -41,7 +41,8 @@ const LEVERAGE_EXP: f64 = 0.50;
 const AVG_DAMPED_LI: f64 = 0.97;
 const GAME_MARGINAL_POS: f64 = 0.030;
 const GAME_MARGINAL_PIT: f64 = 0.015;
-const N_SAMPLES: usize = 10000;
+const N_SAMPLES_FULL: usize = 10000;
+const N_SAMPLES_FAST: usize = 2000;
 const WAR_CAL: f64 = 0.62;
 const STD_RPW: f64 = 5.90;
 
@@ -138,7 +139,7 @@ fn comp_hitting(pa: i32, ab: i32, bb: i32, ibb: i32, hbp: i32, singles: i32,
                 park_factor: f64, rng: &mut ChaCha8Rng) -> CompResult {
     if pa < 1 {
         return CompResult { name: "hitting".into(), runs_mean: 0.0, runs_var: 0.0,
-                            ci90: (0.0, 0.0), samples: vec![0.0; N_SAMPLES] };
+                            ci90: (0.0, 0.0), samples: vec![0.0; N_SAMPLES_FULL] };
     }
     let ubb = bb - ibb;
     let obs_woba = compute_woba(ubb, hbp, singles, doubles, triples, hr, ab, sf) / park_factor;
@@ -148,7 +149,7 @@ fn comp_hitting(pa: i32, ab: i32, bb: i32, ibb: i32, hbp: i32, singles: i32,
     let runs_above_avg = (post_mean - LEAGUE_AVG_WOBA) / WOBA_SCALE * pa as f64;
     let total_mean = runs_above_avg - fat_runs;
     let total_var = (post_var / (WOBA_SCALE * WOBA_SCALE)) * (pa as f64 * pa as f64);
-    let samples_woba = sample_normal(rng, post_mean, post_var, N_SAMPLES);
+    let samples_woba = sample_normal(rng, post_mean, post_var, N_SAMPLES_FULL);
     let samples: Vec<f64> = samples_woba.iter()
         .map(|w| (w - LEAGUE_AVG_WOBA) / WOBA_SCALE * pa as f64 - fat_runs).collect();
     let ci90 = credible_interval(&samples, 0.90);
@@ -160,7 +161,7 @@ fn comp_pitching(ip: f64, er: i32, hr: i32, bb: i32, hbp: i32, k: i32,
                  rng: &mut ChaCha8Rng) -> CompResult {
     if ip < 1.0 {
         return CompResult { name: "pitching".into(), runs_mean: 0.0, runs_var: 0.0,
-                            ci90: (0.0, 0.0), samples: vec![0.0; N_SAMPLES] };
+                            ci90: (0.0, 0.0), samples: vec![0.0; N_SAMPLES_FULL] };
     }
     let league_era = league_rpg * 0.92;
     let fip_c = league_era - PRIOR_FIP_MEAN + 3.10;
@@ -171,7 +172,7 @@ fn comp_pitching(ip: f64, er: i32, hr: i32, bb: i32, hbp: i32, k: i32,
     let fat_era = league_era + (-FAT_PITCH_PER_200 / 200.0) * 9.0;
     let total_mean = (fat_era - post_mean) / 9.0 * ip;
     let total_var = (ip / 9.0).powi(2) * post_var;
-    let fip_samples = sample_normal(rng, post_mean, post_var, N_SAMPLES);
+    let fip_samples = sample_normal(rng, post_mean, post_var, N_SAMPLES_FULL);
     let samples: Vec<f64> = fip_samples.iter().map(|f| (fat_era - f) / 9.0 * ip).collect();
     let ci90 = credible_interval(&samples, 0.90);
     CompResult { name: "pitching".into(), runs_mean: total_mean, runs_var: total_var, ci90, samples }
@@ -188,7 +189,7 @@ fn comp_baserunning(pa: i32, sb: i32, cs: i32, gidp: i32, rng: &mut ChaCha8Rng) 
     let (post_mean, post_var) = bayesian_update(0.0, PRIOR_BR_SD * PRIOR_BR_SD, obs, BR_OBS_VAR, eff_n);
     let total_mean = post_mean * pa_scale;
     let total_var = post_var * pa_scale * pa_scale;
-    let samples = sample_normal(rng, total_mean, total_var, N_SAMPLES);
+    let samples = sample_normal(rng, total_mean, total_var, N_SAMPLES_FULL);
     let ci90 = credible_interval(&samples, 0.90);
     CompResult { name: "baserunning".into(), runs_mean: total_mean, runs_var: total_var, ci90, samples }
 }
@@ -196,7 +197,7 @@ fn comp_baserunning(pa: i32, sb: i32, cs: i32, gidp: i32, rng: &mut ChaCha8Rng) 
 fn comp_fielding(inn_fielded: f64, uzr: Option<f64>, drs: Option<f64>, oaa: Option<f64>,
                  total_zone: Option<f64>, position: &str, rng: &mut ChaCha8Rng) -> CompResult {
     if position == "DH" || position == "P" || inn_fielded < 50.0 {
-        let samples = sample_normal(rng, 0.0, PRIOR_FIELD_SD * PRIOR_FIELD_SD, N_SAMPLES);
+        let samples = sample_normal(rng, 0.0, PRIOR_FIELD_SD * PRIOR_FIELD_SD, N_SAMPLES_FULL);
         return CompResult { name: "fielding".into(), runs_mean: 0.0,
                             runs_var: PRIOR_FIELD_SD * PRIOR_FIELD_SD, ci90: (-8.2, 8.2), samples };
     }
@@ -210,13 +211,13 @@ fn comp_fielding(inn_fielded: f64, uzr: Option<f64>, drs: Option<f64>, oaa: Opti
     } else if let Some(tz) = total_zone {
         (tz, TOTALZONE_OBS_VAR)
     } else {
-        let samples = sample_normal(rng, 0.0, PRIOR_FIELD_SD * PRIOR_FIELD_SD, N_SAMPLES);
+        let samples = sample_normal(rng, 0.0, PRIOR_FIELD_SD * PRIOR_FIELD_SD, N_SAMPLES_FULL);
         return CompResult { name: "fielding".into(), runs_mean: 0.0,
                             runs_var: PRIOR_FIELD_SD * PRIOR_FIELD_SD, ci90: (-8.2, 8.2), samples };
     };
     let eff_n = (inn_fielded / 300.0).max(1.0) as usize;
     let (post_mean, post_var) = bayesian_update(0.0, PRIOR_FIELD_SD * PRIOR_FIELD_SD, obs, obs_var, eff_n);
-    let samples = sample_normal(rng, post_mean, post_var, N_SAMPLES);
+    let samples = sample_normal(rng, post_mean, post_var, N_SAMPLES_FULL);
     let ci90 = credible_interval(&samples, 0.90);
     CompResult { name: "fielding".into(), runs_mean: post_mean, runs_var: post_var, ci90, samples }
 }
@@ -225,7 +226,7 @@ fn comp_positional(position: &str, games: i32, rng: &mut ChaCha8Rng) -> CompResu
     let adj = pos_adj_value(position);
     let frac = games as f64 / 162.0;
     let runs = adj * frac;
-    let samples = sample_normal(rng, runs, 1.0, N_SAMPLES);
+    let samples = sample_normal(rng, runs, 1.0, N_SAMPLES_FULL);
     let ci90 = credible_interval(&samples, 0.90);
     CompResult { name: "positional".into(), runs_mean: runs, runs_var: 1.0, ci90, samples }
 }
@@ -234,7 +235,7 @@ fn comp_aqi(pa: i32, bb: i32, k: i32, ubb: i32, hbp: i32, singles: i32,
             doubles: i32, triples: i32, hr: i32, ab: i32, sf: i32,
             chase_rate: Option<f64>, rng: &mut ChaCha8Rng) -> CompResult {
     if pa < 100 {
-        let samples = sample_normal(rng, 0.0, PRIOR_AQI_SD * PRIOR_AQI_SD, N_SAMPLES);
+        let samples = sample_normal(rng, 0.0, PRIOR_AQI_SD * PRIOR_AQI_SD, N_SAMPLES_FULL);
         return CompResult { name: "approach_quality".into(), runs_mean: 0.0,
                             runs_var: PRIOR_AQI_SD * PRIOR_AQI_SD, ci90: (-4.9, 4.9), samples };
     }
@@ -245,14 +246,14 @@ fn comp_aqi(pa: i32, bb: i32, k: i32, ubb: i32, hbp: i32, singles: i32,
     let woba_resid = actual_woba - exp_woba;
     let mut aqi = 0.0;
     if let Some(cr) = chase_rate { aqi += -10.0 * (cr - 0.30); }
-    else { aqi += 3.0 * (bb_rate - 0.085) + (-2.0) * (k_rate - 0.220); }
-    aqi += -4.0 * woba_resid;
-    let obs = aqi * (pa as f64 / 600.0) * 5.0;
+    else { aqi += 1.5 * (bb_rate - 0.085) + (-1.0) * (k_rate - 0.220); }
+    aqi += -8.0 * woba_resid;
+    let obs = aqi * (pa as f64 / 600.0) * 3.0;
     let obs_var = if chase_rate.is_some() { AQI_OBS_VAR } else { AQI_OBS_VAR * 2.0 };
     let pa_scale = (pa as f64 / 600.0).max(0.1);
     let eff_n = (pa_scale * 5.0).max(1.0) as usize;
     let (post_mean, post_var) = bayesian_update(0.0, PRIOR_AQI_SD * PRIOR_AQI_SD, obs, obs_var, eff_n);
-    let samples = sample_normal(rng, post_mean, post_var, N_SAMPLES);
+    let samples = sample_normal(rng, post_mean, post_var, N_SAMPLES_FULL);
     let ci90 = credible_interval(&samples, 0.90);
     CompResult { name: "approach_quality".into(), runs_mean: post_mean, runs_var: post_var, ci90, samples }
 }
@@ -270,7 +271,7 @@ fn comp_durability(games: i32, is_pitcher: bool, gs: i32, gp: i32, season_games:
     } else { expected_full };
     let delta = actual - expected;
     let runs = delta as f64 * marginal * 9.8;
-    let samples = sample_normal(rng, runs, 2.0, N_SAMPLES);
+    let samples = sample_normal(rng, runs, 2.0, N_SAMPLES_FULL);
     let ci90 = credible_interval(&samples, 0.90);
     CompResult { name: "durability".into(), runs_mean: runs, runs_var: 2.0, ci90, samples }
 }
@@ -286,8 +287,8 @@ fn comp_catcher(framing: Option<f64>, blocking: Option<f64>, throwing: Option<f6
     let gc_var = 16.0; // game calling prior variance
     let total = fr_mean + bl + th;
     let total_var = fr_var + gc_var;
-    let fr_samples = sample_normal(rng, fr_mean, fr_var, N_SAMPLES);
-    let gc_samples = sample_normal(rng, 0.0, gc_var, N_SAMPLES);
+    let fr_samples = sample_normal(rng, fr_mean, fr_var, N_SAMPLES_FULL);
+    let gc_samples = sample_normal(rng, 0.0, gc_var, N_SAMPLES_FULL);
     let samples: Vec<f64> = fr_samples.iter().zip(gc_samples.iter())
         .map(|(f, g)| f + bl + th + g).collect();
     let ci90 = credible_interval(&samples, 0.90);
@@ -303,7 +304,7 @@ fn comp_catcher(framing: Option<f64>, blocking: Option<f64>, throwing: Option<f6
     inn_fielded=0.0, uzr=None, drs=None, oaa=None, total_zone=None,
     framing_runs=None, blocking_runs=None, throwing_runs=None, catcher_pitches=0,
     avg_leverage_index=1.0, position="DH", season=2024, park_factor=1.0,
-    league_rpg=0.0, season_games=162, seed=42))]
+    league_rpg=0.0, season_games=162, seed=42, fast=false))]
 fn compute_bravs_fast(
     py: Python<'_>,
     pa: i32, ab: i32, hits: i32, doubles: i32, triples: i32, hr: i32,
@@ -314,9 +315,10 @@ fn compute_bravs_fast(
     framing_runs: Option<f64>, blocking_runs: Option<f64>, throwing_runs: Option<f64>,
     catcher_pitches: i32,
     avg_leverage_index: f64, position: &str, season: i32, park_factor: f64,
-    league_rpg: f64, season_games: i32, seed: u64,
+    league_rpg: f64, season_games: i32, seed: u64, fast: bool,
 ) -> PyResult<Py<PyDict>> {
     let mut rng = ChaCha8Rng::seed_from_u64(seed);
+    let n_samp = if fast { N_SAMPLES_FAST } else { N_SAMPLES_FULL };
     let rpg = if league_rpg > 0.0 { league_rpg } else { get_rpg(season) };
     let rpw = pythagorean_rpw(rpg, park_factor);
     let era_mult = 4.62 / rpg; // era anchor = 2023
@@ -394,21 +396,21 @@ fn compute_bravs_fast(
         .filter(|c| skill_names.contains(&c.name.as_str()))
         .map(|c| c.runs_mean).sum();
     let lev_runs = skill_runs * (lev_mult - 1.0);
-    let lev_samples = sample_normal(&mut rng, lev_runs, skill_runs.abs().max(1.0) * (lev_mult - 1.0).abs() * 0.1, N_SAMPLES);
+    let lev_samples = sample_normal(&mut rng, lev_runs, skill_runs.abs().max(1.0) * (lev_mult - 1.0).abs() * 0.1, N_SAMPLES_FULL);
     let lev_ci = credible_interval(&lev_samples, 0.90);
     components.push(CompResult {
         name: "leverage".into(), runs_mean: lev_runs, runs_var: 1.0, ci90: lev_ci, samples: lev_samples,
     });
 
     // Sum posterior
-    let mut total_samples = vec![0.0f64; N_SAMPLES];
+    let mut total_samples = vec![0.0f64; N_SAMPLES_FULL];
     for comp in &components {
         for (i, s) in comp.samples.iter().enumerate() {
-            if i < N_SAMPLES { total_samples[i] += s; }
+            if i < N_SAMPLES_FULL { total_samples[i] += s; }
         }
     }
-    let total_mean: f64 = total_samples.iter().sum::<f64>() / N_SAMPLES as f64;
-    let total_var: f64 = total_samples.iter().map(|s| (s - total_mean).powi(2)).sum::<f64>() / N_SAMPLES as f64;
+    let total_mean: f64 = total_samples.iter().sum::<f64>() / N_SAMPLES_FULL as f64;
+    let total_var: f64 = total_samples.iter().map(|s| (s - total_mean).powi(2)).sum::<f64>() / N_SAMPLES_FULL as f64;
     let bravs = total_mean / rpw;
     let bravs_ci = credible_interval(&total_samples.iter().map(|s| s / rpw).collect::<Vec<_>>(), 0.90);
 

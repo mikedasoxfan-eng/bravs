@@ -37,6 +37,7 @@ def compute_bravs(
     seed: int = 42,
     apply_era_adjustment: bool = True,
     league_era: float | None = None,
+    fast: bool = False,
 ) -> BRAVSResult:
     """Compute the full BRAVS valuation for a player-season.
 
@@ -53,10 +54,13 @@ def compute_bravs(
         seed: Random seed for reproducibility.
         apply_era_adjustment: Whether to apply era normalization.
         league_era: League ERA for pitching calibration. If None, estimated from league_rpg.
+        fast: If True, use 2000 samples and skip correlation matrix for ~5x speedup.
 
     Returns:
         BRAVSResult with full component decomposition and posterior.
     """
+    if fast:
+        n_samples = 2000
     rng = np.random.default_rng(seed)
 
     # Determine league ERA from runs per game if not provided

@@ -51,7 +51,7 @@ AQI_OBS_VARIANCE = 12.0
 # These are orthogonal to wOBA by construction.
 PROXY_COEFF_CHASE_RATE = -10.0    # high O-Swing% → poor approach
 PROXY_COEFF_ZONE_CONTACT = 6.0    # high Z-Contact% → good approach
-PROXY_COEFF_WOBA_RESIDUAL = -4.0  # negative residual → skills > decisions, less AQI credit
+PROXY_COEFF_WOBA_RESIDUAL = -8.0  # stronger penalty: skills > decisions, less AQI credit
 PROXY_INTERCEPT = 0.0
 
 # Expected wOBA model: what wOBA would we expect from BB%/K% alone?
@@ -109,7 +109,8 @@ def _estimate_aqi_from_proxy(player: PlayerSeason) -> float | None:
     else:
         # Without chase rate data, use a dampened BB%/K% signal
         # but at 1/3 the weight to minimize double-counting
-        aqi += 3.0 * (bb_rate - 0.085) + (-2.0) * (k_rate - 0.220)
+        # Minimal fallback: very dampened to avoid double-counting with wOBA
+        aqi += 1.5 * (bb_rate - 0.085) + (-1.0) * (k_rate - 0.220)
 
     if player.zone_contact_rate is not None:
         aqi += PROXY_COEFF_ZONE_CONTACT * (player.zone_contact_rate - avg_zone_contact)
@@ -118,8 +119,8 @@ def _estimate_aqi_from_proxy(player: PlayerSeason) -> float | None:
     # (the player has good bat skills, not necessarily good decisions)
     aqi += PROXY_COEFF_WOBA_RESIDUAL * woba_residual
 
-    # Scale to runs per 600 PA (dampened from original 10.0 to 5.0)
-    return aqi * (player.pa / 600.0) * 5.0
+    # Scale to runs per 600 PA (dampened to 3.0 for better orthogonalization)
+    return aqi * (player.pa / 600.0) * 3.0
 
 
 def compute_aqi(

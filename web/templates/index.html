@@ -1071,6 +1071,15 @@ function statCell(val, label) {
 function formatCompName(name) {
   return name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
+
+// Auto-load from URL if permalink
+const urlMatch = window.location.pathname.match(/\/player\/(\d+)\/(\d+)/);
+if (urlMatch) {
+  const pid = urlMatch[1];
+  const szn = urlMatch[2];
+  currentPlayerId = pid;
+  loadBRAVS(pid, szn);
+}
 </script>
 </body>
 </html>

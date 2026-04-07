@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import csv
+import io
 import logging
 import os
 import re
@@ -12,7 +14,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests
-from flask import Flask, render_template, jsonify, request as flask_request
+from flask import Flask, Response, render_template, jsonify, request as flask_request
 
 from baseball_metric.core.model import compute_bravs
 from baseball_metric.core.types import PlayerSeason
@@ -31,6 +33,15 @@ except ImportError:
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Initialize SQLite cache for persistent caching across restarts
+try:
+    from web.cache import init_cache, get_api as _cache_get, set_api as _cache_set
+    from web.cache import get_bravs as _cache_get_bravs, set_bravs as _cache_set_bravs
+    init_cache()
+    HAS_CACHE = True
+except Exception:
+    HAS_CACHE = False
 
 MLB_API = "https://statsapi.mlb.com/api/v1"
 HEADSHOT_URL = (
@@ -85,15 +96,28 @@ SEASON_LENGTHS: dict[int, int] = {2020: 60, 1994: 115, 1995: 144, 1981: 107}
 
 
 def _mlb_get(url: str, params: dict | None = None) -> dict | None:
-    """Fetch from MLB Stats API with caching."""
+    """Fetch from MLB Stats API with multi-layer caching (memory + SQLite)."""
     cache_key = url + str(params or {})
+
+    # Layer 1: in-memory cache (fastest)
     if cache_key in _cache:
         return _cache[cache_key]  # type: ignore[return-value]
+
+    # Layer 2: SQLite persistent cache (survives restarts)
+    if HAS_CACHE:
+        cached = _cache_get(cache_key)
+        if cached is not None:
+            _cache[cache_key] = cached  # promote to memory
+            return cached
+
+    # Layer 3: actual API call
     try:
         resp = requests.get(url, params=params, timeout=10)
         resp.raise_for_status()
         data = resp.json()
         _cache[cache_key] = data
+        if HAS_CACHE:
+            _cache_set(cache_key, data)
         return data
     except Exception as e:
         logger.warning("MLB API error: %s", e)
@@ -663,6 +687,209 @@ def compare_players():
             logger.warning("Compare failed for %s/%s: %s", pid, season, e)
 
     return jsonify({"players": results})
+
+
+@app.route("/api/player/<int:player_id>/career")
+def player_career(player_id):
+    """Compute career BRAVS across all MLB seasons for a player."""
+    # Fetch player info
+    player_info = _mlb_get(f"{MLB_API}/people/{player_id}")
+    if not player_info or "people" not in player_info:
+        return jsonify({"error": "Player not found"}), 404
+    pinfo = player_info["people"][0]
+    raw_name = pinfo.get("fullFMLName", pinfo.get("fullName", "Unknown"))
+
+    # Reuse player_seasons logic to get all MLB seasons
+    hitting = _mlb_get(
+        f"{MLB_API}/people/{player_id}/stats",
+        {"stats": "yearByYear", "group": "hitting", "gameType": "R"},
+    )
+    pitching = _mlb_get(
+        f"{MLB_API}/people/{player_id}/stats",
+        {"stats": "yearByYear", "group": "pitching", "gameType": "R"},
+    )
+
+    mlb_seasons: dict[int, dict] = {}
+
+    if hitting and "stats" in hitting:
+        for group in hitting["stats"]:
+            for split in group.get("splits", []):
+                yr = int(split.get("season", 0))
+                if yr < 1871:
+                    continue
+                # Skip minor league splits (MLB splits have sport.id == 1)
+                sport = split.get("sport", {})
+                if sport.get("id") and sport["id"] != 1:
+                    continue
+                team = split.get("team", {})
+                pos = split.get("position", {})
+                if yr not in mlb_seasons:
+                    mlb_seasons[yr] = {
+                        "team_abbrev": _get_team_abbrev(team),
+                        "position": pos.get("abbreviation", ""),
+                    }
+
+    if pitching and "stats" in pitching:
+        for group in pitching["stats"]:
+            for split in group.get("splits", []):
+                yr = int(split.get("season", 0))
+                if yr < 1871:
+                    continue
+                sport = split.get("sport", {})
+                if sport.get("id") and sport["id"] != 1:
+                    continue
+                team = split.get("team", {})
+                if yr not in mlb_seasons:
+                    mlb_seasons[yr] = {
+                        "team_abbrev": _get_team_abbrev(team),
+                        "position": "P",
+                    }
+
+    if not mlb_seasons:
+        return jsonify({"error": "No MLB seasons found"}), 404
+
+    # Compute BRAVS for each season in parallel
+    season_results = []
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        futures = {
+            pool.submit(compute_player_bravs_internal, player_id, yr): yr
+            for yr in mlb_seasons
+        }
+        for future in as_completed(futures):
+            yr = futures[future]
+            try:
+                resp_data = future.result()
+                if resp_data and "error" not in resp_data:
+                    season_results.append({
+                        "season": yr,
+                        "team": resp_data.get("team_abbrev", mlb_seasons[yr]["team_abbrev"]),
+                        "bravs": resp_data.get("bravs", 0),
+                        "war_eq": resp_data.get("bravs_war_eq", 0),
+                        "position": resp_data.get("position", mlb_seasons[yr]["position"]),
+                    })
+            except Exception as e:
+                logger.warning("Career BRAVS failed for %s/%s: %s", player_id, yr, e)
+
+    # Sort by year descending
+    season_results.sort(key=lambda x: x["season"], reverse=True)
+
+    career_bravs = round(sum(s["bravs"] for s in season_results), 1)
+    career_war_eq = round(sum(s["war_eq"] for s in season_results), 1)
+
+    return jsonify({
+        "player_name": _display_name(raw_name),
+        "player_id": player_id,
+        "headshot": HEADSHOT_URL.format(pid=player_id),
+        "career_bravs": career_bravs,
+        "career_war_eq": career_war_eq,
+        "seasons": season_results,
+    })
+
+
+@app.route("/api/leaderboard/<int:season>/<league>")
+def season_leaderboard(season, league):
+    """Season leaderboard: top position players by OPS + top pitchers by ERA."""
+    league_id = 103 if league.upper() == "AL" else 104
+
+    seen_ids: set[int] = set()
+    candidates: list[dict] = []
+
+    def _add(leaders: list[dict]) -> None:
+        for p in leaders:
+            if p["id"] not in seen_ids:
+                seen_ids.add(p["id"])
+                candidates.append(p)
+
+    # Top 20 position players by OPS
+    _add(_fetch_leaders("onBasePlusSlugging", season, league_id, 20))
+    # Top 10 pitchers by ERA
+    _add(_fetch_pitching_leaders("earnedRunAverage", season, league_id, 10))
+
+    # Compute BRAVS for all candidates in parallel
+    results = []
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        futures = {
+            pool.submit(compute_player_bravs_internal, cand["id"], season): cand
+            for cand in candidates
+        }
+        for future in as_completed(futures):
+            cand = futures[future]
+            try:
+                resp_data = future.result()
+                if resp_data and "error" not in resp_data:
+                    results.append({
+                        "player_name": resp_data.get("player_name", cand["name"]),
+                        "player_id": cand["id"],
+                        "bravs": resp_data.get("bravs", 0),
+                        "war_eq": resp_data.get("bravs_war_eq", 0),
+                        "position": resp_data.get("position", ""),
+                        "team": resp_data.get("team_abbrev", ""),
+                        "headshot": HEADSHOT_URL.format(pid=cand["id"]),
+                    })
+            except Exception as e:
+                logger.warning("Leaderboard BRAVS failed for %s: %s", cand["name"], e)
+
+    results.sort(key=lambda x: x.get("bravs", 0), reverse=True)
+
+    return jsonify({
+        "season": season,
+        "league": league.upper(),
+        "players": results,
+    })
+
+
+@app.route("/api/export/<int:player_id>/<int:season>")
+def export_csv(player_id, season):
+    """Export BRAVS breakdown as downloadable CSV."""
+    resp_data = compute_player_bravs_internal(player_id, season)
+    if not resp_data:
+        return jsonify({"error": "Could not compute BRAVS"}), 404
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Header
+    writer.writerow(["Component", "Runs", "CI_Low", "CI_High"])
+
+    # Component rows
+    for comp in resp_data.get("components", []):
+        writer.writerow([
+            comp.get("name", ""),
+            comp.get("runs", 0),
+            comp.get("ci_lo", 0),
+            comp.get("ci_hi", 0),
+        ])
+
+    # Blank separator
+    writer.writerow([])
+
+    # Metadata rows
+    writer.writerow(["BRAVS", resp_data.get("bravs", 0), "", ""])
+    writer.writerow(["WAR-eq", resp_data.get("bravs_war_eq", 0), "", ""])
+    writer.writerow(["Era-Std", resp_data.get("bravs_era_std", 0), "", ""])
+    writer.writerow(["RPW", resp_data.get("rpw", 0), "", ""])
+
+    csv_content = output.getvalue()
+    output.close()
+
+    player_name = resp_data.get("player_name", "player").replace(" ", "_")
+    filename = f"bravs_{player_name}_{season}.csv"
+
+    return Response(
+        csv_content,
+        mimetype="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
+
+
+@app.route("/player/<int:player_id>/<int:season>")
+def player_permalink(player_id, season):
+    """Shareable deep link for a player-season."""
+    return render_template(
+        "index.html",
+        auto_load_player=player_id,
+        auto_load_season=season,
+    )
 
 
 if __name__ == "__main__":
