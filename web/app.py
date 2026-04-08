@@ -409,6 +409,28 @@ def compute_player_bravs(player_id: int, season: int):
     pf = get_park_factor(team_abbrev, season)
     season_length = SEASON_LENGTHS.get(season, 162)
 
+    # Detect in-progress season: if this is the current year and the player
+    # has fewer games than a typical full season, check the schedule to see
+    # how many games the team has actually played.
+    import datetime
+    current_year = datetime.date.today().year
+    games_played = max(_safe_int(h.get("gamesPlayed")), _safe_int(p.get("gamesPlayed")))
+    if season >= current_year and games_played < 140 and season_length == 162:
+        # Query schedule to find actual team games played
+        if team_id:
+            sched = _mlb_get(
+                f"{MLB_API}/schedule",
+                {"sportId": 1, "season": season, "teamId": team_id, "gameType": "R"},
+            )
+            if sched and "dates" in sched:
+                team_games_played = sum(
+                    1 for dt in sched["dates"]
+                    for g in dt.get("games", [])
+                    if g.get("status", {}).get("abstractGameState") == "Final"
+                )
+                if team_games_played > 0 and team_games_played < 155:
+                    season_length = team_games_played
+
     # Build PlayerSeason
     hits_total = _safe_int(h.get("hits"))
     ps = PlayerSeason(
