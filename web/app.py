@@ -965,9 +965,20 @@ def team_roster(team_abbrev, season):
         for future in as_completed(futures):
             try:
                 r = future.result()
-                if r and r.get("team_abbrev", "").upper() == team_abbrev.upper():
-                    r["player_id"] = futures[future]["id"]
-                    results.append(r)
+                if r:
+                    r_abbrev = r.get("team_abbrev", "").upper()
+                    r_team = r.get("team", "").upper()
+                    target = team_abbrev.upper()
+                    # Match on abbreviation OR team name containing the abbreviation
+                    if (r_abbrev == target or target in r_team
+                            or r_team.startswith(target)
+                            or (target == "NYY" and "YANKEE" in r_team)
+                            or (target == "LAD" and "DODGER" in r_team)
+                            or (target == "LAA" and ("ANGEL" in r_team or r_abbrev == "LOS"))
+                            or (target == "SF" and ("GIANT" in r_team or r_abbrev == "SFG"))
+                            or (target == "CWS" and ("WHITE" in r_team or r_abbrev == "CHW"))):
+                        r["player_id"] = futures[future]["id"]
+                        results.append(r)
             except Exception:
                 pass
 
@@ -1123,6 +1134,7 @@ def player_similar(player_id, season):
     scored.sort(key=lambda x: x["similarity"], reverse=True)
 
     return jsonify({
+        "player_name": target.get("player_name", ""),
         "target": {
             "player_name": target.get("player_name", ""),
             "season": season,
@@ -1201,11 +1213,15 @@ def live_mvp(league):
             "player_name": r.get("player_name", ""),
             "player_id": r.get("player_id"),
             "position": r.get("position", ""),
-            "team": r.get("team_abbrev", ""),
+            "team": r.get("team", ""),
+            "team_abbrev": r.get("team_abbrev", ""),
             "team_id": r.get("team_id"),
             "headshot": r.get("headshot", ""),
+            "bravs": pace_bravs,
             "bravs_raw": raw_bravs,
             "bravs_pace": pace_bravs,
+            "bravs_era_std": r.get("bravs_era_std", 0),
+            "bravs_war_eq": round(pace_bravs * 0.62, 1),
             "games_played": games,
             "est_team_games": est_team_games,
             "components": r.get("components", []),
@@ -1250,14 +1266,13 @@ def player_dynasty(player_id):
             for split in group.get("splits", []):
                 yr = int(split.get("season", 0))
                 sport = split.get("sport", {})
-                if yr >= 1871 and (not sport.get("id") or sport["id"] == 1):
+                if yr >= 1871:
                     mlb_years.add(yr)
     if pitching and "stats" in pitching:
         for group in pitching["stats"]:
             for split in group.get("splits", []):
                 yr = int(split.get("season", 0))
-                sport = split.get("sport", {})
-                if yr >= 1871 and (not sport.get("id") or sport["id"] == 1):
+                if yr >= 1871:
                     mlb_years.add(yr)
 
     if not mlb_years:
@@ -1312,14 +1327,14 @@ def player_dynasty(player_id):
         "player_name": _display_name(raw_name),
         "player_id": player_id,
         "headshot": HEADSHOT_URL.format(pid=player_id),
-        "dynasty": {
+        "best_window": {
             "total_bravs": round(best_total, 1),
-            "avg_bravs_per_year": dynasty_avg,
-            "start_year": best_start,
-            "end_year": best_end,
+            "avg_per_year": dynasty_avg,
+            "start": best_start,
+            "end": best_end,
             "seasons": best_window,
         },
-        "career_seasons": all_seasons,
+        "seasons": all_seasons,
         "career_bravs": round(sum(s["bravs"] for s in all_seasons), 1),
     })
 
