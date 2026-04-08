@@ -640,6 +640,9 @@ nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
   <button class="nav-tab active" data-tab="player" onclick="switchTab('player')">Player</button>
   <button class="nav-tab" data-tab="awards" onclick="switchTab('awards')">Award Races</button>
   <button class="nav-tab" data-tab="team" onclick="switchTab('team')">Team</button>
+  <button class="nav-tab" data-tab="mvp" onclick="switchTab('mvp')">Live MVP</button>
+  <button class="nav-tab" data-tab="dynasty" onclick="switchTab('dynasty')">Dynasties</button>
+  <button class="nav-tab" data-tab="dream" onclick="switchTab('dream')">Dream Team</button>
 </div>
 
 <!-- === PLAYER TAB === -->
@@ -724,6 +727,45 @@ nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
   </div>
 </div>
 
+<!-- === LIVE MVP TAB === -->
+<div id="tab-mvp" style="display:none">
+  <div style="max-width:760px;margin:32px auto 0;padding:0 24px;">
+    <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;">
+      <select id="mvp-league" style="font-family:inherit;font-size:13px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text)">
+        <option value="AL">American League</option>
+        <option value="NL">National League</option>
+      </select>
+      <button onclick="loadLiveMVP()" style="padding:8px 18px;font-family:inherit;font-size:12px;font-weight:600;background:var(--text);color:var(--surface);border:none;border-radius:6px;cursor:pointer">Load Race</button>
+    </div>
+    <div class="loading" id="mvp-loading"><span>Computing live BRAVS<span class="dots"></span></span></div>
+    <div id="mvp-results">
+      <div class="empty"><h2>Live MVP Race</h2><p>See who is leading the MVP race right now based on current 2026 stats. All BRAVS values are prorated for the games played so far.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- === DYNASTY TAB === -->
+<div id="tab-dynasty" style="display:none">
+  <div style="max-width:680px;margin:32px auto 0;padding:0 24px;">
+    <div class="search-wrap" style="margin:0;padding:0;max-width:100%">
+      <input class="search-input" id="dynasty-search" type="text" placeholder="Search player for dynasty analysis..." autocomplete="off" spellcheck="false">
+      <div class="dropdown" id="dynasty-dropdown"></div>
+    </div>
+    <div class="loading" id="dynasty-loading"><span>Computing dynasty<span class="dots"></span></span></div>
+    <div id="dynasty-results"></div>
+    <div class="empty" id="dynasty-empty"><h2>Dynasty Finder</h2><p>Search for any player to find their best 5-consecutive-year stretch and see how it ranks against the greatest dynasty runs in history.</p></div>
+  </div>
+</div>
+
+<!-- === DREAM TEAM TAB === -->
+<div id="tab-dream" style="display:none">
+  <div style="max-width:760px;margin:32px auto 0;padding:0 24px;">
+    <button onclick="loadDreamTeam()" style="padding:10px 24px;font-family:inherit;font-size:13px;font-weight:600;background:var(--text);color:var(--surface);border:none;border-radius:6px;cursor:pointer;margin-bottom:16px">Build the All-Time Dream Team</button>
+    <div class="loading" id="dream-loading"><span>Assembling legends<span class="dots"></span></span></div>
+    <div id="dream-results"></div>
+  </div>
+</div>
+
 <script>
 const $ = id => document.getElementById(id);
 let debounceTimer = null;
@@ -738,6 +780,9 @@ function switchTab(tab) {
   $('tab-player').style.display = tab === 'player' ? 'block' : 'none';
   $('tab-awards').style.display = tab === 'awards' ? 'block' : 'none';
   $('tab-team').style.display = tab === 'team' ? 'block' : 'none';
+  $('tab-mvp').style.display = tab === 'mvp' ? 'block' : 'none';
+  $('tab-dynasty').style.display = tab === 'dynasty' ? 'block' : 'none';
+  $('tab-dream').style.display = tab === 'dream' ? 'block' : 'none';
 }
 
 // --- Search ---
@@ -859,6 +904,8 @@ async function loadBRAVS(playerId, season) {
 
     renderResult(data);
     loadCareerSparkline(playerId);
+    loadProjection(playerId);
+    loadSimilarity(playerId, season);
   } catch (e) {
     $('loading').classList.remove('visible');
     $('error').textContent = 'Failed to compute BRAVS: ' + e.message;
@@ -1239,6 +1286,195 @@ async function loadTeam() {
     document.getElementById('team-loading').classList.remove('visible');
     document.getElementById('team-results').innerHTML = '<div class="error-card visible">Failed: ' + e.message + '</div>';
   }
+}
+
+// --- Live MVP ---
+async function loadLiveMVP() {
+  const lg = document.getElementById('mvp-league').value;
+  document.getElementById('mvp-loading').classList.add('visible');
+  document.getElementById('mvp-results').innerHTML = '';
+  try {
+    const resp = await fetch('/api/mvp/live/' + lg);
+    const data = await resp.json();
+    document.getElementById('mvp-loading').classList.remove('visible');
+    if (data.error) { document.getElementById('mvp-results').innerHTML = '<div class="error-card visible">' + data.error + '</div>'; return; }
+
+    let html = '<div style="margin-bottom:12px;font-size:13px;font-weight:600">2026 ' + data.league + ' MVP Race (Live)</div>';
+    html += '<div class="award-race-results"><div class="race-header"><span></span><span></span><span>Player</span><span>BRAVS</span><span>Pace</span><span>WAR-eq</span></div>';
+    data.candidates.forEach((p, i) => {
+      html += '<div class="race-row" onclick="switchTab(\'player\');currentPlayerId=' + p.player_id + ';loadBRAVS(' + p.player_id + ',' + data.season + ')">' +
+        '<span class="rank ' + (i===0?'gold':'') + '">' + (i+1) + '</span>' +
+        '<img src="' + (p.headshot||'') + '" onerror="this.style.display=\'none\'">' +
+        '<div><span class="pname">' + esc(p.player_name) + '</span> <span class="pteam">' + (p.team_abbrev||'') + ' / ' + (p.position||'') + '</span></div>' +
+        '<span class="bval ' + (i===0?'top':'') + '">' + p.bravs.toFixed(1) + '</span>' +
+        '<span class="bval">' + (p.pace_bravs ? p.pace_bravs.toFixed(1) : '--') + '</span>' +
+        '<span class="bval">' + p.bravs_war_eq.toFixed(1) + '</span></div>';
+    });
+    html += '</div>';
+    document.getElementById('mvp-results').innerHTML = html;
+  } catch(e) {
+    document.getElementById('mvp-loading').classList.remove('visible');
+    document.getElementById('mvp-results').innerHTML = '<div class="error-card visible">' + e.message + '</div>';
+  }
+}
+
+// --- Dynasty Finder ---
+let dynastyTimer = null;
+document.addEventListener('DOMContentLoaded', () => {
+  const ds = document.getElementById('dynasty-search');
+  if (ds) {
+    ds.addEventListener('input', e => {
+      clearTimeout(dynastyTimer);
+      const q = e.target.value.trim();
+      if (q.length < 2) { document.getElementById('dynasty-dropdown').classList.remove('open'); return; }
+      dynastyTimer = setTimeout(async () => {
+        const resp = await fetch('/api/search?q=' + encodeURIComponent(q));
+        const players = await resp.json();
+        const dd = document.getElementById('dynasty-dropdown');
+        if (!players.length) { dd.classList.remove('open'); return; }
+        dd.innerHTML = players.slice(0,6).map(p =>
+          '<div class="dropdown-item" onclick="loadDynasty(' + p.id + ',\'' + esc(p.name) + '\')">' +
+          '<img src="' + p.headshot + '" onerror="this.style.display=\'none\'">' +
+          '<div class="info"><div class="name">' + esc(p.name) + '</div></div></div>'
+        ).join('');
+        dd.classList.add('open');
+      }, 300);
+    });
+  }
+});
+
+async function loadDynasty(playerId, name) {
+  document.getElementById('dynasty-dropdown').classList.remove('open');
+  document.getElementById('dynasty-search').value = name;
+  document.getElementById('dynasty-empty').style.display = 'none';
+  document.getElementById('dynasty-loading').classList.add('visible');
+  document.getElementById('dynasty-results').innerHTML = '';
+  try {
+    const resp = await fetch('/api/dynasty/' + playerId);
+    const data = await resp.json();
+    document.getElementById('dynasty-loading').classList.remove('visible');
+    if (data.error) { document.getElementById('dynasty-results').innerHTML = '<div class="error-card visible">' + data.error + '</div>'; return; }
+
+    let html = '<div class="card" style="margin-top:12px"><div style="padding:24px 32px">';
+    html += '<div style="font-size:18px;font-weight:700">' + esc(data.player_name) + '</div>';
+    html += '<div style="font-size:12px;color:var(--text-3);margin-top:4px">Best 5-year window: ' + data.best_window.start + '-' + data.best_window.end + '</div>';
+    html += '<div style="display:flex;gap:24px;margin-top:16px">';
+    html += '<div><div style="font-size:28px;font-weight:800;color:var(--green)">' + data.best_window.total_bravs.toFixed(1) + '</div><div style="font-size:9px;color:var(--text-4);text-transform:uppercase;letter-spacing:1px">5-yr BRAVS</div></div>';
+    html += '<div><div style="font-size:28px;font-weight:800">' + data.best_window.avg_per_year.toFixed(1) + '</div><div style="font-size:9px;color:var(--text-4);text-transform:uppercase;letter-spacing:1px">Avg/Year</div></div>';
+    html += '<div><div style="font-size:28px;font-weight:800">' + data.career_bravs.toFixed(1) + '</div><div style="font-size:9px;color:var(--text-4);text-transform:uppercase;letter-spacing:1px">Career</div></div>';
+    html += '</div></div>';
+
+    // Season bars
+    if (data.seasons && data.seasons.length) {
+      html += '<div style="padding:0 32px 24px"><div class="section-title">Career BRAVS by Season</div>';
+      const maxB = Math.max(...data.seasons.map(s => Math.abs(s.bravs)), 1);
+      data.seasons.forEach(s => {
+        const w = Math.abs(s.bravs) / maxB * 60;
+        const inWindow = s.season >= data.best_window.start && s.season <= data.best_window.end;
+        const color = s.bravs >= 0 ? (inWindow ? 'var(--green)' : '#86efac') : 'var(--red)';
+        html += '<div style="display:flex;align-items:center;gap:8px;height:22px;font-size:11px">' +
+          '<span style="width:36px;text-align:right;color:var(--text-3)">' + s.season + '</span>' +
+          '<div style="width:' + w + '%;height:12px;background:' + color + ';border-radius:2px;min-width:2px"></div>' +
+          '<span style="color:' + (s.bravs>=0?'var(--green)':'var(--red)') + ';font-weight:600">' + s.bravs.toFixed(1) + '</span></div>';
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+    document.getElementById('dynasty-results').innerHTML = html;
+  } catch(e) {
+    document.getElementById('dynasty-loading').classList.remove('visible');
+    document.getElementById('dynasty-results').innerHTML = '<div class="error-card visible">' + e.message + '</div>';
+  }
+}
+
+// --- Dream Team ---
+async function loadDreamTeam() {
+  document.getElementById('dream-loading').classList.add('visible');
+  document.getElementById('dream-results').innerHTML = '';
+  try {
+    const resp = await fetch('/api/dreamteam');
+    const data = await resp.json();
+    document.getElementById('dream-loading').classList.remove('visible');
+
+    let html = '<div class="card"><div style="padding:24px 32px">';
+    html += '<div style="font-size:18px;font-weight:700">The All-Time Dream Team</div>';
+    html += '<div style="font-size:12px;color:var(--text-3);margin-top:2px">Best single season at every position</div>';
+    html += '<div style="display:flex;gap:24px;margin-top:16px;margin-bottom:20px">';
+    html += '<div><div style="font-size:32px;font-weight:800;color:var(--green)">' + data.total_bravs.toFixed(1) + '</div><div style="font-size:9px;color:var(--text-4);text-transform:uppercase;letter-spacing:1px">Total BRAVS</div></div>';
+    html += '<div><div style="font-size:32px;font-weight:800">' + data.total_war_eq.toFixed(1) + '</div><div style="font-size:9px;color:var(--text-4);text-transform:uppercase;letter-spacing:1px">WAR-Equiv</div></div>';
+    html += '</div>';
+
+    data.roster.forEach((p, i) => {
+      const pct = p.bravs / (data.total_bravs / data.roster.length) * 40;
+      html += '<div style="display:grid;grid-template-columns:40px 1fr 60px;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--border-light);font-size:12px">' +
+        '<span style="font-weight:700;color:var(--text-3)">' + p.slot + '</span>' +
+        '<div><span style="font-weight:600">' + esc(p.name) + '</span> <span style="color:var(--text-4)">' + p.season + '</span>' +
+        '<div style="font-size:10px;color:var(--text-3);margin-top:1px">' + esc(p.signature) + '</div></div>' +
+        '<span style="font-weight:700;text-align:right;color:var(--green)">' + p.bravs.toFixed(1) + '</span></div>';
+    });
+
+    html += '</div></div>';
+    document.getElementById('dream-results').innerHTML = html;
+  } catch(e) {
+    document.getElementById('dream-loading').classList.remove('visible');
+    document.getElementById('dream-results').innerHTML = '<div class="error-card visible">' + e.message + '</div>';
+  }
+}
+
+// --- Projection ---
+async function loadProjection(playerId) {
+  try {
+    const resp = await fetch('/api/player/' + playerId + '/projection');
+    const data = await resp.json();
+    if (data.error || !data.projections || !data.projections.length) return;
+
+    // Append projection info to the sparkline card if it exists
+    const wrap = document.getElementById('sparkline-wrap');
+    if (!wrap || !wrap.classList.contains('visible')) return;
+
+    const card = wrap.querySelector('.sparkline-card');
+    if (!card) return;
+
+    let projHtml = '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-light)">';
+    projHtml += '<div class="sparkline-title">Projection (aging curves + injury risk)</div>';
+    projHtml += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">';
+    data.projections.slice(0, 5).forEach(p => {
+      const color = p.projected_bravs >= 0 ? 'var(--green)' : 'var(--red)';
+      projHtml += '<div style="text-align:center;min-width:55px;padding:6px 8px;background:var(--bg);border-radius:4px">' +
+        '<div style="font-size:14px;font-weight:700;color:' + color + '">' + p.projected_bravs.toFixed(1) + '</div>' +
+        '<div style="font-size:9px;color:var(--text-4)">age ' + p.age + '</div></div>';
+    });
+    projHtml += '</div>';
+    projHtml += '<div style="font-size:10px;color:var(--text-4);margin-top:6px">Remaining career: ' + data.remaining_career_bravs + ' BRAVS / ' + data.remaining_war_eq + ' WAR-eq / ' + data.expected_years_left + ' years</div>';
+    projHtml += '</div>';
+
+    card.insertAdjacentHTML('beforeend', projHtml);
+  } catch(e) {}
+}
+
+// --- Similarity (on player card) ---
+async function loadSimilarity(playerId, season) {
+  try {
+    const resp = await fetch('/api/player/' + playerId + '/similar/' + season);
+    const data = await resp.json();
+    if (data.error || !data.similar || !data.similar.length) return;
+
+    const wrap = document.getElementById('result-wrap');
+    if (!wrap) return;
+
+    let html = '<div class="card" style="margin-top:8px"><div style="padding:20px 32px">';
+    html += '<div class="section-title">Most Similar Seasons</div>';
+    data.similar.forEach(s => {
+      const bar = Math.max(s.similarity, 0);
+      html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;font-size:12px">' +
+        '<span style="width:140px;font-weight:600">' + esc(s.name) + ' ' + s.season + '</span>' +
+        '<div style="flex:1;height:14px;background:var(--bg);border-radius:2px;overflow:hidden">' +
+          '<div style="width:' + bar + '%;height:100%;background:var(--green);opacity:0.5;border-radius:2px"></div></div>' +
+        '<span style="width:45px;text-align:right;font-weight:600;color:var(--text-3)">' + s.similarity.toFixed(0) + '%</span></div>';
+    });
+    html += '</div></div>';
+    wrap.insertAdjacentHTML('beforeend', html);
+  } catch(e) {}
 }
 
 // --- Helpers ---

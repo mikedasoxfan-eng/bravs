@@ -1025,6 +1025,364 @@ def player_projection(player_id: int):
     })
 
 
+# ---------------------------------------------------------------------------
+# Endpoint 1: Player Similarity
+# ---------------------------------------------------------------------------
+
+# Reference seasons with known MLB API IDs (skip historical players without API data)
+_SIMILARITY_REFS = [
+    (545361, 2016, "Mike Trout"),
+    # Bonds: no reliable MLB API data — skipped
+    (121578, 1927, "Babe Ruth"),
+    (121439, 1965, "Willie Mays"),
+    (592450, 2022, "Aaron Judge"),
+    (660271, 2023, "Shohei Ohtani"),
+    # Pedro Martinez: no reliable MLB API data — skipped
+    # Bob Gibson: no reliable MLB API data — skipped
+    (594798, 2018, "Jacob deGrom"),
+    (605141, 2018, "Mookie Betts"),
+    (514888, 2017, "Jose Altuve"),
+    # Griffey: no reliable MLB API data — skipped
+    (477132, 2014, "Clayton Kershaw"),
+    (408234, 2012, "Miguel Cabrera"),
+    (115749, 1982, "Rickey Henderson"),
+]
+
+_SIM_WEIGHTS = {
+    "hitting": 3.0,
+    "pitching": 3.0,
+    "baserunning": 2.0,
+    "fielding": 1.5,
+    "positional": 1.0,
+    "approach_quality": 1.0,
+    "durability": 0.5,
+    "leverage": 0.5,
+}
+
+
+def _extract_component_runs(bravs_result: dict) -> dict[str, float]:
+    """Extract named component runs from a BRAVS result dict."""
+    comp_map: dict[str, float] = {}
+    for comp in bravs_result.get("components", []):
+        comp_map[comp["name"]] = comp.get("runs", 0.0)
+    return comp_map
+
+
+def _similarity_score(comp1: dict[str, float], comp2: dict[str, float]) -> float:
+    """Weighted Euclidean distance converted to 0-100 similarity."""
+    total = 0.0
+    for name, weight in _SIM_WEIGHTS.items():
+        c1 = comp1.get(name, 0.0)
+        c2 = comp2.get(name, 0.0)
+        total += weight * (c1 - c2) ** 2
+    dist = total ** 0.5
+    return max(0.0, 100.0 - dist * 1.2)
+
+
+@app.route("/api/player/<int:player_id>/similar/<int:season>")
+def player_similar(player_id, season):
+    """Find the most similar historical player-seasons by BRAVS component profile."""
+    target = compute_player_bravs_internal(player_id, season)
+    if not target:
+        return jsonify({"error": "Could not compute BRAVS for target"}), 404
+    target_comps = _extract_component_runs(target)
+
+    # Compute reference seasons in parallel
+    ref_results: list[tuple[str, int, int, dict | None]] = []
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        futures = {
+            pool.submit(compute_player_bravs_internal, ref_id, ref_yr): (ref_name, ref_id, ref_yr)
+            for ref_id, ref_yr, ref_name in _SIMILARITY_REFS
+            if not (ref_id == player_id and ref_yr == season)
+        }
+        for future in as_completed(futures):
+            ref_name, ref_id, ref_yr = futures[future]
+            try:
+                result = future.result()
+                ref_results.append((ref_name, ref_id, ref_yr, result))
+            except Exception as e:
+                logger.warning("Similarity ref failed %s %s: %s", ref_name, ref_yr, e)
+
+    # Score each reference
+    scored: list[dict] = []
+    for ref_name, ref_id, ref_yr, ref_data in ref_results:
+        if not ref_data:
+            continue
+        ref_comps = _extract_component_runs(ref_data)
+        sim = _similarity_score(target_comps, ref_comps)
+        scored.append({
+            "player_name": ref_name,
+            "player_id": ref_id,
+            "season": ref_yr,
+            "similarity": round(sim, 1),
+            "bravs": ref_data.get("bravs", 0),
+            "position": ref_data.get("position", ""),
+            "headshot": HEADSHOT_URL.format(pid=ref_id),
+        })
+
+    scored.sort(key=lambda x: x["similarity"], reverse=True)
+
+    return jsonify({
+        "target": {
+            "player_name": target.get("player_name", ""),
+            "season": season,
+            "bravs": target.get("bravs", 0),
+        },
+        "similar": scored[:5],
+    })
+
+
+# ---------------------------------------------------------------------------
+# Endpoint 2: Live MVP Race (current season)
+# ---------------------------------------------------------------------------
+
+@app.route("/api/mvp/live/<league>")
+def live_mvp(league):
+    """Live MVP race for the current season, adjusted for pace."""
+    import datetime
+    current_year = datetime.date.today().year
+    league_id = 103 if league.upper() == "AL" else 104
+
+    # Gather candidates from multiple leader categories
+    seen_ids: set[int] = set()
+    candidates: list[dict] = []
+
+    def _add(leaders: list[dict]) -> None:
+        for p in leaders:
+            if p["id"] not in seen_ids:
+                seen_ids.add(p["id"])
+                candidates.append(p)
+
+    _add(_fetch_leaders("onBasePlusSlugging", current_year, league_id, 12))
+    _add(_fetch_leaders("plateAppearances", current_year, league_id, 8))
+    _add(_fetch_leaders("homeRuns", current_year, league_id, 5))
+    _add(_fetch_pitching_leaders("earnedRunAverage", current_year, league_id, 8))
+    _add(_fetch_pitching_leaders("strikeouts", current_year, league_id, 5))
+    _add(_fetch_pitching_leaders("inningsPitched", current_year, league_id, 5))
+
+    # Compute BRAVS for all candidates in parallel
+    raw_results: list[dict] = []
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        futures = {
+            pool.submit(compute_player_bravs_internal, cand["id"], current_year): cand
+            for cand in candidates[:20]
+        }
+        for future in as_completed(futures):
+            cand = futures[future]
+            try:
+                resp_data = future.result()
+                if resp_data and "error" not in resp_data:
+                    resp_data["player_id"] = cand["id"]
+                    raw_results.append(resp_data)
+            except Exception as e:
+                logger.warning("Live MVP failed for %s: %s", cand["name"], e)
+
+    # Adjust for in-progress season: if durability is significantly negative,
+    # add it back to get a "pace" BRAVS that doesn't penalize unplayed games.
+    adjusted: list[dict] = []
+    for r in raw_results:
+        comps = _extract_component_runs(r)
+        durability = comps.get("durability", 0.0)
+        raw_bravs = r.get("bravs", 0.0)
+        if durability < -5.0:
+            pace_bravs = round(raw_bravs - durability / r.get("rpw", 5.9), 1)
+        else:
+            pace_bravs = raw_bravs
+
+        games = 0
+        trad = r.get("traditional", {})
+        if trad.get("batting", {}).get("G"):
+            games = trad["batting"]["G"]
+        elif trad.get("pitching", {}).get("G"):
+            games = trad["pitching"]["G"]
+        est_team_games = games + 5
+
+        adjusted.append({
+            "player_name": r.get("player_name", ""),
+            "player_id": r.get("player_id"),
+            "position": r.get("position", ""),
+            "team": r.get("team_abbrev", ""),
+            "team_id": r.get("team_id"),
+            "headshot": r.get("headshot", ""),
+            "bravs_raw": raw_bravs,
+            "bravs_pace": pace_bravs,
+            "games_played": games,
+            "est_team_games": est_team_games,
+            "components": r.get("components", []),
+        })
+
+    adjusted.sort(key=lambda x: x["bravs_pace"], reverse=True)
+
+    return jsonify({
+        "season": current_year,
+        "league": league.upper(),
+        "candidates": adjusted,
+    })
+
+
+# ---------------------------------------------------------------------------
+# Endpoint 3: Dynasty Rankings
+# ---------------------------------------------------------------------------
+
+@app.route("/api/dynasty/<int:player_id>")
+def player_dynasty(player_id):
+    """Find the best 5-consecutive-year dynasty window for a player."""
+    # Reuse career endpoint logic to get all seasons
+    player_info = _mlb_get(f"{MLB_API}/people/{player_id}")
+    if not player_info or "people" not in player_info:
+        return jsonify({"error": "Player not found"}), 404
+    pinfo = player_info["people"][0]
+    raw_name = pinfo.get("fullFMLName", pinfo.get("fullName", "Unknown"))
+
+    # Get all MLB seasons via yearByYear
+    hitting = _mlb_get(
+        f"{MLB_API}/people/{player_id}/stats",
+        {"stats": "yearByYear", "group": "hitting", "gameType": "R"},
+    )
+    pitching = _mlb_get(
+        f"{MLB_API}/people/{player_id}/stats",
+        {"stats": "yearByYear", "group": "pitching", "gameType": "R"},
+    )
+
+    mlb_years: set[int] = set()
+    if hitting and "stats" in hitting:
+        for group in hitting["stats"]:
+            for split in group.get("splits", []):
+                yr = int(split.get("season", 0))
+                sport = split.get("sport", {})
+                if yr >= 1871 and (not sport.get("id") or sport["id"] == 1):
+                    mlb_years.add(yr)
+    if pitching and "stats" in pitching:
+        for group in pitching["stats"]:
+            for split in group.get("splits", []):
+                yr = int(split.get("season", 0))
+                sport = split.get("sport", {})
+                if yr >= 1871 and (not sport.get("id") or sport["id"] == 1):
+                    mlb_years.add(yr)
+
+    if not mlb_years:
+        return jsonify({"error": "No MLB seasons found"}), 404
+
+    # Compute BRAVS for each season in parallel
+    season_map: dict[int, dict] = {}
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        futures = {
+            pool.submit(compute_player_bravs_internal, player_id, yr): yr
+            for yr in mlb_years
+        }
+        for future in as_completed(futures):
+            yr = futures[future]
+            try:
+                resp_data = future.result()
+                if resp_data and "error" not in resp_data:
+                    season_map[yr] = {
+                        "season": yr,
+                        "team": resp_data.get("team_abbrev", ""),
+                        "bravs": resp_data.get("bravs", 0),
+                        "war_eq": resp_data.get("bravs_war_eq", 0),
+                        "position": resp_data.get("position", ""),
+                    }
+            except Exception as e:
+                logger.warning("Dynasty BRAVS failed for %s/%s: %s", player_id, yr, e)
+
+    all_seasons = sorted(season_map.values(), key=lambda x: x["season"])
+
+    # Find the best 5-consecutive-year window
+    best_total = -999.0
+    best_start = 0
+    best_end = 0
+    best_window: list[dict] = []
+
+    sorted_years = sorted(season_map.keys())
+    for i in range(len(sorted_years)):
+        window_years = [y for y in sorted_years if sorted_years[i] <= y < sorted_years[i] + 5]
+        if len(window_years) < 2:
+            continue
+        window_bravs = sum(season_map[y]["bravs"] for y in window_years)
+        if window_bravs > best_total:
+            best_total = window_bravs
+            best_start = window_years[0]
+            best_end = window_years[-1]
+            best_window = [season_map[y] for y in window_years]
+
+    dynasty_years = len(best_window) if best_window else 0
+    dynasty_avg = round(best_total / dynasty_years, 1) if dynasty_years else 0.0
+
+    return jsonify({
+        "player_name": _display_name(raw_name),
+        "player_id": player_id,
+        "headshot": HEADSHOT_URL.format(pid=player_id),
+        "dynasty": {
+            "total_bravs": round(best_total, 1),
+            "avg_bravs_per_year": dynasty_avg,
+            "start_year": best_start,
+            "end_year": best_end,
+            "seasons": best_window,
+        },
+        "career_seasons": all_seasons,
+        "career_bravs": round(sum(s["bravs"] for s in all_seasons), 1),
+    })
+
+
+# ---------------------------------------------------------------------------
+# Endpoint 4: Dream Team
+# ---------------------------------------------------------------------------
+
+@app.route("/api/dreamteam")
+def dream_team():
+    """Return the all-time BRAVS dream team with pre-computed values."""
+    roster = [
+        {"slot": "C",   "name": "Mike Piazza",      "season": 1997, "bravs": 17.1, "war_eq": 10.6,
+         "signature": ".362/.431/.638, 40 HR from catcher"},
+        {"slot": "1B",  "name": "Lou Gehrig",        "season": 1927, "bravs": 14.5, "war_eq": 9.0,
+         "signature": ".373/.474/.765, 218 H / 47 HR"},
+        {"slot": "2B",  "name": "Rogers Hornsby",    "season": 1922, "bravs": 22.2, "war_eq": 13.7,
+         "signature": ".401/.459/.722, 250 hits (!)"},
+        {"slot": "3B",  "name": "Mike Schmidt",      "season": 1980, "bravs": 14.4, "war_eq": 8.9,
+         "signature": ".286/.380/.624, 48 HR, Gold Glove D"},
+        {"slot": "SS",  "name": "Honus Wagner",      "season": 1908, "bravs": 19.6, "war_eq": 12.1,
+         "signature": ".354/.413/.542, 53 SB, elite glove"},
+        {"slot": "LF",  "name": "Ted Williams",      "season": 1941, "bravs": 18.2, "war_eq": 11.3,
+         "signature": ".406/.553/.735, last man to hit .400"},
+        {"slot": "CF",  "name": "Willie Mays",       "season": 1965, "bravs": 26.1, "war_eq": 16.2,
+         "signature": ".317/.398/.645, 52 HR, elite defense"},
+        {"slot": "RF",  "name": "Babe Ruth",         "season": 1921, "bravs": 22.0, "war_eq": 13.6,
+         "signature": ".378/.512/.846, 59 HR, 204 hits"},
+        {"slot": "DH",  "name": "Barry Bonds",       "season": 2001, "bravs": 25.0, "war_eq": 15.5,
+         "signature": ".328/.515/.863, 73 HR, 177 BB"},
+        {"slot": "SP1", "name": "Pedro Martinez",    "season": 2000, "bravs": 11.3, "war_eq": 7.0,
+         "signature": "1.74 ERA, 284 K in 217 IP, steroid-era"},
+        {"slot": "SP2", "name": "Bob Gibson",        "season": 1968, "bravs": 28.1, "war_eq": 17.5,
+         "signature": "1.12 ERA, 268 K in 305 IP, Year of Pitcher"},
+        {"slot": "SP3", "name": "Sandy Koufax",      "season": 1966, "bravs": 24.5, "war_eq": 15.2,
+         "signature": "1.73 ERA, 317 K in 323 IP, final season"},
+        {"slot": "SP4", "name": "Randy Johnson",     "season": 2001, "bravs": 14.3, "war_eq": 8.9,
+         "signature": "2.49 ERA, 372 K in 250 IP, 6'10 unit"},
+        {"slot": "SP5", "name": "Greg Maddux",       "season": 1995, "bravs": 11.1, "war_eq": 6.9,
+         "signature": "1.63 ERA, 23 BB in 210 IP, Picasso"},
+        {"slot": "CL",  "name": "Mariano Rivera",    "season": 2004, "bravs": 4.9,  "war_eq": 3.1,
+         "signature": "1.94 ERA, 53 SV, gmLI 1.85, cutter god"},
+    ]
+
+    total_bravs = round(sum(p["bravs"] for p in roster), 1)
+    total_war_eq = round(sum(p["war_eq"] for p in roster), 1)
+
+    lineup_bravs = round(sum(p["bravs"] for p in roster if not p["slot"].startswith("SP") and p["slot"] != "CL"), 1)
+    rotation_bravs = round(sum(p["bravs"] for p in roster if p["slot"].startswith("SP")), 1)
+    closer_bravs = round(sum(p["bravs"] for p in roster if p["slot"] == "CL"), 1)
+
+    return jsonify({
+        "roster": roster,
+        "total_bravs": total_bravs,
+        "total_war_eq": total_war_eq,
+        "breakdown": {
+            "lineup_bravs": lineup_bravs,
+            "rotation_bravs": rotation_bravs,
+            "closer_bravs": closer_bravs,
+        },
+    })
+
+
 if __name__ == "__main__":
     print("\n  BRAVS Web App")
     print(f"  Engine: {'Rust (bravs_engine)' if USE_RUST else 'Python (fallback)'}")
