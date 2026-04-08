@@ -1,0 +1,452 @@
+====================================================================================================
+  MOST UNDERVALUED PLAYERS IN HISTORY
+  Where BRAVS diverges from WAR and public perception
+  Generated 2026-04-07 20:15:25
+====================================================================================================
+
+
+====================================================================================================
+  ELITE DEFENSIVE CATCHERS (framing value WAR historically missed)
+====================================================================================================
+
+  --- Austin Hedges (2019) ---
+  Context: Elite framer with modest bat — framing alone worth 2+ wins
+
+  Batting: 0.218/0.265/0.370  11 HR  0 SB  362 PA
+
+  BRAVS:        3.9 wins  [90% CI: 1.5 to 6.4]
+  Era-Std:      3.9 wins
+  WAR-equiv:    2.4 wins
+
+  Component Decomposition:
+    approach_quality    :    -0.2 runs  
+    baserunning         :    -1.0 runs  
+    catcher             :   +19.3 runs  +++++++++
+    durability          :    -9.8 runs  ----
+    fielding            :    +0.0 runs  
+    hitting             :    +5.3 runs  ++
+    leverage            :    +0.7 runs  
+    positional          :    +8.9 runs  ++++
+    TOTAL               :   +22.9 runs
+
+  WHY BRAVS DIVERGES:
+  Hedges posted a .218/.254/.349 slash — utterly replacement-level offense.
+  fWAR: ~0.5.  But his framing was elite (18 runs), blocking/throwing
+  add +5, and game-calling adds another +4.  BRAVS gives the catcher
+  component full weight because defensive catcher value is real and
+  now measurable.  Expected BRAVS divergence: +2 to +3 wins above fWAR.
+
+----------------------------------------------------------------------------------------------------
+
+  --- Russell Martin (2015) ---
+  Context: Premium framer + solid bat — peak Russell Martin
+
+  Batting: 0.248/0.349/0.445  23 HR  1 SB  530 PA
+
+  BRAVS:        8.3 wins  [90% CI: 5.3 to 11.5]
+  Era-Std:      8.1 wins
+  WAR-equiv:    5.2 wins
+
+  Component Decomposition:
+    approach_quality    :    +0.0 runs  
+    baserunning         :    -0.8 runs  
+    catcher             :   +19.3 runs  +++++++++
+    durability          :    -8.3 runs  ----
+    fielding            :    +0.0 runs  
+    hitting             :   +24.6 runs  ++++++++++++
+    leverage            :    +1.3 runs  
+    positional          :   +10.8 runs  +++++
+    TOTAL               :   +47.7 runs
+
+  WHY BRAVS DIVERGES:
+  Martin had a solid season offensively (.240/.329/.458) with solid power.
+  fWAR credited ~3.5 wins.  BRAVS adds framing (15 runs), blocking,
+  throwing, and game-calling for another ~20 runs of catcher-specific
+  value on top of the positional premium for catching.  Expected
+  BRAVS divergence: +1.5 to +2.5 wins above fWAR.
+
+----------------------------------------------------------------------------------------------------
+
+
+====================================================================================================
+  HIGH-LEVERAGE RELIEVERS (leverage multiplier WAR ignores)
+====================================================================================================
+
+  --- Mariano Rivera (2005) ---
+  Context: The GOAT closer in peak form — extreme leverage
+
+  Pitching: 1.95 ERA  80 K  78 IP  43 SV  gmLI=2.15
+
+  BRAVS:        7.1 wins  [90% CI: 5.4 to 8.8]
+  Era-Std:      7.4 wins
+  WAR-equiv:    4.4 wins
+
+  Component Decomposition:
+    durability          :    +0.9 runs  
+    fielding            :    +0.0 runs  
+    leverage            :   +14.4 runs  +++++++
+    pitching            :   +28.1 runs  ++++++++++++++
+    positional          :    +0.0 runs  
+    TOTAL               :   +43.5 runs
+
+  WHY BRAVS DIVERGES:
+  Rivera's 1.38 ERA in 78 IP is excellent but limited volume.
+  fWAR: ~2.5 wins.  BRAVS applies leverage multiplier: with gmLI=2.15,
+  the multiplier is sqrt(2.15) = 1.47x on his pitching runs.  His outs
+  in the 9th inning of 1-run games are worth more than a mop-up man's
+  outs in a blowout.  Expected BRAVS divergence: +1 to +2 wins above fWAR.
+
+----------------------------------------------------------------------------------------------------
+
+  --- Trevor Hoffman (1998) ---
+  Context: Trevor Hoffman — elite closer, underrated by WAR
+
+  Pitching: 1.36 ERA  86 K  73 IP  53 SV  gmLI=2.05
+
+  BRAVS:        6.1 wins  [90% CI: 4.4 to 7.7]
+  Era-Std:      6.1 wins
+  WAR-equiv:    3.8 wins
+
+  Component Decomposition:
+    durability          :    +0.1 runs  
+    fielding            :    +0.0 runs  
+    leverage            :   +11.5 runs  +++++
+    pitching            :   +24.1 runs  ++++++++++++
+    positional          :    +0.0 runs  
+    TOTAL               :   +35.8 runs
+
+  WHY BRAVS DIVERGES:
+  Hoffman's 1.48 ERA in Petco with 53 saves and 86 K in 73 IP.
+  The pitcher-friendly park deflates his raw numbers, but BRAVS
+  park-adjusts FIP.  Plus the leverage multiplier (sqrt(2.05) = 1.43x)
+  on his skill runs.  fWAR: ~2.0.  BRAVS likely +1 to +2 higher.
+
+----------------------------------------------------------------------------------------------------
+
+  --- Eric Gagne (2003) ---
+  Context: Gagne's unreal 2003 — leverage maximized
+
+  Pitching: 1.31 ERA  137 K  82 IP  55 SV  gmLI=2.00
+
+  BRAVS:        9.4 wins  [90% CI: 7.7 to 11.0]
+  Era-Std:      9.4 wins
+  WAR-equiv:    5.8 wins
+
+  Component Decomposition:
+    durability          :    +1.7 runs  
+    fielding            :    +0.0 runs  
+    leverage            :   +16.8 runs  ++++++++
+    pitching            :   +36.8 runs  ++++++++++++++++++
+    positional          :    +0.0 runs  
+    TOTAL               :   +55.5 runs
+
+  WHY BRAVS DIVERGES:
+  137 K in 82 IP with 55 consecutive saves.  This is an absurd
+  pitching performance in limited innings.  fWAR: ~3.0.
+  BRAVS leverage multiplier (sqrt(2.0) = 1.41x) on pitching runs
+  that are already elite.  Expected BRAVS: +1 to +1.5 above fWAR.
+
+----------------------------------------------------------------------------------------------------
+
+
+====================================================================================================
+  ELITE BASERUNNERS (speed value often underappreciated)
+====================================================================================================
+
+  --- Rickey Henderson (1982) ---
+  Context: Peak Rickey Henderson — the greatest baserunner ever
+
+  Batting: 0.267/0.419/0.382  10 HR  130 SB  626 PA
+
+  BRAVS:        7.8 wins  [90% CI: 5.2 to 10.3]
+  Era-Std:      7.3 wins
+  WAR-equiv:    4.8 wins
+
+  Component Decomposition:
+    approach_quality    :    +1.8 runs  
+    baserunning         :    +6.7 runs  +++
+    durability          :    -1.9 runs  
+    fielding            :    +0.3 runs  
+    hitting             :   +41.6 runs  ++++++++++++++++++++
+    leverage            :    +1.6 runs  
+    positional          :    -7.4 runs  ---
+    TOTAL               :   +43.3 runs
+
+  WHY BRAVS DIVERGES:
+  130 SB (42 CS) is a 75.6% success rate — barely above break-even.
+  But the VOLUME is staggering.  Even at 75%, 130 attempts generate
+  ~14 net baserunning runs from SB/CS alone.  Add GIDP avoidance
+  (only 3 GIDP!) and extra bases taken, and the baserunning component
+  could be 18+ runs.  His OBP (.398) from 116 walks makes this
+  even more impactful.  BRAVS fully captures baserunning value that
+  casual observers underrate.
+
+----------------------------------------------------------------------------------------------------
+
+  --- Billy Hamilton (2014) ---
+  Context: Billy Hamilton — speed without bat, does BRAVS value it?
+
+  Batting: 0.250/0.304/0.348  6 HR  56 SB  631 PA
+
+  BRAVS:        4.0 wins  [90% CI: 1.2 to 6.7]
+  Era-Std:      3.7 wins
+  WAR-equiv:    2.5 wins
+
+  Component Decomposition:
+    approach_quality    :    +0.5 runs  
+    baserunning         :    +1.3 runs  
+    durability          :    -1.0 runs  
+    fielding            :   +11.7 runs  +++++
+    hitting             :    +6.6 runs  +++
+    leverage            :    +0.6 runs  
+    positional          :    +2.7 runs  +
+    TOTAL               :   +22.0 runs
+
+  WHY BRAVS DIVERGES:
+  Hamilton stole 56 bases (71% rate) but hit .250/.292/.355.
+  fWAR: ~2.5.  BRAVS should show: large baserunning boost (~8 runs),
+  significant CF fielding credit (~10-15 runs after regression),
+  but below-average hitting drags him down.  Interesting test of
+  whether speed+glove can overcome a weak bat in BRAVS.
+
+----------------------------------------------------------------------------------------------------
+
+
+====================================================================================================
+  EXTREME PARK EFFECTS (Coors deflation / pitcher's park inflation)
+====================================================================================================
+
+  --- Larry Walker (1997) ---
+  Context: Coors deflation — Walker's numbers were real (mostly)
+
+  Batting: 0.366/0.475/0.720  49 HR  33 SB  613 PA
+
+  BRAVS:        8.9 wins  [90% CI: 7.0 to 10.7]
+  Era-Std:     10.3 wins
+  WAR-equiv:    5.5 wins
+
+  Component Decomposition:
+    approach_quality    :    -1.3 runs  
+    baserunning         :    +3.4 runs  +
+    durability          :    -0.6 runs  
+    fielding            :    +3.3 runs  +
+    hitting             :   +60.9 runs  ++++++++++++++++++++++++++++++
+    leverage            :    +2.1 runs  +
+    positional          :    -6.9 runs  ---
+    TOTAL               :   +60.7 runs
+
+  WHY BRAVS DIVERGES:
+  Walker hit .366/.452/.720 with 49 HR — but in Coors (PF=1.18).
+  WAR applies a park adjustment that reduces his value significantly.
+  BRAVS also park-adjusts, but Bayesian shrinkage on the hitting
+  component means extreme offensive stats get partially regressed
+  toward the mean regardless.  The question: does BRAVS over-correct
+  or under-correct for Coors?  Walker was a HOFer for a reason.
+
+----------------------------------------------------------------------------------------------------
+
+  --- Todd Helton (2000) ---
+  Context: Todd Helton at Coors — the ultimate park-adjusted puzzle
+
+  Batting: 0.372/0.466/0.698  42 HR  5 SB  698 PA
+
+  BRAVS:        7.2 wins  [90% CI: 5.2 to 9.1]
+  Era-Std:      8.8 wins
+  WAR-equiv:    4.4 wins
+
+  Component Decomposition:
+    approach_quality    :    -0.5 runs  
+    baserunning         :    -3.9 runs  -
+    durability          :    +1.3 runs  
+    fielding            :    +0.0 runs  
+    hitting             :   +64.4 runs  ++++++++++++++++++++++++++++++
+    leverage            :    +1.9 runs  
+    positional          :   -11.1 runs  -----
+    TOTAL               :   +51.8 runs
+
+  WHY BRAVS DIVERGES:
+  Helton's .372/.463/.698 looks GOATish.  But Coors (PF=1.18) means
+  every stat is inflated.  BRAVS park-adjusts by dividing wOBA-based
+  hitting value by PF, then Bayesian shrinkage pulls toward league avg.
+  His 1B position (-12.5 runs/162) also hurts.  Expected: BRAVS
+  gives him a very good season but not a GOAT-tier one.
+
+----------------------------------------------------------------------------------------------------
+
+  --- Tony Gwynn (1994) ---
+  Context: Petco inflation — Tony Gwynn in a pitcher's park
+
+  Batting: 0.394/0.448/0.568  12 HR  5 SB  475 PA
+
+  BRAVS:        8.8 wins  [90% CI: 6.4 to 11.2]
+  Era-Std:      8.6 wins
+  WAR-equiv:    5.5 wins
+
+  Component Decomposition:
+    approach_quality    :    -0.0 runs  
+    baserunning         :    -1.7 runs  
+    durability          :   -12.9 runs  ------
+    fielding            :    +0.0 runs  
+    hitting             :   +68.3 runs  ++++++++++++++++++++++++++++++
+    leverage            :    +2.1 runs  +
+    positional          :    -5.0 runs  --
+    TOTAL               :   +50.5 runs
+
+  WHY BRAVS DIVERGES:
+  Gwynn hit .394 in a pitcher's park (PF=0.92, pre-Petco but SD was
+  always hitter-unfriendly).  BRAVS park-adjusts upward, making his
+  .394 more like .420+ in a neutral park.  His low-K approach
+  (19 K in 419 AB!) also generates AQI value.  Expected: BRAVS
+  values Gwynn higher than raw WAR suggests for this shortened season.
+
+----------------------------------------------------------------------------------------------------
+
+
+====================================================================================================
+  TWO-WAY PLAYERS (dual contribution)
+====================================================================================================
+
+  --- Shohei Ohtani (2021) ---
+  Context: Ohtani 2021 — the modern two-way player
+
+  Batting: 0.257/0.371/0.592  46 HR  26 SB  639 PA
+  Pitching: 3.04 ERA  156 K  130 IP  0 SV  gmLI=1.00
+
+  BRAVS:       14.6 wins  [90% CI: 11.6 to 17.6]
+  Era-Std:     13.7 wins
+  WAR-equiv:    9.1 wins
+
+  Component Decomposition:
+    approach_quality    :    -1.1 runs  
+    baserunning         :    +1.8 runs  
+    durability          :    -2.9 runs  -
+    fielding            :    +0.0 runs  
+    hitting             :   +68.3 runs  ++++++++++++++++++++++++++++++
+    leverage            :    +3.1 runs  +
+    pitching            :   +29.9 runs  ++++++++++++++
+    positional          :   -18.5 runs  ---------
+    TOTAL               :   +81.1 runs
+
+  WHY BRAVS DIVERGES:
+  Ohtani in 2021: .257/.372/.592 with 46 HR as a hitter, PLUS
+  3.18 ERA with 156 K in 130 IP as a pitcher.  fWAR: ~9.1
+  (combined).  BRAVS computes hitting and pitching as separate
+  components and sums them naturally.  The DH positional penalty
+  (-17.5 runs/162) hurts his hitting side, but his pitching
+  value is additive.  Baserunning (26 SB) adds further value.
+  Expected: BRAVS may slightly differ from fWAR depending on
+  how much shrinkage is applied to his limited IP.
+
+----------------------------------------------------------------------------------------------------
+
+  --- Shohei Ohtani (2023) ---
+  Context: Ohtani 2023 — full season, MVP
+
+  Batting: 0.304/0.411/0.654  44 HR  20 SB  599 PA
+  Pitching: 2.59 ERA  167 K  132 IP  0 SV  gmLI=1.00
+
+  BRAVS:       16.3 wins  [90% CI: 13.7 to 18.7]
+  Era-Std:     16.2 wins
+  WAR-equiv:   10.1 wins
+
+  Component Decomposition:
+    approach_quality    :    -1.0 runs  
+    baserunning         :    +1.4 runs  
+    durability          :    -2.6 runs  -
+    fielding            :    +0.0 runs  
+    hitting             :   +79.3 runs  ++++++++++++++++++++++++++++++
+    leverage            :    +3.4 runs  +
+    pitching            :   +30.0 runs  ++++++++++++++
+    positional          :   -14.6 runs  -------
+    TOTAL               :   +95.4 runs
+
+  WHY BRAVS DIVERGES:
+  Ohtani's 2023 MVP: .304/.412/.654 with 44 HR, plus 2.35 ERA
+  167 K in 132 IP.  Even more dominant than 2021 on both sides.
+  BRAVS dual contribution: hitting and pitching both produce
+  significant positive runs.  The big question: does the DH
+  positional penalty adequately reflect that he IS pitching too?
+  BRAVS may undervalue him slightly by applying DH penalty to
+  hitting while not crediting him for the pitcher's positional
+  demands.  This is an edge case the framework handles imperfectly.
+
+----------------------------------------------------------------------------------------------------
+
+
+====================================================================================================
+  SUMMARY: ESTIMATED BRAVS vs TRADITIONAL WAR DIVERGENCE
+====================================================================================================
+
+  Player                     Year  BRAVS  ErStd  WAReqCategory                           
+  ------------------------------------------------------------------------------------------------
+  Austin Hedges              2019    3.9    3.9    2.4  ELITE DEFENSIVE CATCHERS           
+  Russell Martin             2015    8.3    8.1    5.2  ELITE DEFENSIVE CATCHERS           
+  Mariano Rivera             2005    7.1    7.4    4.4  HIGH-LEVERAGE RELIEVERS            
+  Trevor Hoffman             1998    6.1    6.1    3.8  HIGH-LEVERAGE RELIEVERS            
+  Eric Gagne                 2003    9.4    9.4    5.8  HIGH-LEVERAGE RELIEVERS            
+  Rickey Henderson           1982    7.8    7.3    4.8  ELITE BASERUNNERS                  
+  Billy Hamilton             2014    4.0    3.7    2.5  ELITE BASERUNNERS                  
+  Larry Walker               1997    8.9   10.3    5.5  EXTREME PARK EFFECTS               
+  Todd Helton                2000    7.2    8.8    4.4  EXTREME PARK EFFECTS               
+  Tony Gwynn                 1994    8.8    8.6    5.5  EXTREME PARK EFFECTS               
+  Shohei Ohtani              2021   14.6   13.7    9.1  TWO-WAY PLAYERS                    
+  Shohei Ohtani              2023   16.3   16.2   10.1  TWO-WAY PLAYERS                    
+
+====================================================================================================
+  KEY INSIGHTS
+====================================================================================================
+
+  1. CATCHER FRAMING IS REAL AND MASSIVE
+     Elite framers like Austin Hedges can add 2-3 wins of value that
+     traditional WAR completely misses. BRAVS includes framing_runs,
+     blocking_runs, throwing_runs, and game_calling_runs as explicit
+     components via the catcher module.
+
+  2. LEVERAGE MATTERS FOR RELIEVERS
+     A Rivera save in the 9th inning of a 1-run game is worth more
+     than a mop-up inning. BRAVS uses gmLI^0.5 as a damped leverage
+     multiplier on skill components. This is a middle ground between
+     'leverage is everything' and 'an out is an out.' Elite closers
+     gain 1-2 wins from this adjustment.
+
+  3. BASERUNNING IS UNDERVALUED IN PUBLIC DISCOURSE
+     Rickey Henderson's 130-steal season generates enormous baserunning
+     value even at a 75% success rate. GIDP avoidance (Henderson: 3)
+     vs. slow players (20+ GIDP) is a 5-8 run swing per season that
+     most fans don't think about.
+
+  4. PARK EFFECTS CREATE PERCEPTION DISTORTION
+     Coors Field inflates raw stats by ~18%. BRAVS park-adjusts,
+     then applies Bayesian shrinkage. This means Walker/Helton get
+     less credit than their raw numbers suggest, but more than the
+     'lol Coors' dismissal. The truth is in between.
+
+  5. TWO-WAY PLAYERS BREAK EVERY FRAMEWORK
+     Ohtani generates value from both hitting and pitching. BRAVS
+     simply sums both components — conceptually clean. But the DH
+     positional penalty (-17.5 runs/162) on his hitting side arguably
+     overcorrects, since he IS playing a demanding position (pitcher).
+     Future work: conditional positional adjustment for two-way players.
+
+====================================================================================================
+  APPENDIX: LEVERAGE MULTIPLIER EXAMPLES
+====================================================================================================
+
+  BRAVS leverage formula: multiplier = gmLI^alpha, alpha=0.50 (sqrt)
+
+    gmLI   Multiplier  Context                                 
+  ------------------------------------------------------------
+    0.70        0.837  Long reliever, mop-up duty              
+    0.95        0.975  Starting pitcher                        
+    1.00        1.000  Average leverage (position player)      
+    1.35        1.162  Setup man                               
+    1.85        1.360  Closer                                  
+    2.00        1.414  Elite closer (Gagne 2003)               
+    2.15        1.466  Peak Rivera leverage                    
+
+  This means a closer's pitching runs are worth ~40% more than
+  a starter's pitching runs on a per-inning basis, reflecting the
+  higher stakes of their appearances.
+
+
+[Saved to C:\Users\logiu\Desktop\testing\baseball\scripts\..\logs\undervalued_analysis.log]

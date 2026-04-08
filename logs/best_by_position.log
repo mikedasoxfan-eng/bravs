@@ -1,0 +1,266 @@
+==============================================================================================================
+  BEST SINGLE SEASON BY POSITION — BRAVS RANKINGS
+  Generated 2026-04-07 20:14:39
+==============================================================================================================
+
+--------------------------------------------------------------------------------------------------------------
+  CATCHER (C)
+--------------------------------------------------------------------------------------------------------------
+  Rank  Player                     Year   BRAVS   ErStd   WAReq            90% CI              Key Component Runs
+  ----------------------------------------------------------------------------------------------------------
+     1. Buster Posey               2012    19.8    18.1    12.3  [ 16.3,  23.2]  hitting:+80  catcher:+17  baserunning:-2
+     2. Mike Piazza                1997    17.1    17.3    10.6  [ 14.2,  19.9]  hitting:+89  catcher:+2  approach_quality:-1
+     3. Johnny Bench               1972    14.0    13.5     8.7  [ 10.6,  17.3]  hitting:+54  catcher:+15  baserunning:-1
+
+  BEST EVER at C: Buster Posey (2012)
+  BRAVS = 19.8 | Era-Std = 18.1 | WAR-eq = 12.3
+  Component breakdown:
+    approach_quality    :    -0.5 runs  [-3.4, +2.6]
+    baserunning         :    -2.4 runs  [-3.7, -0.7]
+    catcher             :   +17.1 runs  [+6.3, +25.9]
+    durability          :    -2.2 runs  [-4.3, +0.3]
+    fielding            :    +0.0 runs  [-8.2, +8.2]
+    hitting             :   +80.2 runs  [+64.5, +84.5]
+    leverage            :    +2.9 runs  [+2.4, +3.5]
+    positional          :   +12.2 runs  [+9.8, +13.1]
+
+--------------------------------------------------------------------------------------------------------------
+  FIRST BASE (1B)
+--------------------------------------------------------------------------------------------------------------
+  Rank  Player                     Year   BRAVS   ErStd   WAReq            90% CI              Key Component Runs
+  ----------------------------------------------------------------------------------------------------------
+     1. Lou Gehrig                 1927    14.0    16.0     8.7  [ 11.9,  16.0]  hitting:+105  baserunning:-1  approach_quality:-1
+     2. Albert Pujols              2006    11.9    12.3     7.4  [  9.8,  13.9]  hitting:+84  fielding:+3  baserunning:-3
+     3. Jeff Bagwell               1994    11.4    11.7     7.1  [  9.0,  13.7]  hitting:+89  approach_quality:-1  baserunning:+0
+
+  BEST EVER at 1B: Lou Gehrig (1927)
+  BRAVS = 14.0 | Era-Std = 16.0 | WAR-eq = 8.7
+  Component breakdown:
+    approach_quality    :    -1.2 runs  [-4.4, +1.5]
+    baserunning         :    -1.5 runs  [-3.4, +0.0]
+    durability          :    +0.0 runs  [-2.3, +2.4]
+    fielding            :    +0.0 runs  [-8.2, +8.2]
+    hitting             :  +104.7 runs  [+107.7, +129.6]
+    leverage            :    +3.2 runs  [+2.8, +3.6]
+    positional          :   -10.5 runs  [-13.6, -10.3]
+
+--------------------------------------------------------------------------------------------------------------
+  SECOND BASE (2B)
+--------------------------------------------------------------------------------------------------------------
+  Rank  Player                     Year   BRAVS   ErStd   WAReq            90% CI              Key Component Runs
+  ----------------------------------------------------------------------------------------------------------
+     1. Rogers Hornsby             1922    18.9    19.4    11.7  [ 16.4,  21.4]  hitting:+112  baserunning:-2  approach_quality:-2
+     2. Jeff Kent                  2000    14.2    14.7     8.8  [ 12.2,  16.2]  hitting:+85  baserunning:-2  fielding:-1
+     3. Jose Altuve                2017    11.7    12.0     7.3  [  9.4,  13.9]  hitting:+63  baserunning:+2  fielding:+2
+
+  BEST EVER at 2B: Rogers Hornsby (1922)
+  BRAVS = 18.9 | Era-Std = 19.4 | WAR-eq = 11.7
+  Component breakdown:
+    approach_quality    :    -1.5 runs  [-4.5, +1.4]
+    baserunning         :    -1.7 runs  [-3.3, -0.1]
+    durability          :    -0.3 runs  [-2.6, +2.1]
+    fielding            :    +0.0 runs  [-8.2, +8.2]
+    hitting             :  +112.4 runs  [+102.2, +123.4]
+    leverage            :    +3.4 runs  [+3.0, +3.8]
+    positional          :    +2.4 runs  [+0.8, +4.1]
+
+--------------------------------------------------------------------------------------------------------------
+  THIRD BASE (3B)
+--------------------------------------------------------------------------------------------------------------
+  Rank  Player                     Year   BRAVS   ErStd   WAReq            90% CI              Key Component Runs
+  ----------------------------------------------------------------------------------------------------------
+     1. Adrian Beltre              2004    15.7    15.9     9.7  [ 13.5,  17.8]  hitting:+83  fielding:+8  approach_quality:-1
+     2. Mike Schmidt               1980    13.6    13.3     8.5  [ 11.1,  16.1]  hitting:+67  fielding:+7  baserunning:+2
+     3. George Brett               1980    13.0    12.5     8.0  [ 10.5,  15.3]  hitting:+78  fielding:+2  baserunning:+1
+
+  BEST EVER at 3B: Adrian Beltre (2004)
+  BRAVS = 15.7 | Era-Std = 15.9 | WAR-eq = 9.7
+  Component breakdown:
+    approach_quality    :    -1.2 runs  [-4.2, +1.7]
+    baserunning         :    -0.8 runs  [-2.4, +0.8]
+    durability          :    +0.3 runs  [-2.0, +2.6]
+    fielding            :    +7.8 runs  [+3.1, +13.3]
+    hitting             :   +83.0 runs  [+75.5, +96.4]
+    leverage            :    +2.7 runs  [+2.4, +3.1]
+    positional          :    +2.3 runs  [+0.8, +4.1]
+
+--------------------------------------------------------------------------------------------------------------
+  SHORTSTOP (SS)
+--------------------------------------------------------------------------------------------------------------
+  Rank  Player                     Year   BRAVS   ErStd   WAReq            90% CI              Key Component Runs
+  ----------------------------------------------------------------------------------------------------------
+     1. Cal Ripken                 1991    14.8    14.5     9.2  [ 12.3,  17.3]  hitting:+67  fielding:+6  baserunning:-0
+     2. Honus Wagner               1908    14.5    14.0     9.0  [ 11.7,  17.3]  hitting:+72  baserunning:+2  approach_quality:+1
+     3. Alex Rodriguez             1996    14.3    15.0     8.8  [ 12.2,  16.2]  hitting:+82  fielding:+3  baserunning:-2
+
+  BEST EVER at SS: Cal Ripken (1991)
+  BRAVS = 14.8 | Era-Std = 14.5 | WAR-eq = 9.2
+  Component breakdown:
+    approach_quality    :    -0.1 runs  [-3.1, +2.8]
+    baserunning         :    -0.4 runs  [-2.0, +1.2]
+    durability          :    +2.2 runs  [-0.3, +4.4]
+    fielding            :    +5.9 runs  [+0.6, +10.8]
+    hitting             :   +67.1 runs  [+53.4, +74.7]
+    leverage            :    +2.2 runs  [+1.8, +2.7]
+    positional          :    +7.9 runs  [+5.9, +9.2]
+
+--------------------------------------------------------------------------------------------------------------
+  LEFT FIELD (LF)
+--------------------------------------------------------------------------------------------------------------
+  Rank  Player                     Year   BRAVS   ErStd   WAReq            90% CI              Key Component Runs
+  ----------------------------------------------------------------------------------------------------------
+     1. Barry Bonds                2001    26.1    25.6    16.2  [ 23.8,  28.4]  hitting:+152  baserunning:+3  fielding:-1
+     2. Ted Williams               1941    17.5    17.9    10.8  [ 14.9,  19.9]  hitting:+114  baserunning:-2  approach_quality:+1
+     3. Rickey Henderson           1990    15.1    14.2     9.4  [ 12.4,  17.7]  hitting:+82  baserunning:+9  fielding:+1
+
+  BEST EVER at LF: Barry Bonds (2001)
+  BRAVS = 26.1 | Era-Std = 25.6 | WAR-eq = 16.2
+  Component breakdown:
+    approach_quality    :    -0.0 runs  [-3.0, +2.9]
+    baserunning         :    +2.8 runs  [+1.3, +4.5]
+    durability          :    -0.6 runs  [-2.9, +1.8]
+    fielding            :    -0.9 runs  [-6.0, +4.2]
+    hitting             :  +152.4 runs  [+146.7, +167.7]
+    leverage            :    +4.8 runs  [+4.4, +5.1]
+    positional          :    -6.8 runs  [-8.7, -5.4]
+
+--------------------------------------------------------------------------------------------------------------
+  CENTER FIELD (CF)
+--------------------------------------------------------------------------------------------------------------
+  Rank  Player                     Year   BRAVS   ErStd   WAReq            90% CI              Key Component Runs
+  ----------------------------------------------------------------------------------------------------------
+     1. Willie Mays                1965    25.4    21.5    15.7  [ 22.1,  28.6]  hitting:+116  fielding:+4  baserunning:+1
+     2. Mickey Mantle              1956    17.6    17.7    10.9  [ 15.2,  19.9]  hitting:+97  fielding:+2  baserunning:+2
+     3. Mike Trout                 2016    16.4    16.0    10.2  [ 13.9,  18.9]  hitting:+83  baserunning:+3  fielding:+2
+
+  BEST EVER at CF: Willie Mays (1965)
+  BRAVS = 25.4 | Era-Std = 21.5 | WAR-eq = 15.7
+  Component breakdown:
+    approach_quality    :    -0.5 runs  [-3.4, +2.5]
+    baserunning         :    +0.5 runs  [-1.2, +2.1]
+    durability          :    +0.7 runs  [-1.7, +2.9]
+    fielding            :    +4.5 runs  [-1.3, +8.9]
+    hitting             :  +115.5 runs  [+86.3, +107.2]
+    leverage            :    +3.7 runs  [+3.3, +4.2]
+    positional          :    +2.9 runs  [+0.8, +4.1]
+
+--------------------------------------------------------------------------------------------------------------
+  RIGHT FIELD (RF)
+--------------------------------------------------------------------------------------------------------------
+  Rank  Player                     Year   BRAVS   ErStd   WAReq            90% CI              Key Component Runs
+  ----------------------------------------------------------------------------------------------------------
+     1. Babe Ruth                  1927    14.4    16.5     8.9  [ 12.4,  16.4]  hitting:+103  baserunning:-1  approach_quality:-1
+     2. Mookie Betts               2018    12.9    13.0     8.0  [ 10.5,  15.2]  hitting:+78  fielding:+7  baserunning:+2
+     3. Hank Aaron                 1971    12.8    12.3     7.9  [  9.9,  15.6]  hitting:+84  baserunning:-1  approach_quality:-0
+
+  BEST EVER at RF: Babe Ruth (1927)
+  BRAVS = 14.4 | Era-Std = 16.5 | WAR-eq = 8.9
+  Component breakdown:
+    approach_quality    :    -0.6 runs  [-3.7, +2.2]
+    baserunning         :    -0.7 runs  [-2.4, +0.8]
+    durability          :    -1.0 runs  [-3.5, +1.2]
+    fielding            :    +0.0 runs  [-8.2, +8.2]
+    hitting             :  +102.9 runs  [+105.8, +127.3]
+    leverage            :    +3.1 runs  [+2.8, +3.5]
+    positional          :    -6.1 runs  [-8.6, -5.3]
+
+--------------------------------------------------------------------------------------------------------------
+  DESIGNATED HITTER (DH)
+--------------------------------------------------------------------------------------------------------------
+  Rank  Player                     Year   BRAVS   ErStd   WAReq            90% CI              Key Component Runs
+  ----------------------------------------------------------------------------------------------------------
+     1. Edgar Martinez             1995    13.1    13.4     8.1  [ 10.6,  15.4]  hitting:+94  baserunning:-1  approach_quality:-0
+     2. David Ortiz                2016     7.7     7.9     4.8  [  5.1,  10.3]  hitting:+65  baserunning:-3  approach_quality:-0
+     3. Nelson Cruz                2017     7.5     7.5     4.7  [  4.9,  10.1]  hitting:+62  baserunning:-3  approach_quality:-1
+
+  BEST EVER at DH: Edgar Martinez (1995)
+  BRAVS = 13.1 | Era-Std = 13.4 | WAR-eq = 8.1
+  Component breakdown:
+    approach_quality    :    -0.1 runs  [-3.1, +2.8]
+    baserunning         :    -1.3 runs  [-2.9, +0.3]
+    durability          :    -2.8 runs  [-5.3, -0.6]
+    fielding            :    +0.0 runs  [-8.2, +8.2]
+    hitting             :   +94.4 runs  [+89.4, +109.9]
+    leverage            :    +2.9 runs  [+2.5, +3.3]
+    positional          :   -14.9 runs  [-17.3, -14.0]
+
+--------------------------------------------------------------------------------------------------------------
+  STARTING PITCHER (SP)
+--------------------------------------------------------------------------------------------------------------
+  Rank  Player                     Year   BRAVS   ErStd   WAReq            90% CI              Key Component Runs
+  ----------------------------------------------------------------------------------------------------------
+     1. Bob Gibson                 1968    28.1    22.6    17.5  [ 25.3,  31.0]  pitching:+128  fielding:+0
+     2. Pedro Martinez             2000    11.3    12.7     7.0  [ 10.0,  12.6]  pitching:+73  fielding:+0
+     3. Greg Maddux                1995    11.1    11.6     6.9  [  9.6,  12.6]  pitching:+67  fielding:+0
+
+  BEST EVER at SP: Bob Gibson (1968)
+  BRAVS = 28.1 | Era-Std = 22.6 | WAR-eq = 17.5
+  Component breakdown:
+    durability          :    +0.8 runs  [-1.7, +3.0]
+    fielding            :    +0.0 runs  [-8.2, +8.2]
+    leverage            :    +4.0 runs  [+3.6, +4.4]
+    pitching            :  +128.3 runs  [+90.4, +100.0]
+    positional          :    +0.0 runs  [-1.7, +1.7]
+
+--------------------------------------------------------------------------------------------------------------
+  RELIEF PITCHER (RP)
+--------------------------------------------------------------------------------------------------------------
+  Rank  Player                     Year   BRAVS   ErStd   WAReq            90% CI              Key Component Runs
+  ----------------------------------------------------------------------------------------------------------
+     1. Eric Gagne                 2003     9.4     9.4     5.8  [  7.7,  11.0]  pitching:+37  fielding:+0
+     2. Dennis Eckersley           1990     8.0     7.5     5.0  [  6.0,   9.9]  pitching:+31  fielding:+0
+     3. Mariano Rivera             2004     5.5     5.9     3.4  [  3.9,   7.0]  pitching:+22  fielding:+0
+
+  BEST EVER at RP: Eric Gagne (2003)
+  BRAVS = 9.4 | Era-Std = 9.4 | WAR-eq = 5.8
+  Component breakdown:
+    durability          :    +1.7 runs  [-0.5, +4.1]
+    fielding            :    +0.0 runs  [-8.2, +8.2]
+    leverage            :   +16.8 runs  [+12.9, +20.7]
+    pitching            :   +36.8 runs  [+35.3, +40.2]
+    positional          :    +0.0 runs  [-1.7, +1.7]
+
+
+==============================================================================================================
+  CROSS-POSITION: BEST SINGLE SEASON EVER AT EACH POSITION
+==============================================================================================================
+
+  Rank   Pos  Player                     Year   BRAVS   ErStd   WAReq
+  ---------------------------------------------------------------------------
+     1.   LF  Barry Bonds                2001    26.1    25.6    16.2
+     2.   SP  Bob Gibson                 1968    28.1    22.6    17.5
+     3.   CF  Willie Mays                1965    25.4    21.5    15.7
+     4.   2B  Rogers Hornsby             1922    18.9    19.4    11.7
+     5.    C  Buster Posey               2012    19.8    18.1    12.3
+     6.   RF  Babe Ruth                  1927    14.4    16.5     8.9
+     7.   1B  Lou Gehrig                 1927    14.0    16.0     8.7
+     8.   3B  Adrian Beltre              2004    15.7    15.9     9.7
+     9.   SS  Cal Ripken                 1991    14.8    14.5     9.2
+    10.   DH  Edgar Martinez             1995    13.1    13.4     8.1
+    11.   RP  Eric Gagne                 2003     9.4     9.4     5.8
+
+==============================================================================================================
+  POSITIONAL VALUE PREMIUM ANALYSIS
+==============================================================================================================
+
+  The positional adjustment built into BRAVS (per 162 games):
+       C: +12.5 runs
+      SS: +7.5 runs
+      CF: +2.5 runs
+      2B: +2.5 runs
+      3B: +2.5 runs
+      LF: -7.5 runs
+      RF: -7.5 runs
+      1B: -12.5 runs
+      DH: -17.5 runs
+
+  This means a catcher with identical offensive stats to a DH gets
+  +30 runs of positional credit per full season — roughly 3 extra wins.
+  Johnny Bench and Buster Posey benefit enormously from this premium.
+
+  Relievers produce low raw BRAVS due to limited innings, but their
+  high-leverage contexts generate leverage multiplier boosts that
+  partially compensate.
+
+
+[Saved to C:\Users\logiu\Desktop\testing\baseball\scripts\..\logs\best_by_position.log]

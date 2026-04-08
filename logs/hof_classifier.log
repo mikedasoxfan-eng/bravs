@@ -1,13 +1,13 @@
 ====================================================================================================
-  HALL OF FAME CLASSIFIER — BRAVS SEPARATION ANALYSIS
-  Generated 2026-04-07 20:08:56
+  HALL OF FAME CLASSIFIER â€” BRAVS SEPARATION ANALYSIS
+  Generated 2026-04-07 20:13:18
 ====================================================================================================
 
 Computing HOF group...
 Computing non-HOF group...
 
 ====================================================================================================
-  HALL OF FAMERS — Career BRAVS (from peak seasons modeled)
+  HALL OF FAMERS â€” Career BRAVS (from peak seasons modeled)
 ====================================================================================================
   Player                     CarBRAVS  CarErStd  CarWAReq   Seasons
 ---------------------------------------------------------------------------
@@ -28,7 +28,7 @@ Computing non-HOF group...
   Mariano Rivera                 12.0      12.8       7.5         2
 
 ====================================================================================================
-  NON-HALL OF FAMERS (or borderline) — Career BRAVS
+  NON-HALL OF FAMERS (or borderline) â€” Career BRAVS
 ====================================================================================================
   Player                     CarBRAVS  CarErStd  CarWAReq   Seasons
 ---------------------------------------------------------------------------
@@ -122,6 +122,3 @@ Computing non-HOF group...
   Note: This analysis uses only 2-3 peak seasons per player.
   A full career analysis with all seasons would show even stronger
   separation, since HOFers maintain production over longer careers.
-
-
-[Saved to C:\Users\logiu\Desktop\testing\baseball\scripts\..\logs\hof_classifier.log]
