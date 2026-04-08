@@ -529,6 +529,52 @@ nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
 }
 .race-header span:nth-child(n+4) { text-align: right; }
 
+/* Career sparkline */
+.sparkline-wrap {
+  max-width: 760px;
+  margin: 8px auto 0;
+  padding: 0 24px;
+  display: none;
+}
+.sparkline-wrap.visible { display: block; animation: fadeUp 0.35s ease; }
+.sparkline-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-4);
+  margin-bottom: 6px;
+}
+.sparkline-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 20px;
+}
+.sparkline-svg { width: 100%; height: 80px; }
+.sparkline-svg polyline {
+  fill: none;
+  stroke: var(--green);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.sparkline-svg circle { fill: var(--green); }
+.sparkline-svg .negative { stroke: var(--red); fill: var(--red); }
+.sparkline-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-4);
+  margin-top: 4px;
+}
+.sparkline-stats {
+  display: flex;
+  gap: 24px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-3);
+}
+.sparkline-stats strong { color: var(--text); }
+
 /* Loading */
 .loading {
   text-align: center;
@@ -593,6 +639,7 @@ nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
 <div class="nav-tabs" id="nav-tabs">
   <button class="nav-tab active" data-tab="player" onclick="switchTab('player')">Player</button>
   <button class="nav-tab" data-tab="awards" onclick="switchTab('awards')">Award Races</button>
+  <button class="nav-tab" data-tab="team" onclick="switchTab('team')">Team</button>
 </div>
 
 <!-- === PLAYER TAB === -->
@@ -626,6 +673,8 @@ nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
   <div class="error-card" id="error"></div>
 
   <div class="result-wrap" id="result-wrap"></div>
+
+  <div class="sparkline-wrap" id="sparkline-wrap"></div>
 
   <div class="compare-grid" id="compare-grid"></div>
 
@@ -662,6 +711,19 @@ nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
   </div>
 </div>
 
+<!-- === TEAM TAB === -->
+<div id="tab-team" style="display:none">
+  <div style="max-width:680px;margin:32px auto 0;padding:0 24px;">
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <input id="team-abbrev" placeholder="Team (NYY, LAD...)" style="font-family:inherit;font-size:13px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);width:140px">
+      <input id="team-year" type="number" value="2023" style="font-family:inherit;font-size:13px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);width:80px">
+      <button onclick="loadTeam()" style="padding:8px 18px;font-family:inherit;font-size:12px;font-weight:600;background:var(--text);color:var(--surface);border:none;border-radius:6px;cursor:pointer">Load Team</button>
+    </div>
+    <div id="team-loading" class="loading"><span>Loading roster<span class="dots"></span></span></div>
+    <div id="team-results"></div>
+  </div>
+</div>
+
 <script>
 const $ = id => document.getElementById(id);
 let debounceTimer = null;
@@ -675,6 +737,7 @@ function switchTab(tab) {
   document.querySelector(`.nav-tab[data-tab="${tab}"]`).classList.add('active');
   $('tab-player').style.display = tab === 'player' ? 'block' : 'none';
   $('tab-awards').style.display = tab === 'awards' ? 'block' : 'none';
+  $('tab-team').style.display = tab === 'team' ? 'block' : 'none';
 }
 
 // --- Search ---
@@ -795,6 +858,7 @@ async function loadBRAVS(playerId, season) {
     }
 
     renderResult(data);
+    loadCareerSparkline(playerId);
   } catch (e) {
     $('loading').classList.remove('visible');
     $('error').textContent = 'Failed to compute BRAVS: ' + e.message;
@@ -878,6 +942,7 @@ function renderResult(r) {
     '<div class="sub-card">' +
       '<span>Total runs above FAT: ' + r.total_runs.toFixed(1) + '</span>' +
       '<span>Leverage multiplier: ' + r.leverage_mult.toFixed(3) + '</span>' +
+      '<button class="add-compare-btn" onclick="openWhatIf()" style="margin-left:auto">What If?</button>' +
     '</div>' +
     '<button class="add-compare-btn" onclick="addToCompare()">+ Add to comparison</button>';
 
@@ -1058,6 +1123,122 @@ function loadPlayerFromAward(playerId, season) {
   currentPlayerId = playerId;
   $('seasons-wrap').classList.remove('visible');
   loadBRAVS(playerId, season);
+}
+
+// --- Career Sparkline ---
+async function loadCareerSparkline(playerId) {
+  const wrap = document.getElementById('sparkline-wrap');
+  try {
+    const resp = await fetch('/api/player/' + playerId + '/career');
+    const data = await resp.json();
+    if (!data.seasons || data.seasons.length < 2) { wrap.classList.remove('visible'); return; }
+
+    const seasons = data.seasons.slice().reverse(); // chronological
+    const vals = seasons.map(s => s.bravs || 0);
+    const years = seasons.map(s => s.season);
+    const minV = Math.min(...vals, 0);
+    const maxV = Math.max(...vals, 1);
+    const range = maxV - minV || 1;
+
+    const w = 680, h = 60, pad = 10;
+    const points = vals.map((v, i) => {
+      const x = pad + (i / (vals.length - 1)) * (w - 2 * pad);
+      const y = h - pad - ((v - minV) / range) * (h - 2 * pad);
+      return x + ',' + y;
+    }).join(' ');
+
+    const circles = vals.map((v, i) => {
+      const x = pad + (i / (vals.length - 1)) * (w - 2 * pad);
+      const y = h - pad - ((v - minV) / range) * (h - 2 * pad);
+      const cls = v < 0 ? 'negative' : '';
+      return '<circle cx="' + x + '" cy="' + y + '" r="3" class="' + cls + '"/>';
+    }).join('');
+
+    const peakIdx = vals.indexOf(Math.max(...vals));
+    const peakYear = years[peakIdx];
+    const peakVal = vals[peakIdx];
+    const total = vals.reduce((a, b) => a + b, 0);
+
+    wrap.innerHTML =
+      '<div class="sparkline-card">' +
+        '<div class="sparkline-title">Career BRAVS Progression (' + years[0] + '-' + years[years.length-1] + ')</div>' +
+        '<svg class="sparkline-svg" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none">' +
+          '<polyline points="' + points + '"/>' +
+          circles +
+        '</svg>' +
+        '<div class="sparkline-labels">' +
+          '<span>' + years[0] + '</span>' +
+          '<span>' + years[years.length - 1] + '</span>' +
+        '</div>' +
+        '<div class="sparkline-stats">' +
+          '<span>Career: <strong>' + total.toFixed(1) + ' BRAVS</strong></span>' +
+          '<span>Peak: <strong>' + peakVal.toFixed(1) + '</strong> (' + peakYear + ')</span>' +
+          '<span>Seasons: <strong>' + seasons.length + '</strong></span>' +
+          '<span>WAR-eq: <strong>' + data.career_war_eq.toFixed(1) + '</strong></span>' +
+        '</div>' +
+      '</div>';
+    wrap.classList.add('visible');
+  } catch(e) {
+    wrap.classList.remove('visible');
+  }
+}
+
+// --- What If ---
+function openWhatIf() {
+  if (!currentResult) return;
+  const r = currentResult;
+  const pos = prompt('What position? (C, 1B, 2B, 3B, SS, LF, CF, RF, DH, P)', r.position);
+  if (!pos) return;
+  // Recompute with different position via API
+  // Build a modified request
+  const params = new URLSearchParams({
+    position_override: pos,
+    player_id: currentPlayerId,
+    season: r.season
+  });
+  fetch('/api/whatif?' + params)
+    .then(resp => resp.json())
+    .then(data => {
+      if (data.error) { alert(data.error); return; }
+      // Show comparison
+      const diff = data.bravs - r.bravs;
+      const sign = diff >= 0 ? '+' : '';
+      alert(r.player_name + ' as ' + pos + ': ' + data.bravs.toFixed(1) + ' BRAVS (' + sign + diff.toFixed(1) + ' vs actual ' + r.position + ')');
+    });
+}
+
+// --- Team Roster ---
+async function loadTeam() {
+  const abbrev = document.getElementById('team-abbrev').value.trim();
+  const year = document.getElementById('team-year').value;
+  if (!abbrev) return;
+  document.getElementById('team-loading').classList.add('visible');
+  document.getElementById('team-results').innerHTML = '';
+  try {
+    const resp = await fetch('/api/team/' + abbrev + '/' + year);
+    const data = await resp.json();
+    document.getElementById('team-loading').classList.remove('visible');
+    if (!data.players || !data.players.length) {
+      document.getElementById('team-results').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-4);font-size:12px">No players found</div>';
+      return;
+    }
+    let html = '<div style="margin-bottom:8px;font-size:13px;font-weight:600">' + abbrev.toUpperCase() + ' ' + year + ' Roster (Total: ' + data.team_bravs + ' BRAVS)</div>';
+    html += '<div class="award-race-results"><div class="race-header"><span></span><span></span><span>Player</span><span>BRAVS</span><span>ErStd</span><span>WAR-eq</span></div>';
+    data.players.forEach((p, i) => {
+      html += '<div class="race-row" onclick="loadPlayerFromAward(' + (p.player_id||0) + ',' + year + ')">' +
+        '<span class="rank ' + (i === 0 ? 'gold' : '') + '">' + (i+1) + '</span>' +
+        '<img src="' + (p.headshot||'') + '" onerror="this.style.display=\'none\'">' +
+        '<div><span class="pname">' + esc(p.player_name) + '</span> <span class="pteam">' + (p.position||'') + '</span></div>' +
+        '<span class="bval ' + (i===0?'top':'') + '">' + p.bravs.toFixed(1) + '</span>' +
+        '<span class="bval">' + p.bravs_era_std.toFixed(1) + '</span>' +
+        '<span class="bval">' + p.bravs_war_eq.toFixed(1) + '</span></div>';
+    });
+    html += '</div>';
+    document.getElementById('team-results').innerHTML = html;
+  } catch(e) {
+    document.getElementById('team-loading').classList.remove('visible');
+    document.getElementById('team-results').innerHTML = '<div class="error-card visible">Failed: ' + e.message + '</div>';
+  }
 }
 
 // --- Helpers ---

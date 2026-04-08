@@ -892,6 +892,95 @@ def player_permalink(player_id, season):
     )
 
 
+@app.route("/api/whatif")
+def what_if():
+    """Recompute BRAVS with a different position."""
+    player_id = flask_request.args.get("player_id")
+    season = flask_request.args.get("season")
+    pos_override = flask_request.args.get("position_override", "DH")
+    if not player_id or not season:
+        return jsonify({"error": "Missing player_id or season"}), 400
+
+    # Get the normal result first
+    result = compute_player_bravs_internal(int(player_id), int(season))
+    if not result:
+        return jsonify({"error": "Could not compute"}), 500
+
+    # Now recompute with different position using Python engine
+    # We need to rebuild the PlayerSeason with the new position
+    # For simplicity, just adjust the positional component
+    from baseball_metric.utils.constants import POS_ADJ, GAMES_PER_SEASON
+    old_pos = result.get("position", "DH")
+    old_adj = POS_ADJ.get(old_pos, 0.0)
+    new_adj = POS_ADJ.get(pos_override, 0.0)
+
+    # Find the positional component and adjust
+    pos_diff_per_162 = new_adj - old_adj
+    # Estimate games from components or traditional stats
+    games = 150  # approximate
+    if result.get("traditional", {}).get("batting", {}).get("G"):
+        games = result["traditional"]["batting"]["G"]
+
+    pos_diff = pos_diff_per_162 * (games / GAMES_PER_SEASON)
+    rpw = result.get("rpw", 5.9)
+
+    new_bravs = result["bravs"] + pos_diff / rpw
+
+    return jsonify({
+        "player_name": result["player_name"],
+        "position": pos_override,
+        "original_position": old_pos,
+        "bravs": round(new_bravs, 1),
+        "bravs_war_eq": round(new_bravs * 0.62, 1),
+        "positional_diff_runs": round(pos_diff, 1),
+    })
+
+
+@app.route("/api/team/<team_abbrev>/<int:season>")
+def team_roster(team_abbrev, season):
+    """Get all players on a team for a season and rank by BRAVS."""
+    # Use the leaders endpoint to find players on this team
+    # This is approximate — we get league leaders and filter by team
+    league_id = 103  # try AL first
+    all_players = []
+
+    for lid in [103, 104]:
+        leaders = _fetch_leaders("plateAppearances", season, lid, 50)
+        all_players.extend(leaders)
+        leaders_p = _fetch_pitching_leaders("inningsPitched", season, lid, 30)
+        all_players.extend(leaders_p)
+
+    # Deduplicate
+    seen = set()
+    unique = []
+    for p in all_players:
+        if p["id"] not in seen:
+            seen.add(p["id"])
+            unique.append(p)
+
+    # Compute BRAVS for all and filter by team
+    results = []
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        futures = {pool.submit(compute_player_bravs_internal, p["id"], season): p for p in unique[:40]}
+        for future in as_completed(futures):
+            try:
+                r = future.result()
+                if r and r.get("team_abbrev", "").upper() == team_abbrev.upper():
+                    r["player_id"] = futures[future]["id"]
+                    results.append(r)
+            except Exception:
+                pass
+
+    results.sort(key=lambda x: x.get("bravs", 0), reverse=True)
+
+    return jsonify({
+        "team": team_abbrev,
+        "season": season,
+        "players": results,
+        "team_bravs": round(sum(r.get("bravs", 0) for r in results), 1),
+    })
+
+
 if __name__ == "__main__":
     print("\n  BRAVS Web App")
     print(f"  Engine: {'Rust (bravs_engine)' if USE_RUST else 'Python (fallback)'}")

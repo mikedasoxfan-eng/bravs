@@ -1,0 +1,119 @@
+=====================================================================================
+  CONTROVERSIAL MVP RACES THROUGH THE BRAVS LENS
+=====================================================================================
+
+=====================================================================================
+  1941 AL MVP: Ted Williams (.406 BA) vs Joe DiMaggio (56-game streak)
+=====================================================================================
+
+Rank  Player                Pos    BRAVS  ErStd  WAReq            90% CI
+-------------------------------------------------------------------------------------
+  1.  Ted Williams          LF      18.2   18.6   11.3  [ 15.6,  20.6]
+  2.  Joe DiMaggio          CF      15.0   15.5    9.3  [ 12.5,  17.5] <-- WINNER
+
+  P(Ted Williams > Joe DiMaggio) = 100%
+  CI overlap: 1.8 wins
+
+  Component             #1 Ted Williams#2 Joe DiMaggio       Gap
+  ----------------------------------------------------
+  approach_quality            +0.6      -0.2      +0.8
+  baserunning                 +2.1      +2.9      -0.8
+  durability                  -3.6      -4.8      +1.2
+  fielding                    +0.0      +0.0      +0.0
+  hitting                   +114.1     +88.8     +25.3
+  leverage                    +3.6      +2.8      +0.8
+  positional                  -6.7      +2.2      -8.9
+
+  CONTEXT: DiMaggio won 291-254 in voting despite Williams hitting .406
+  (last player ever). DiMaggio's 56-game hitting streak captured the
+  public imagination. Williams was unpopular with Boston media.
+
+  BRAVS TAKE: Williams' .553 OBP is one of the greatest offensive seasons
+  ever. His 147 walks in 606 PA represent extraordinary value. DiMaggio
+  had the lower K rate (13!) and more triples, but Williams' plate
+  discipline was on another level. The LF vs CF positional difference
+  is a wash in terms of total BRAVS impact.
+
+
+=====================================================================================
+  2001 NL MVP: Bonds (73 HR) vs Sosa (64 HR) vs Pujols (rookie) vs Helton
+=====================================================================================
+
+Rank  Player                Pos    BRAVS  ErStd  WAReq            90% CI
+-------------------------------------------------------------------------------------
+  1.  Barry Bonds           LF      26.3   25.8   16.3  [ 23.7,  28.8] <-- WINNER
+  2.  Sammy Sosa            RF      16.2   16.8   10.0  [ 13.7,  18.6]
+  3.  Albert Pujols         LF      12.0   12.2    7.4  [  9.5,  14.4]
+  4.  Todd Helton           1B       9.2   10.6    5.7  [  7.0,  11.4]
+
+  P(Barry Bonds > Sammy Sosa) = 100%
+  CI overlap: -5.1 wins
+
+  Component             #1 Barry Bonds#2 Sammy Sosa       Gap
+  ----------------------------------------------------
+  approach_quality            -0.0      -1.6      +1.6
+  baserunning                 +2.8      -3.2      +6.0
+  durability                  -0.6      +1.4      -2.0
+  fielding                    +0.0      +0.0      +0.0
+  hitting                   +152.4    +107.1     +45.3
+  leverage                    +4.8      +3.2      +1.6
+  positional                  -6.8      -7.2      +0.3
+
+  CONTEXT: Bonds hit 73 home runs. That's the answer. But Sosa had 64 HR
+  and 160 RBI, Pujols was a sensational rookie (37 HR, .329 BA), and
+  Helton hit .336/.432/.685 but at Coors. Bonds won unanimously.
+
+  BRAVS TAKE: Bonds' 177 walks make his wOBA stratospheric. The Coors
+  park factor (1.16) hammers Helton's value — his raw stats are inflated
+  by ~16%. Sosa's 153 strikeouts and 19 GIDP hurt his BRAVS relative
+  to his counting stats. Pujols in his rookie year was already elite.
+
+
+=====================================================================================
+  2011 NL MVP: Braun vs Kemp (Triple Crown near-miss) vs Votto
+=====================================================================================
+
+Rank  Player                Pos    BRAVS  ErStd  WAReq            90% CI
+-------------------------------------------------------------------------------------
+  1.  Matt Kemp             CF      15.7   14.7    9.8  [ 12.7,  18.7]
+  2.  Ryan Braun            LF      10.7   10.3    6.6  [  7.8,  13.5] <-- WINNER
+  3.  Joey Votto            1B       8.4    8.5    5.2  [  5.5,  11.2]
+
+  P(Matt Kemp > Ryan Braun) = 100%
+  CI overlap: 0.8 wins
+
+  Component             #1 Matt Kemp#2 Ryan Braun       Gap
+  ----------------------------------------------------
+  approach_quality            -1.3      -0.8      -0.5
+  baserunning                 +3.2      +3.2      -0.0
+  durability                  +1.9      -1.6      +3.5
+  fielding                    +0.0      +0.0      +0.0
+  hitting                    +78.3     +65.9     +12.3
+  leverage                    +2.5      +2.1      +0.4
+  positional                  +2.7      -7.5     +10.2
+
+  CONTEXT: Braun won despite Kemp nearly winning the Triple Crown
+  (.324/39 HR/126 RBI) and having more fWAR (8.3 vs 7.7). Braun later
+  tested positive for PEDs (suspended in 2013). Many feel Kemp was
+  robbed — he played CF (harder position), had more PA, more HR,
+  more SB, and played for a non-playoff team (voters often reward
+  playoff teams). Votto was a dark horse with elite plate discipline.
+
+  BRAVS TAKE: The CF vs LF positional difference matters. Kemp gets
+  +2.5 CF credit vs Braun's -7.5 LF penalty — a 10-run swing. Kemp's
+  40 SB also provides a baserunning edge. But Braun's efficiency in
+  fewer PA and his lower K rate help. The real question: was Braun
+  this good, or was it pharmaceutical?
+
+
+=====================================================================================
+  SUMMARY: WHAT BRAVS REVEALS ABOUT CONTROVERSIAL VOTES
+=====================================================================================
+
+  Across these races, a pattern emerges:
+
+  1. VOTERS OVERWEIGHT NARRATIVE: DiMaggio's streak, Bonds' 73 HR,
+     Braun's team making the playoffs. BRAVS ignores narrative.
+
+  2. DEFENSE AND BASERUNNING ARE UNDERVALUED BY VOTERS: Trout 2012,
+     Kemp 2011
