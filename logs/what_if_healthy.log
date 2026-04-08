@@ -1,0 +1,187 @@
+==========================================================================================
+  WHAT IF THEY STAYED HEALTHY?
+  Injury-adjusted career projections using BRAVS aging curves
+==========================================================================================
+
+  Rank  Player                  Actual  Healthy    Lost   Seasons
+  -----------------------------------------------------------------
+    1.  Sandy Koufax              49.0    427.1  +378.1  12/21
+    2.  Mickey Mantle            112.0    312.0  +200.0  18/21
+    3.  Ken Griffey Jr.           77.0    262.5  +185.5  22/21
+    4.  Jose Fernandez            17.0    186.1  +169.1   4/21
+    5.  Mike Trout                85.0    250.1  +165.1  14/20
+    6.  Johan Santana             44.0    204.7  +160.7  12/19
+    7.  Mark Prior                12.0    164.4  +152.4   5/19
+    8.  Jacob deGrom              38.0    183.6  +145.6   9/15
+    9.  Josh Hamilton             28.0    164.7  +136.7   9/19
+   10.  Matt Harvey               12.0    131.0  +119.0   7/18
+   11.  Nomar Garciaparra         38.0    155.3  +117.3  12/18
+   12.  Prince Fielder            42.0    151.2  +109.2  12/19
+   13.  David Wright              52.0    158.8  +106.8  14/19
+   14.  Bo Jackson                14.0    105.8   +91.8   5/17
+   15.  Yoenis Cespedes           22.0     80.0   +58.0   8/15
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Sandy Koufax: +378.1 BRAVS lost to injuries
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Peak: 24.5 BRAVS at age 30
+  Actual career: 49.0 BRAVS in 12 seasons
+  Healthy career: 427.1 BRAVS in 21 seasons
+
+    age 20:  16.8  ##############
+    age 21:  19.3  ################
+    age 22:  21.4  #################
+    age 23:  23.0  ###################
+    age 24:  24.0  ####################
+    age 25:  24.8  ####################
+    age 26:  25.3  #####################
+    age 27:  25.8  #####################
+    age 28:  25.5  #####################
+    age 29:  25.0  ####################
+    age 30:  24.5  #################### <-- peak
+    age 31:  23.7  ###################
+    age 32:  22.7  ##################
+    age 33:  21.7  ##################  (lost)
+    age 34:  20.4  #################  (lost)
+    age 35:  18.8  ###############  (lost)
+    age 36:  17.0  ##############  (lost)
+    age 37:  15.0  ############  (lost)
+    age 38:  12.9  ##########  (lost)
+    age 39:  10.8  #########  (lost)
+    age 40:   8.8  #######  (lost)
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Mickey Mantle: +200.0 BRAVS lost to injuries
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Peak: 18.4 BRAVS at age 25
+  Actual career: 112.0 BRAVS in 18 seasons
+  Healthy career: 312.0 BRAVS in 21 seasons
+
+    age 20:  13.3  ###########
+    age 21:  14.8  ############
+    age 22:  16.1  #############
+    age 23:  17.1  ##############
+    age 24:  17.8  ##############
+    age 25:  18.4  ############### <-- peak
+    age 26:  18.8  ###############
+    age 27:  19.0  ###############
+    age 28:  18.8  ###############
+    age 29:  18.4  ###############
+    age 30:  17.8  ##############
+    age 31:  17.1  ##############
+    age 32:  16.3  #############
+    age 33:  15.4  ############
+    age 34:  14.4  ############
+    age 35:  13.3  ###########
+    age 36:  12.0  ##########
+    age 37:  10.6  ########
+    age 38:   9.1  #######
+    age 39:   7.6  ######  (lost)
+    age 40:   6.1  #####  (lost)
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Ken Griffey Jr.: +185.5 BRAVS lost to injuries
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Peak: 15.8 BRAVS at age 26
+  Actual career: 77.0 BRAVS in 22 seasons
+  Healthy career: 262.5 BRAVS in 21 seasons
+
+    age 20:  11.2  #########
+    age 21:  12.4  ##########
+    age 22:  13.6  ###########
+    age 23:  14.4  ############
+    age 24:  15.0  ############
+    age 25:  15.5  ############
+    age 26:  15.8  ############# <-- peak
+    age 27:  16.0  #############
+    age 28:  15.8  #############
+    age 29:  15.5  ############
+    age 30:  15.0  ############
+    age 31:  14.4  ############
+    age 32:  13.7  ###########
+    age 33:  12.9  ##########
+    age 34:  12.1  ##########
+    age 35:  11.2  #########
+    age 36:  10.1  ########
+    age 37:   8.9  #######
+    age 38:   7.7  ######
+    age 39:   6.4  #####
+    age 40:   5.1  ####
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Jose Fernandez: +169.1 BRAVS lost to injuries
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Peak: 10.0 BRAVS at age 23
+  Actual career: 17.0 BRAVS in 4 seasons
+  Healthy career: 186.1 BRAVS in 21 seasons
+
+    age 20:   7.3  ######
+    age 21:   8.4  #######
+    age 22:   9.3  #######
+    age 23:  10.0  ######## <-- peak
+    age 24:  10.4  ########
+    age 25:  10.8  #########  (lost)
+    age 26:  11.0  #########  (lost)
+    age 27:  11.2  #########  (lost)
+    age 28:  11.1  #########  (lost)
+    age 29:  10.9  #########  (lost)
+    age 30:  10.7  ########  (lost)
+    age 31:  10.3  ########  (lost)
+    age 32:   9.9  ########  (lost)
+    age 33:   9.4  #######  (lost)
+    age 34:   8.9  #######  (lost)
+    age 35:   8.2  ######  (lost)
+    age 36:   7.4  ######  (lost)
+    age 37:   6.5  #####  (lost)
+    age 38:   5.6  ####  (lost)
+    age 39:   4.7  ###  (lost)
+    age 40:   3.8  ###  (lost)
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Mike Trout: +165.1 BRAVS lost to injuries
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Peak: 15.4 BRAVS at age 25
+  Actual career: 85.0 BRAVS in 14 seasons
+  Healthy career: 250.1 BRAVS in 20 seasons
+
+    age 21:  12.4  ##########
+    age 22:  13.5  ###########
+    age 23:  14.3  ###########
+    age 24:  14.9  ############
+    age 25:  15.4  ############ <-- peak
+    age 26:  15.7  #############
+    age 27:  15.9  #############
+    age 28:  15.7  #############
+    age 29:  15.4  ############
+    age 30:  14.9  ############
+    age 31:  14.3  ###########
+    age 32:  13.7  ###########
+    age 33:  12.9  ##########
+    age 34:  12.1  ##########
+    age 35:  11.1  #########
+    age 36:  10.0  ########  (lost)
+    age 37:   8.9  #######  (lost)
+    age 38:   7.6  ######  (lost)
+    age 39:   6.4  #####  (lost)
+    age 40:   5.1  ####  (lost)
+
+  ==========================================================================================
+  KEY FINDINGS
+  ==========================================================================================
+
+  The biggest "what ifs" in baseball history are players whose
+  peak talent was undeniable but whose bodies couldn't sustain it.
+
+  BRAVS aging curves project what each player WOULD have produced
+  with normal aging (no injuries). The "lost" column is the gap
+  between their projected healthy career and their actual output.
+
+  Caveats:
+  - Assumes the player would have aged normally (no guarantee)
+  - Doesn't account for potential improvement (some young players
+    never reached their ceiling due to early injury)
+  - Actual career BRAVS estimates are approximate (not computed
+    from full season-by-season data)
+  - Some players (Koufax) retired by choice due to injury risk,
+    not because they couldn't play at all
+
