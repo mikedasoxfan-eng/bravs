@@ -1,0 +1,127 @@
+====================================================================================================
+  HALL OF FAME CLASSIFIER — BRAVS SEPARATION ANALYSIS
+  Generated 2026-04-07 20:08:56
+====================================================================================================
+
+Computing HOF group...
+Computing non-HOF group...
+
+====================================================================================================
+  HALL OF FAMERS — Career BRAVS (from peak seasons modeled)
+====================================================================================================
+  Player                     CarBRAVS  CarErStd  CarWAReq   Seasons
+---------------------------------------------------------------------------
+  Barry Bonds*                   46.2      44.9      28.7         2
+  Willie Mays                    47.5      41.0      29.4         2
+  Babe Ruth                      36.1      38.8      22.4         2
+  Ted Williams                   35.7      35.7      22.1         2
+  Mike Trout*                    33.3      32.3      20.6         2
+  Randy Johnson                  28.0      30.4      17.4         2
+  Mike Piazza                    27.8      28.5      17.2         2
+  Ken Griffey Jr                 27.2      28.0      16.9         2
+  Pedro Martinez                 24.8      27.7      15.4         2
+  Cal Ripken                     27.0      26.3      16.7         2
+  Hank Aaron                     27.8      26.1      17.2         2
+  Roger Clemens*                 22.6      23.5      14.0         2
+  Greg Maddux                    22.0      22.8      13.6         2
+  Derek Jeter                    19.4      21.4      12.0         2
+  Mariano Rivera                 12.0      12.8       7.5         2
+
+====================================================================================================
+  NON-HALL OF FAMERS (or borderline) — Career BRAVS
+====================================================================================================
+  Player                     CarBRAVS  CarErStd  CarWAReq   Seasons
+---------------------------------------------------------------------------
+  Mark McGwire                   28.5      29.7      17.7         2
+  Roy Halladay                   28.9      28.5      17.9         2
+  Jim Edmonds                    24.8      26.1      15.4         2
+  Sammy Sosa                     24.0      25.4      14.9         2
+  Curt Schilling                 23.1      24.6      14.3         2
+  Johan Santana                  20.4      21.4      12.6         2
+  Bobby Abreu                    19.5      20.3      12.1         2
+  Andruw Jones                   19.9      20.3      12.3         2
+  Scott Rolen                    18.3      18.9      11.4         2
+  Kenny Lofton                   17.5      18.5      10.9         2
+  Larry Walker                   15.8      18.3       9.8         2
+  David Ortiz                    16.5      17.3      10.2         2
+  Rafael Palmeiro                14.9      16.3       9.2         2
+  Fred McGriff                   15.2      14.9       9.4         2
+  Harold Baines                  13.3      12.5       8.3         2
+
+====================================================================================================
+  DISTRIBUTION ANALYSIS (era-standardized career BRAVS)
+====================================================================================================
+
+  HOF group:     mean=29.3  median=28.0  min=12.8  max=44.9  sd=8.0
+  Non-HOF group: mean=20.9  median=20.3  min=12.5  max=29.7  sd=4.9
+
+  TEXT HISTOGRAM (era-standardized career BRAVS from peak seasons)
+  Range              HOF non-HOF  Distribution
+  ----------------------------------------------------------------------
+  [   12,   14)     1       1  #.
+  [   14,   16)     0       1  .
+  [   16,   18)     0       2  ..
+  [   18,   20)     0       3  ...
+  [   20,   22)     1       3  #...
+  [   22,   24)     2       0  ##
+  [   24,   26)     0       2  ..
+  [   26,   28)     4       1  ####.
+  [   28,   30)     1       2  #..
+  [   30,   32)     1       0  #
+  [   32,   34)     1       0  #
+  [   34,   36)     1       0  #
+  [   36,   38)     0       0  
+  [   38,   40)     1       0  #
+  [   40,   42)     1       0  #
+  [   42,   44)     0       0  
+  [   44,   46)     1       0  #
+  [   46,   48)     0       0  
+
+  Legend: # = HOF, . = non-HOF
+
+====================================================================================================
+  OPTIMAL THRESHOLD ANALYSIS
+====================================================================================================
+
+  Optimal threshold: 20.5 era-standardized career BRAVS
+  Accuracy at threshold: 76.7%
+  Confusion matrix:
+    True Positives  (HOF correctly classified): 14
+    False Positives (non-HOF classified as HOF): 6
+    True Negatives  (non-HOF correctly classified): 9
+    False Negatives (HOF classified as non-HOF): 1
+
+  Misclassified players:
+    Mariano Rivera            actual=HOF      predicted=non-HOF  BRAVS=12.8
+    Jim Edmonds               actual=non-HOF  predicted=HOF      BRAVS=26.1
+    Mark McGwire              actual=non-HOF  predicted=HOF      BRAVS=29.7
+    Sammy Sosa                actual=non-HOF  predicted=HOF      BRAVS=25.4
+    Johan Santana             actual=non-HOF  predicted=HOF      BRAVS=21.4
+    Roy Halladay              actual=non-HOF  predicted=HOF      BRAVS=28.5
+    Curt Schilling            actual=non-HOF  predicted=HOF      BRAVS=24.6
+
+====================================================================================================
+  ROC / AUC ANALYSIS
+====================================================================================================
+
+  AUC (area under ROC curve): 0.8222
+  Mann-Whitney U p-value:     0.001411
+
+  Interpretation: GOOD separation (AUC >= 0.80)
+
+====================================================================================================
+  RAW BRAVS vs WAR-CALIBRATED BRAVS SEPARATION
+====================================================================================================
+
+  Raw BRAVS           : HOF mean=  29.2  non-HOF mean=  20.0  gap=  9.1  Cohen's d=1.26
+  Era-standardized    : HOF mean=  29.3  non-HOF mean=  20.9  gap=  8.5  Cohen's d=1.28
+  WAR-equivalent      : HOF mean=  18.1  non-HOF mean=  12.4  gap=  5.7  Cohen's d=1.26
+
+  Cohen's d interpretation: <0.5 small, 0.5-0.8 medium, >0.8 large
+
+  Note: This analysis uses only 2-3 peak seasons per player.
+  A full career analysis with all seasons would show even stronger
+  separation, since HOFers maintain production over longer careers.
+
+
+[Saved to C:\Users\logiu\Desktop\testing\baseball\scripts\..\logs\hof_classifier.log]
