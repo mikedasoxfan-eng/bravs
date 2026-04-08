@@ -939,46 +939,55 @@ def what_if():
 @app.route("/api/team/<team_abbrev>/<int:season>")
 def team_roster(team_abbrev, season):
     """Get all players on a team for a season and rank by BRAVS."""
-    # Use the leaders endpoint to find players on this team
-    # This is approximate — we get league leaders and filter by team
-    league_id = 103  # try AL first
-    all_players = []
+    # Resolve team abbreviation to MLB team ID
+    team_id = TEAM_IDS.get(team_abbrev.upper())
+    if not team_id:
+        # Try looking up by searching all teams
+        teams_data = _mlb_get(f"{MLB_API}/teams", {"season": season, "sportId": 1})
+        if teams_data and "teams" in teams_data:
+            for t in teams_data["teams"]:
+                if team_abbrev.upper() in (
+                    t.get("abbreviation", "").upper(),
+                    t.get("teamCode", "").upper(),
+                    t.get("shortName", "").upper()[:3],
+                ):
+                    team_id = t["id"]
+                    break
+    if not team_id:
+        return jsonify({"error": f"Unknown team: {team_abbrev}"}), 404
 
-    for lid in [103, 104]:
-        leaders = _fetch_leaders("plateAppearances", season, lid, 50)
-        all_players.extend(leaders)
-        leaders_p = _fetch_pitching_leaders("inningsPitched", season, lid, 30)
-        all_players.extend(leaders_p)
+    # Fetch actual roster from MLB API
+    roster_data = _mlb_get(
+        f"{MLB_API}/teams/{team_id}/roster",
+        {"season": season, "rosterType": "fullSeason"},
+    )
+    if not roster_data or "roster" not in roster_data:
+        return jsonify({"error": "Could not fetch roster"}), 500
 
-    # Deduplicate
-    seen = set()
-    unique = []
-    for p in all_players:
-        if p["id"] not in seen:
-            seen.add(p["id"])
-            unique.append(p)
+    # Extract player IDs and names
+    roster_players = []
+    for entry in roster_data["roster"]:
+        person = entry.get("person", {})
+        pid = person.get("id")
+        name = person.get("fullName", "Unknown")
+        pos = entry.get("position", {}).get("abbreviation", "")
+        if pid:
+            roster_players.append({"id": pid, "name": name, "position": pos})
 
-    # Compute BRAVS for all and filter by team
+    # Compute BRAVS for all roster players in parallel
     results = []
-    with ThreadPoolExecutor(max_workers=6) as pool:
-        futures = {pool.submit(compute_player_bravs_internal, p["id"], season): p for p in unique[:40]}
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        futures = {
+            pool.submit(compute_player_bravs_internal, p["id"], season): p
+            for p in roster_players
+        }
         for future in as_completed(futures):
+            p = futures[future]
             try:
                 r = future.result()
                 if r:
-                    r_abbrev = r.get("team_abbrev", "").upper()
-                    r_team = r.get("team", "").upper()
-                    target = team_abbrev.upper()
-                    # Match on abbreviation OR team name containing the abbreviation
-                    if (r_abbrev == target or target in r_team
-                            or r_team.startswith(target)
-                            or (target == "NYY" and "YANKEE" in r_team)
-                            or (target == "LAD" and "DODGER" in r_team)
-                            or (target == "LAA" and ("ANGEL" in r_team or r_abbrev == "LOS"))
-                            or (target == "SF" and ("GIANT" in r_team or r_abbrev == "SFG"))
-                            or (target == "CWS" and ("WHITE" in r_team or r_abbrev == "CHW"))):
-                        r["player_id"] = futures[future]["id"]
-                        results.append(r)
+                    r["player_id"] = p["id"]
+                    results.append(r)
             except Exception:
                 pass
 
