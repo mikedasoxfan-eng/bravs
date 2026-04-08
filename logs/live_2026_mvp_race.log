@@ -1,0 +1,75 @@
+==============================================================================================
+  LIVE 2026 MVP RACE — WHO'S LEADING RIGHT NOW?
+==============================================================================================
+
+  Fetching American League leaders...
+  Found 46 candidates. Computing BRAVS...
+
+  ==========================================================================================
+  2026 American League MVP RACE (as of today)
+  ==========================================================================================
+
+  Rank  Player                  Team                  Pos     G  BRAVS  WAReq      Key Stat
+  ------------------------------------------------------------------------------------------
+    1.  José Soriano            Los Angeles Angels    DH      3    1.1    0.7 <<
+    2.  Max Fried               New York Yankees      DH      3    1.1    0.7
+    3.  Cam Schlittler          New York Yankees      DH      3    1.1    0.7
+    4.  Kevin Gausman           Toronto Blue Jays     DH      3    0.9    0.6
+    5.  Yordan Alvarez          Houston Astros        LF     12    0.8    0.5  .324/4 HR
+    6.  Taj Bradley             Minnesota Twins       DH      3    0.8    0.5
+    7.  Jose Altuve             Houston Astros        2B     12    0.7    0.4  .341/2 HR
+    8.  Brendan Donovan         Seattle Mariners      3B     10    0.6    0.3  .343/3 HR
+    9.  Ben Rice                New York Yankees      1B      9    0.6    0.4  .379/3 HR
+   10.  Bryan Woo               Seattle Mariners      DH      2    0.6    0.4
+   11.  Logan Gilbert           Seattle Mariners      DH      3    0.6    0.4
+   12.  Trevor Rogers           Baltimore Orioles     DH      3    0.6    0.4
+   13.  Tarik Skubal            Detroit Tigers        DH      3    0.6    0.4
+   14.  Wilyer Abreu            Boston Red Sox        RF     11    0.5    0.3  .372/3 HR
+   15.  Zach Neto               Los Angeles Angels    SS     12    0.5    0.3  .229/4 HR
+
+  Current BRAVS MVP: José Soriano (1.1 BRAVS, 0.7 WAR-eq)
+
+  Fetching National League leaders...
+  Found 47 candidates. Computing BRAVS...
+
+  ==========================================================================================
+  2026 National League MVP RACE (as of today)
+  ==========================================================================================
+
+  Rank  Player                  Team                  Pos     G  BRAVS  WAReq      Key Stat
+  ------------------------------------------------------------------------------------------
+    1.  Sandy Alcantara         Miami Marlins         DH      3    1.5    0.9  0.74 ERA <<
+    2.  Cristopher Sánchez      Philadelphia Phillies DH      3    0.9    0.6
+    3.  Drake Baldwin           Atlanta Braves        C      12    0.8    0.5  .327/5 HR
+    4.  Andy Pages              Los Angeles Dodgers   CF     11    0.8    0.5  .452/3 HR
+    5.  CJ Abrams               Washington Nationals  SS     10    0.6    0.4  .308/4 HR
+    6.  Bryce Elder             Atlanta Braves        DH      2    0.6    0.4
+    7.  Nick Pivetta            San Diego Padres      DH      3    0.6    0.3
+    8.  Ryan O'Hearn            Pittsburgh Pirates    RF     10    0.5    0.3  .389/3 HR
+    9.  Shohei Ohtani           Los Angeles Dodgers   DH     11    0.5    0.3  .286/3 HR
+   10.  Francisco Alvarez       New York Mets         C      10    0.5    0.3  .296/3 HR
+   11.  Logan Webb              San Francisco Giants  DH      3    0.5    0.3
+   12.  Sal Stewart             Cincinnati Reds       1B     11    0.4    0.3  .351/2 HR
+   13.  Jordan Walker           St. Louis Cardinals   RF     11    0.4    0.2  .300/4 HR
+   14.  Christian Yelich        Milwaukee Brewers     LF     11    0.4    0.2  .385/1 HR
+   15.  Oneil Cruz              Pittsburgh Pirates    CF     11    0.4    0.3  .295/4 HR
+
+  Current BRAVS MVP: Sandy Alcantara (1.5 BRAVS, 0.9 WAR-eq)
+
+  ==========================================================================================
+  COMBINED MLB — TOP 10 MOST VALUABLE PLAYERS RIGHT NOW
+  ==========================================================================================
+
+  Rank  Player                  Team                  Pos    BRAVS  WAReq
+  ----------------------------------------------------------------------
+    1.  Sandy Alcantara         Miami Marlins         DH       1.5    0.9
+    2.  José Soriano            Los Angeles Angels    DH       1.1    0.7
+    3.  Max Fried               New York Yankees      DH       1.1    0.7
+    4.  Cam Schlittler          New York Yankees      DH       1.1    0.7
+    5.  Kevin Gausman           Toronto Blue Jays     DH       0.9    0.6
+    6.  Cristopher Sánchez      Philadelphia Phillies DH       0.9    0.6
+    7.  Yordan Alvarez          Houston Astros        LF       0.8    0.5
+    8.  Taj Bradley             Minnesota Twins       DH       0.8    0.5
+    9.  Drake Baldwin           Atlanta Braves        C        0.8    0.5
+   10.  Andy Pages              Los Angeles Dodgers   CF       0.8    0.5
+
