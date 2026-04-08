@@ -1,0 +1,67 @@
+=====================================================================================
+  PLAYER SIMILARITY FINDER
+  Who had the most similar season?
+=====================================================================================
+
+  Target: Juan Soto 2024 (RF, 11.6 BRAVS)
+
+  Rank  Similarity  Player                        BRAVS  Why Similar
+  --------------------------------------------------------------------------------
+    1.      87.5%  Jose Altuve 2017               13.1  approach_quality, baserunning, durability
+        #################
+    2.      82.2%  Mookie Betts 2018              13.4  approach_quality, baserunning, leverage
+        ################
+    3.      73.8%  Mike Trout 2016                15.2  approach_quality, baserunning, durability
+        ##############
+    4.      69.5%  Albert Pujols 2006             12.9  approach_quality, baserunning, durability
+        #############
+    5.      69.3%  Ken Griffey Jr. 1997           15.8  approach_quality, baserunning, durability
+        #############
+
+
+  Target: Bobby Witt Jr. 2025 (SS, 11.5 BRAVS)
+
+  Rank  Similarity  Player                        BRAVS  Why Similar
+  --------------------------------------------------------------------------------
+    1.      81.1%  Rickey Henderson 1982          10.3  approach_quality, baserunning, durability
+        ################
+    2.      74.2%  Ozzie Smith 1987               12.4  approach_quality, baserunning, durability
+        ##############
+    3.      53.6%  Jose Altuve 2017               13.1  approach_quality, durability, fielding
+        ##########
+    4.      40.7%  Mookie Betts 2018              13.4  approach_quality, baserunning, leverage
+        ########
+    5.      33.7%  Mike Trout 2016                15.2  approach_quality, durability, fielding
+        ######
+
+
+  Target: Tarik Skubal 2025 (P, 12.6 BRAVS)
+
+  Rank  Similarity  Player                        BRAVS  Why Similar
+  --------------------------------------------------------------------------------
+    1.      92.5%  Pedro Martinez 2000            11.3  durability, fielding, leverage
+        ##################
+    2.      74.3%  Jacob deGrom 2018              15.1  durability, fielding, leverage
+        ##############
+    3.      64.6%  Clayton Kershaw 2014           16.5  durability, fielding, leverage
+        ############
+    4.       0.0%  Mike Trout 2016                15.2  durability, fielding, leverage
+        
+    5.       0.0%  Barry Bonds 2004               24.1  durability, fielding, leverage
+        
+
+=====================================================================================
+  SIMILARITY MATRIX: ICONIC SEASONS
+=====================================================================================
+
+                  Trout 16  Bonds 04   Ruth 27   Mays 65  Judge 22 Ohtani 23 Martin 00 Gibson 68
+                --------------------------------------------------------------------------------
+        Trout 16       ---        0%       56%       32%       71%       48%        0%        0%
+        Bonds 04        0%       ---       26%       48%        5%        0%        0%        0%
+         Ruth 27       56%       26%       ---       72%       78%       34%        0%        0%
+         Mays 65       32%       48%       72%       ---       54%       14%        0%        0%
+        Judge 22       71%        5%       78%       54%       ---       46%        0%        0%
+       Ohtani 23       48%        0%       34%       14%       46%       ---        0%        0%
+       Martin 00        0%        0%        0%        0%        0%        0%       ---        0%
+       Gibson 68        0%        0%        0%        0%        0%        0%        0%       ---
+

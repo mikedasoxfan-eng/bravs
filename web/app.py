@@ -981,6 +981,50 @@ def team_roster(team_abbrev, season):
     })
 
 
+@app.route("/api/player/<int:player_id>/projection")
+def player_projection(player_id: int):
+    """Project future BRAVS using aging curves."""
+    from baseball_metric.analysis.projections import project_bravs, remaining_career_value
+
+    # Get player info for age
+    pinfo_data = _mlb_get(f"{MLB_API}/people/{player_id}")
+    if not pinfo_data or "people" not in pinfo_data:
+        return jsonify({"error": "Player not found"}), 404
+    pinfo = pinfo_data["people"][0]
+
+    birth = pinfo.get("birthDate", "")
+    if not birth:
+        return jsonify({"error": "Birth date unknown"}), 400
+    birth_year = int(birth[:4])
+    current_age = 2026 - birth_year
+
+    is_pitcher = pinfo.get("primaryPosition", {}).get("abbreviation", "") == "P"
+
+    # Get most recent season BRAVS
+    result = compute_player_bravs_internal(player_id, 2025)
+    if not result:
+        result = compute_player_bravs_internal(player_id, 2024)
+    if not result:
+        return jsonify({"error": "No recent season data"}), 404
+
+    current_bravs = result.get("bravs", 0)
+
+    projections = project_bravs(current_bravs, current_age, is_pitcher, years_forward=8)
+    career = remaining_career_value(current_bravs, current_age, is_pitcher)
+
+    return jsonify({
+        "player_name": _display_name(pinfo.get("fullName", "Unknown")),
+        "current_age": current_age,
+        "current_bravs": round(current_bravs, 1),
+        "is_pitcher": is_pitcher,
+        "projections": projections,
+        "remaining_career_bravs": career["remaining_bravs"],
+        "remaining_war_eq": career["remaining_war_eq"],
+        "expected_years_left": career["expected_years"],
+        "expected_retirement_age": career["retirement_age"],
+    })
+
+
 if __name__ == "__main__":
     print("\n  BRAVS Web App")
     print(f"  Engine: {'Rust (bravs_engine)' if USE_RUST else 'Python (fallback)'}")

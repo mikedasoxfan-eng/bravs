@@ -1,0 +1,58 @@
+=====================================================================================
+  THE BRAVS ALL-TIME DREAM TEAM
+  Best possible season at every position
+=====================================================================================
+
+  Slot  Player                   YearPos    BRAVS  WAReq  Signature
+  --------------------------------------------------------------------------------
+  C     Mike Piazza              1997 C      17.1   10.6  .362/.431/.638, 40 HR from catcher
+  1B    Lou Gehrig               1927 1B     14.5    9.0  .373/.474/.765, 218 H / 47 HR
+  2B    Rogers Hornsby           1922 2B     22.2   13.7  .401/.459/.722, 250 hits (!)
+  3B    Mike Schmidt             1980 3B     14.4    8.9  .286/.380/.624, 48 HR, Gold Glove D
+  SS    Honus Wagner             1908 SS     19.6   12.1  .354/.413/.542, 53 SB, elite glove
+  LF    Ted Williams             1941 LF     18.2   11.3  .406/.553/.735, last man to hit .400
+  CF    Willie Mays              1965 CF     26.1   16.2  .317/.398/.645, 52 HR, elite defense
+  RF    Babe Ruth                1921 RF     22.0   13.6  .378/.512/.846, 59 HR, 204 hits
+  DH    Barry Bonds              2001 DH     25.0   15.5  .328/.515/.863, 73 HR, 177 BB
+  SP1   Pedro Martinez           2000 P      11.3    7.0  1.74 ERA, 284 K in 217 IP, steroid-era
+  SP2   Bob Gibson               1968 P      28.1   17.5  1.12 ERA, 268 K in 305 IP, Year of Pitcher
+  SP3   Sandy Koufax             1966 P      24.5   15.2  1.73 ERA, 317 K in 323 IP, final season
+  SP4   Randy Johnson            2001 P      14.3    8.9  2.49 ERA, 372 K in 250 IP, 6'10 unit
+  SP5   Greg Maddux              1995 P      11.1    6.9  1.63 ERA, 23 BB in 210 IP, Picasso
+  CL    Mariano Rivera           2004 P       4.9    3.1  1.94 ERA, 53 SV, gmLI 1.85, cutter god
+  --------------------------------------------------------------------------------
+  TOTAL                                     273.2  169.4
+
+  =====================================================================================
+  TEAM VALUE BREAKDOWN
+  =====================================================================================
+
+  Lineup (9 batters):    178.9 BRAVS  (65% of total)
+  Rotation (5 SP):        89.4 BRAVS  (33% of total)
+  Closer:                  4.9 BRAVS  (2% of total)
+
+  This roster has 169 WAR-equivalent wins above FAT.
+  A FAT-level team wins roughly 47-48 games.
+  This dream team would therefore be expected to win:
+
+    47 + 169 = 216 games
+
+  ...which is obviously impossible (max 162). This illustrates a known
+  limitation of additive metrics: player values don't perfectly sum to
+  team value because of diminishing returns (Axiom 7: conditional
+  additivity). A team this good would win 140+ games in reality,
+  limited by the maximum possible win pace and randomness.
+
+  Still, even with the additivity caveat, this is the most valuable
+  collection of single-season performances ever assembled.
+  
+=====================================================================================
+  ERA BREAKDOWN: WHEN WERE THE GREATEST SEASONS?
+=====================================================================================
+  1900s:   19.6 BRAVS  (Wagner)
+  1920s:   58.6 BRAVS  (Gehrig, Hornsby, Ruth)
+  1940s:   18.2 BRAVS  (Williams)
+  1960s:   78.7 BRAVS  (Mays, Gibson, Koufax)
+  1980s:   14.4 BRAVS  (Schmidt)
+  1990s:   28.2 BRAVS  (Piazza, Maddux)
+  2000s:   55.5 BRAVS  (Bonds, Martinez, Johnson, Rivera)
