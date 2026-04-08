@@ -1,0 +1,91 @@
+===============================================================================================
+  ACTIVE PLAYERS: WHO'S ALREADY A HALL OF FAMER?
+  Career BRAVS analysis using Rust engine
+===============================================================================================
+
+  Computed: Aaron Judge (11 seasons, 52.4 WAR-eq)
+  Computed: Shohei Ohtani (9 seasons, 49.3 WAR-eq)
+  Computed: Mike Trout (16 seasons, 73.5 WAR-eq)
+  Computed: Mookie Betts (13 seasons, 52.9 WAR-eq)
+  Computed: Freddie Freeman (14 seasons, 50.4 WAR-eq)
+  Computed: Nolan Arenado (11 seasons, -4.7 WAR-eq)
+  Computed: Jose Altuve (13 seasons, 31.8 WAR-eq)
+  Computed: J.T. Realmuto (14 seasons, 26.6 WAR-eq)
+  Computed: Trea Turner (12 seasons, 29.5 WAR-eq)
+  Computed: Jose Ramirez (8 seasons, 23.6 WAR-eq)
+  Computed: Paul Goldschmidt (12 seasons, 19.1 WAR-eq)
+  Computed: Bryce Harper (15 seasons, 55.1 WAR-eq)
+  Computed: Manny Machado (12 seasons, 53.2 WAR-eq)
+  Computed: Corey Seager (10 seasons, -1.1 WAR-eq)
+  Computed: Max Scherzer (11 seasons, 20.1 WAR-eq)
+  Computed: Clayton Kershaw (18 seasons, 87.3 WAR-eq)
+  Computed: Giancarlo Stanton (17 seasons, 27.6 WAR-eq)
+  Computed: Francisco Lindor (12 seasons, 52.9 WAR-eq)
+  Computed: Matt Olson (12 seasons, 27.0 WAR-eq)
+  Computed: Ronald Acuna Jr. (8 seasons, 4.5 WAR-eq)
+  Computed: Juan Soto (9 seasons, 47.1 WAR-eq)
+  Computed: Xander Bogaerts (12 seasons, 29.1 WAR-eq)
+  Computed: Corbin Burnes (10 seasons, 22.8 WAR-eq)
+  Computed: Bobby Witt Jr. (7 seasons, 20.8 WAR-eq)
+  Computed: Julio Rodriguez (4 seasons, 0.4 WAR-eq)
+
+===============================================================================================
+  Rank Player                 AgePos   Yrs Games   HR   BRAVS  WAR-eq   Peak    Pk5  Verdict
+-----------------------------------------------------------------------------------------------
+  1    Clayton Kershaw         38P      18   464    1   140.7    87.3   16.6   73.6  LOCK
+  2    Mike Trout              35RF     16  1659  406   118.7    73.5   18.0   79.5  LOCK
+  3    Bryce Harper            341B     15  1796  365    88.7    55.1   16.8   53.3  LOCK
+  4    Manny Machado           36P      12   320    3    85.8    53.2   11.9   52.4  STRONG
+  5    Mookie Betts            34SS     13  1539  293    85.5    52.9   13.9   54.8  STRONG
+  6    Francisco Lindor        33SS     12  1546  279    85.1    52.9   12.2   51.6  STRONG
+  7    Aaron Judge             34RF     11  1155  371    84.4    52.4   19.8   77.9  STRONG
+  8    Freddie Freeman         353B     14  1797  353    81.3    50.4   11.5   54.3  STRONG
+  9    Shohei Ohtani           32TWP     9  1044  283    79.6    49.3   16.4   74.6  STRONG
+  10   Juan Soto               28RF      9  1104  245    76.2    47.1   13.6   57.7  STRONG
+  11   Jose Altuve             413B     13  1384  279    51.7    31.8   13.9   57.3  NEEDS MORE
+  12   Trea Turner             32SS     12  1264  201    47.5    29.5    9.7   35.7  NEEDS MORE
+  13   Xander Bogaerts         32SS     12  1142  224    47.3    29.1   10.9   41.0  NEEDS MORE
+  14   Giancarlo Stanton       37DH     17  1735  454    44.3    27.6   11.7   43.4  NEEDS MORE
+  15   Matt Olson              37P      12   311    0    43.6    27.0    7.7   30.0  NEEDS MORE
+  16   J.T. Realmuto           39DH     14  1642  331    43.4    26.6   12.2   41.8  NEEDS MORE
+  17   Jose Ramirez            321B      8  1019  265    38.0    23.6    8.5   32.5  NOT YET
+  18   Corbin Burnes           31LF     10  1167  226    36.8    22.8   11.5   34.6  NOT YET
+  19   Bobby Witt Jr.          30P       7   140    0    33.5    20.8   11.5   33.1  NOT YET
+  20   Max Scherzer            34DH     11  1054  184    32.3    20.1   13.0   51.2  NOT YET
+  21   Paul Goldschmidt        363B     12  1173  158    30.7    19.1   11.8   48.2  NOT YET
+  22   Ronald Acuna Jr.        33LF      8   875  129     7.1     4.5    2.8    9.5  NOT YET
+  23   Julio Rodriguez         33P       4    54    0     0.7     0.4    5.7    0.7  NOT YET
+  24   Corey Seager            33LF     10   939  208    -2.0    -1.1    6.7   19.0  NOT YET
+  25   Nolan Arenado           382B     11  1025   18    -7.5    -4.7    6.8   16.7  NOT YET
+
+===============================================================================================
+  HOF TIERS (by career WAR-equivalent)
+===============================================================================================
+
+  LOCK (55+ WAR-eq): Clayton Kershaw, Mike Trout, Bryce Harper
+    First-ballot certainties. Already accumulated enough value
+    that the remaining career is just padding the margin.
+
+  STRONG CASE (45-55 WAR-eq): Manny Machado, Mookie Betts, Francisco Lindor, Aaron Judge, Freddie Freeman, Shohei Ohtani, Juan Soto
+    Very likely HOFers. A few more good seasons seals it.
+    Even if they retired today, the case is compelling.
+
+  BORDERLINE (35-45 WAR-eq): none
+    Could go either way. Need either a strong finish or
+    memorable narrative moments (championships, milestones).
+
+  NEEDS MORE (25-35 WAR-eq): Jose Altuve, Trea Turner, Xander Bogaerts, Giancarlo Stanton, Matt Olson, J.T. Realmuto
+    On the trajectory but not there yet. Need 3-5 more
+    productive seasons to build a real case.
+
+  NOT YET (<25 WAR-eq): Jose Ramirez, Corbin Burnes, Bobby Witt Jr., Max Scherzer, Paul Goldschmidt, Ronald Acuna Jr., Julio Rodriguez, Corey Seager, Nolan Arenado
+    Too early in career or insufficient peak. Could still
+    get there with sustained excellence.
+
+  THRESHOLDS (approximate, from HOF classifier):
+    55+ WAR-eq = clear first-ballot
+    45-55 = strong case, likely in
+    35-45 = borderline, needs narrative
+    25-35 = Hall of Very Good
+    <25 = not enough yet
+
