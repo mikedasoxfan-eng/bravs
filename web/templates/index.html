@@ -1053,24 +1053,24 @@ function runCompare() {
 
   // BRAVS row
   rowsHTML += '<tr><td>BRAVS</td>' + players.map(p =>
-    '<td class="' + (p.bravs === maxBravs ? 'winner' : '') + '">' + p.bravs.toFixed(1) + '</td>'
+    '<td class="' + ((p.bravs||0) === maxBravs ? 'winner' : '') + '">' + (p.bravs||0).toFixed(1) + '</td>'
   ).join('') + '</tr>';
 
   // WAR-eq row
-  const maxWar = Math.max(...players.map(p => p.bravs_war_eq));
+  const maxWar = Math.max(...players.map(p => p.bravs_war_eq||0));
   rowsHTML += '<tr><td>WAR-Equiv</td>' + players.map(p =>
-    '<td class="' + (p.bravs_war_eq === maxWar ? 'winner' : '') + '">' + p.bravs_war_eq.toFixed(1) + '</td>'
+    '<td class="' + ((p.bravs_war_eq||0) === maxWar ? 'winner' : '') + '">' + (p.bravs_war_eq||0).toFixed(1) + '</td>'
   ).join('') + '</tr>';
 
   // Era-Std row
-  const maxEra = Math.max(...players.map(p => p.bravs_era_std));
+  const maxEra = Math.max(...players.map(p => p.bravs_era_std||0));
   rowsHTML += '<tr><td>Era-Std</td>' + players.map(p =>
-    '<td class="' + (p.bravs_era_std === maxEra ? 'winner' : '') + '">' + p.bravs_era_std.toFixed(1) + '</td>'
+    '<td class="' + ((p.bravs_era_std||0) === maxEra ? 'winner' : '') + '">' + (p.bravs_era_std||0).toFixed(1) + '</td>'
   ).join('') + '</tr>';
 
   // 90% CI
   rowsHTML += '<tr><td>90% CI</td>' + players.map(p =>
-    '<td>' + p.ci90_lo.toFixed(1) + ' to ' + p.ci90_hi.toFixed(1) + '</td>'
+    '<td>' + (p.ci90_lo||0).toFixed(1) + ' to ' + (p.ci90_hi||0).toFixed(1) + '</td>'
   ).join('') + '</tr>';
 
   // Component rows
@@ -1157,9 +1157,9 @@ function renderAwardRace(data) {
           '<img src="' + (p.headshot||'') + '" onerror="this.style.display=\'none\'">' +
           '<div><span class="pname">' + esc(p.player_name) + '</span> ' +
             '<span class="pteam">' + (p.team_abbrev||'') + ' / ' + p.position + '</span></div>' +
-          '<span class="bval ' + (i === 0 ? 'top' : '') + '">' + p.bravs.toFixed(1) + '</span>' +
-          '<span class="bval">' + p.bravs_era_std.toFixed(1) + '</span>' +
-          '<span class="bval">' + p.bravs_war_eq.toFixed(1) + '</span>' +
+          '<span class="bval ' + (i === 0 ? 'top' : '') + '">' + (p.bravs||0).toFixed(1) + '</span>' +
+          '<span class="bval">' + (p.bravs_era_std||0).toFixed(1) + '</span>' +
+          '<span class="bval">' + (p.bravs_war_eq||0).toFixed(1) + '</span>' +
         '</div>'
       ).join('') +
     '</div>';
@@ -1276,9 +1276,9 @@ async function loadTeam() {
         '<span class="rank ' + (i === 0 ? 'gold' : '') + '">' + (i+1) + '</span>' +
         '<img src="' + (p.headshot||'') + '" onerror="this.style.display=\'none\'">' +
         '<div><span class="pname">' + esc(p.player_name) + '</span> <span class="pteam">' + (p.position||'') + '</span></div>' +
-        '<span class="bval ' + (i===0?'top':'') + '">' + p.bravs.toFixed(1) + '</span>' +
-        '<span class="bval">' + p.bravs_era_std.toFixed(1) + '</span>' +
-        '<span class="bval">' + p.bravs_war_eq.toFixed(1) + '</span></div>';
+        '<span class="bval ' + (i===0?'top':'') + '">' + (p.bravs||0).toFixed(1) + '</span>' +
+        '<span class="bval">' + (p.bravs_era_std||0).toFixed(1) + '</span>' +
+        '<span class="bval">' + (p.bravs_war_eq||0).toFixed(1) + '</span></div>';
     });
     html += '</div>';
     document.getElementById('team-results').innerHTML = html;
@@ -1306,9 +1306,9 @@ async function loadLiveMVP() {
         '<span class="rank ' + (i===0?'gold':'') + '">' + (i+1) + '</span>' +
         '<img src="' + (p.headshot||'') + '" onerror="this.style.display=\'none\'">' +
         '<div><span class="pname">' + esc(p.player_name) + '</span> <span class="pteam">' + (p.team_abbrev||'') + ' / ' + (p.position||'') + '</span></div>' +
-        '<span class="bval ' + (i===0?'top':'') + '">' + p.bravs.toFixed(1) + '</span>' +
-        '<span class="bval">' + (p.pace_bravs ? p.pace_bravs.toFixed(1) : '--') + '</span>' +
-        '<span class="bval">' + p.bravs_war_eq.toFixed(1) + '</span></div>';
+        '<span class="bval ' + (i===0?'top':'') + '">' + (p.bravs_pace != null ? p.bravs_pace : p.bravs || 0).toFixed(1) + '</span>' +
+        '<span class="bval">' + (p.bravs_raw != null ? p.bravs_raw.toFixed(1) : '--') + '</span>' +
+        '<span class="bval">' + (p.bravs_war_eq != null ? p.bravs_war_eq : (p.bravs_pace||0)*0.62).toFixed(1) + '</span></div>';
     });
     html += '</div>';
     document.getElementById('mvp-results').innerHTML = html;
