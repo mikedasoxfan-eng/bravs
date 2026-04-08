@@ -1181,11 +1181,38 @@ def live_mvp(league):
     _add(_fetch_pitching_leaders("strikeouts", current_year, league_id, 5))
     _add(_fetch_pitching_leaders("inningsPitched", current_year, league_id, 5))
 
-    # Compute BRAVS for all candidates in parallel
+    # Figure out how far into the season we are by checking schedule
+    schedule = _mlb_get(
+        f"{MLB_API}/schedule",
+        {"sportId": 1, "season": current_year, "gameType": "R"},
+    )
+    games_played_league = 0
+    if schedule and "dates" in schedule:
+        for dt in schedule["dates"]:
+            for g in dt.get("games", []):
+                if g.get("status", {}).get("abstractGameState") == "Final":
+                    games_played_league += 1
+    # Estimate per-team games (30 teams, 2 teams per game)
+    team_games_est = max(games_played_league * 2 // 30, 5)
+
+    # Compute BRAVS with correct season_games so durability prorates properly.
+    # We can't pass season_games through compute_player_bravs_internal directly,
+    # so we compute manually here for each candidate.
     raw_results: list[dict] = []
+
+    def _compute_live(cand_id: int, cand_name: str) -> dict | None:
+        """Compute BRAVS for a live-season player with prorated season length."""
+        # We need to call the full compute endpoint logic but with season_games override.
+        # Simplest approach: call the normal endpoint and then adjust.
+        with app.test_request_context():
+            resp = compute_player_bravs(cand_id, current_year)
+            if isinstance(resp, tuple):
+                return None
+            return resp.get_json()
+
     with ThreadPoolExecutor(max_workers=6) as pool:
         futures = {
-            pool.submit(compute_player_bravs_internal, cand["id"], current_year): cand
+            pool.submit(_compute_live, cand["id"], cand["name"]): cand
             for cand in candidates[:20]
         }
         for future in as_completed(futures):
@@ -1198,25 +1225,36 @@ def live_mvp(league):
             except Exception as e:
                 logger.warning("Live MVP failed for %s: %s", cand["name"], e)
 
-    # Adjust for in-progress season: if durability is significantly negative,
-    # add it back to get a "pace" BRAVS that doesn't penalize unplayed games.
+    # For each candidate: strip out durability entirely and extrapolate to
+    # 162-game pace. This gives a "what would their full season look like"
+    # projection based on current rate of production.
     adjusted: list[dict] = []
     for r in raw_results:
         comps = _extract_component_runs(r)
-        durability = comps.get("durability", 0.0)
-        raw_bravs = r.get("bravs", 0.0)
-        if durability < -5.0:
-            pace_bravs = round(raw_bravs - durability / r.get("rpw", 5.9), 1)
-        else:
-            pace_bravs = raw_bravs
+        durability_runs = comps.get("durability", 0.0)
+        rpw = r.get("rpw", 5.9)
 
+        # Get games played
         games = 0
         trad = r.get("traditional", {})
         if trad.get("batting", {}).get("G"):
             games = trad["batting"]["G"]
         elif trad.get("pitching", {}).get("G"):
             games = trad["pitching"]["G"]
-        est_team_games = games + 5
+
+        # Raw BRAVS as-is (with full-season durability penalty)
+        raw_bravs = r.get("bravs", 0.0)
+
+        # Actual BRAVS: strip durability entirely to get pure production rate
+        production_runs = r.get("total_runs", 0.0) - durability_runs
+        actual_bravs = round(production_runs / rpw, 1)
+
+        # 162-game pace: extrapolate current production rate to full season
+        if games > 0:
+            pace_factor = 162.0 / games
+            pace_bravs = round(actual_bravs * min(pace_factor, 20.0), 1)  # cap at 20x
+        else:
+            pace_bravs = 0.0
 
         adjusted.append({
             "player_name": r.get("player_name", ""),
@@ -1226,13 +1264,13 @@ def live_mvp(league):
             "team_abbrev": r.get("team_abbrev", ""),
             "team_id": r.get("team_id"),
             "headshot": r.get("headshot", ""),
-            "bravs": pace_bravs,
-            "bravs_raw": raw_bravs,
+            "bravs": actual_bravs,
             "bravs_pace": pace_bravs,
+            "bravs_raw": raw_bravs,
             "bravs_era_std": r.get("bravs_era_std", 0),
             "bravs_war_eq": round(pace_bravs * 0.62, 1),
             "games_played": games,
-            "est_team_games": est_team_games,
+            "team_games": team_games_est,
             "components": r.get("components", []),
         })
 
@@ -1241,6 +1279,7 @@ def live_mvp(league):
     return jsonify({
         "season": current_year,
         "league": league.upper(),
+        "team_games": team_games_est,
         "candidates": adjusted,
     })
 

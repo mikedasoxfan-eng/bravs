@@ -1299,16 +1299,20 @@ async function loadLiveMVP() {
     document.getElementById('mvp-loading').classList.remove('visible');
     if (data.error) { document.getElementById('mvp-results').innerHTML = '<div class="error-card visible">' + data.error + '</div>'; return; }
 
-    let html = '<div style="margin-bottom:12px;font-size:13px;font-weight:600">2026 ' + data.league + ' MVP Race (Live)</div>';
-    html += '<div class="award-race-results"><div class="race-header"><span></span><span></span><span>Player</span><span>BRAVS</span><span>Pace</span><span>WAR-eq</span></div>';
+    const tg = data.team_games || '?';
+    let html = '<div style="margin-bottom:12px;font-size:13px;font-weight:600">' + data.season + ' ' + data.league + ' MVP Race (~' + tg + ' team games played)</div>';
+    html += '<div class="award-race-results"><div class="race-header"><span></span><span></span><span>Player</span><span>Actual</span><span>162-Pace</span><span>WAR-eq</span></div>';
     data.candidates.forEach((p, i) => {
+      const actual = p.bravs || 0;
+      const pace = p.bravs_pace || 0;
+      const wareq = p.bravs_war_eq || 0;
       html += '<div class="race-row" onclick="switchTab(\'player\');currentPlayerId=' + p.player_id + ';loadBRAVS(' + p.player_id + ',' + data.season + ')">' +
         '<span class="rank ' + (i===0?'gold':'') + '">' + (i+1) + '</span>' +
         '<img src="' + (p.headshot||'') + '" onerror="this.style.display=\'none\'">' +
-        '<div><span class="pname">' + esc(p.player_name) + '</span> <span class="pteam">' + (p.team_abbrev||'') + ' / ' + (p.position||'') + '</span></div>' +
-        '<span class="bval ' + (i===0?'top':'') + '">' + (p.bravs_pace != null ? p.bravs_pace : p.bravs || 0).toFixed(1) + '</span>' +
-        '<span class="bval">' + (p.bravs_raw != null ? p.bravs_raw.toFixed(1) : '--') + '</span>' +
-        '<span class="bval">' + (p.bravs_war_eq != null ? p.bravs_war_eq : (p.bravs_pace||0)*0.62).toFixed(1) + '</span></div>';
+        '<div><span class="pname">' + esc(p.player_name) + '</span> <span class="pteam">' + (p.team_abbrev||'') + ' / ' + (p.position||'') + ' / ' + (p.games_played||0) + 'G</span></div>' +
+        '<span class="bval">' + actual.toFixed(1) + '</span>' +
+        '<span class="bval ' + (i===0?'top':'') + '">' + pace.toFixed(1) + '</span>' +
+        '<span class="bval">' + wareq.toFixed(1) + '</span></div>';
     });
     html += '</div>';
     document.getElementById('mvp-results').innerHTML = html;
