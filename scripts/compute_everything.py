@@ -67,6 +67,43 @@ def main():
                 best_pos = pos
         pos_lookup[(pid, yr)] = best_pos
 
+    # Compute crude fielding runs from Lahman fielding table
+    # Method: compare range factor (PO+A per inning) and error rate to position average
+    fld = pd.read_csv(lahman.DATA_DIR / "Fielding.csv")
+    if "InnOuts" in fld.columns:
+        fld["Inn"] = fld.InnOuts / 3.0
+    else:
+        fld["Inn"] = fld.G * 9.0  # fallback: estimate innings from games
+
+    fld["RF_per_inn"] = (fld.PO.fillna(0) + fld.A.fillna(0)) / fld.Inn.clip(lower=1)
+    fld["E_per_inn"] = fld.E.fillna(0) / fld.Inn.clip(lower=1)
+
+    # Position-year averages
+    pos_avg = fld[fld.Inn >= 100].groupby(["yearID", "POS"]).agg(
+        avg_rf=("RF_per_inn", "mean"),
+        avg_e=("E_per_inn", "mean"),
+    ).reset_index()
+
+    # Merge to get above-average fielding
+    fld_merged = fld.merge(pos_avg, on=["yearID", "POS"], how="left")
+    fld_merged["rf_above_avg"] = (fld_merged.RF_per_inn - fld_merged.avg_rf.fillna(0)) * fld_merged.Inn
+    fld_merged["e_above_avg"] = -(fld_merged.E_per_inn - fld_merged.avg_e.fillna(0)) * fld_merged.Inn  # negative errors = good
+
+    # Convert to run values — very conservative to avoid positional bias
+    # Range factor above avg overstates value at high-putout positions (1B, C, CF)
+    # Use 0.3 runs per play above avg (vs the naive 0.8)
+    fld_merged["fielding_rf_runs"] = fld_merged.rf_above_avg * 0.3
+    fld_merged["fielding_e_runs"] = fld_merged.e_above_avg * 0.5
+
+    # Aggregate per player-year (sum across positions)
+    fld_agg = fld_merged.groupby(["playerID", "yearID"]).agg(
+        fielding_rf=("fielding_rf_runs", "sum"),
+        fielding_e=("fielding_e_runs", "sum"),
+    ).reset_index()
+    fld_lookup = {(r.playerID, int(r.yearID)): (r.fielding_rf, r.fielding_e) for _, r in fld_agg.iterrows()}
+
+    print(f"  Fielding estimates computed for {len(fld_lookup):,} player-seasons")
+
     # Merge batting and pitching into unified player-season records
     all_records = {}
 
@@ -89,7 +126,13 @@ def main():
             "BB_allowed": 0, "HBP_allowed": 0, "K_pitch": 0,
             "G_pitched": 0, "GS": 0, "SV": 0,
             "park_factor": 1.0, "season_games": season_games,
+            "fielding_rf": 0.0, "fielding_e": 0.0,
         }
+        # Add fielding data
+        fld_key = (r.playerID, int(r.yearID))
+        if fld_key in fld_lookup:
+            all_records[key]["fielding_rf"] = round(fld_lookup[fld_key][0], 1)
+            all_records[key]["fielding_e"] = round(fld_lookup[fld_key][1], 1)
 
     for _, r in pit_season.iterrows():
         key = (r.playerID, int(r.yearID))
@@ -118,7 +161,12 @@ def main():
                 "K_pitch": int(r.SO), "G_pitched": int(r.G),
                 "GS": int(r.GS), "SV": int(r.get("SV", 0) or 0),
                 "park_factor": 1.0, "season_games": season_games,
+                "fielding_rf": 0.0, "fielding_e": 0.0,
             }
+            fld_key = (r.playerID, int(r.yearID))
+            if fld_key in fld_lookup:
+                all_records[(r.playerID, int(r.yearID))]["fielding_rf"] = round(fld_lookup[fld_key][0], 1)
+                all_records[(r.playerID, int(r.yearID))]["fielding_e"] = round(fld_lookup[fld_key][1], 1)
 
     player_data = list(all_records.values())
     total = len(player_data)

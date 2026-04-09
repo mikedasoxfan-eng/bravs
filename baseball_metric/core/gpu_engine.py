@@ -208,6 +208,21 @@ def batch_compute_bravs(
     baserunning_runs = br_raw * br_shrink
 
     # ============================================================
+    # COMPONENT 3b: FIELDING (crude estimate from putouts/assists/errors)
+    # ============================================================
+    # For the GPU batch engine, we estimate fielding runs from the
+    # range factor (PO + A per inning) and error rate relative to
+    # position average. This is crude but better than 0 for everyone.
+    # The data is passed as RF_above_avg (range factor above average)
+    # and E_above_avg (errors above average, negative = fewer errors = better)
+    fielding_rf = _f("fielding_rf", 0)  # range factor above avg (runs)
+    fielding_e = _f("fielding_e", 0)    # error runs above avg
+    fielding_runs = (fielding_rf + fielding_e) * era_mult
+    # Apply Bayesian shrinkage (fielding is noisy)
+    fielding_shrink = 0.5  # trust only half
+    fielding_runs = fielding_runs * fielding_shrink
+
+    # ============================================================
     # COMPONENT 4: POSITIONAL
     # ============================================================
     games_frac = games / GAMES_PER_SEASON
@@ -264,12 +279,13 @@ def batch_compute_bravs(
 
     has_batting = (pa >= 50).float()
     total_runs = (hitting_runs * has_batting + pitching_runs +
-                  baserunning_runs * has_batting + positional_runs +
-                  durability_runs + aqi_runs * has_batting + leverage_runs)
+                  baserunning_runs * has_batting + fielding_runs * has_batting +
+                  positional_runs + durability_runs + aqi_runs * has_batting +
+                  leverage_runs)
 
     # Posterior: use hitting samples + point estimates for other components
-    other_runs = (pitching_runs + baserunning_runs * has_batting + positional_runs +
-                  durability_runs + aqi_runs * has_batting).unsqueeze(1)
+    other_runs = (pitching_runs + baserunning_runs * has_batting + fielding_runs * has_batting +
+                  positional_runs + durability_runs + aqi_runs * has_batting).unsqueeze(1)
     total_samples = hitting_samples * has_batting.unsqueeze(1) + pitching_samples + other_runs
     total_samples = total_samples + torch.randn(N, n_samples, device=DEVICE, generator=gen) * 3.0  # add noise for other components
 
@@ -295,6 +311,7 @@ def batch_compute_bravs(
     pit_cpu = pitching_runs.cpu().numpy()
     br_cpu = baserunning_runs.cpu().numpy()
     pos_cpu = positional_runs.cpu().numpy()
+    fld_cpu = fielding_runs.cpu().numpy()
     dur_cpu = durability_runs.cpu().numpy()
     aqi_cpu = aqi_runs.cpu().numpy()
     rpw_cpu = rpw.cpu().numpy()
@@ -320,6 +337,7 @@ def batch_compute_bravs(
             "pitching_runs": round(float(pit_cpu[i]), 1),
             "baserunning_runs": round(float(br_cpu[i]), 1),
             "positional_runs": round(float(pos_cpu[i]), 1),
+            "fielding_runs": round(float(fld_cpu[i]), 1),
             "durability_runs": round(float(dur_cpu[i]), 1),
             "aqi_runs": round(float(aqi_cpu[i]), 1),
         })

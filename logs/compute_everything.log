@@ -1,0 +1,85 @@
+================================================================================
+  COMPUTING BRAVS FOR EVERY PLAYER-SEASON IN MLB HISTORY
+  Device: cuda (NVIDIA GeForce RTX 5060 Ti)
+================================================================================
+  Fielding estimates computed for 116,953 player-seasons
+
+  Player-seasons to compute: 75,265
+  Year range: 1920-2025
+
+  Launching GPU computation...
+
+  GPU computation: 2.80s for 75,265 player-seasons
+  Rate: 26,886 player-seasons/second
+  Per player: 37 microseconds
+
+  Saved: data/bravs_all_seasons.csv (75,265 rows)
+  Saved: data/bravs_all_batting.csv (37,011 rows)
+  Saved: data/bravs_all_pitching.csv (29,940 rows)
+  Saved: data/bravs_careers.csv (14,092 rows)
+
+================================================================================
+  TOP 25 CAREERS BY WAR-EQUIVALENT
+================================================================================
+  Rank Player                          Years  WAR-eq   BRAVS   Peak  HOF
+  ------------------------------------------------------------------------
+  1    Willie Mays              1951-1973   149.6   262.4   20.4    Y
+  2    Gaylord Perry            1962-1983   120.6   211.7   20.7    Y
+  3    Nolan Ryan               1968-1993   119.7   210.0   17.4    Y
+  4    Ted Williams             1939-1960   118.6   208.1   20.7    Y
+  5    Babe Ruth                1920-1935   118.3   207.6   24.9    Y
+  6    Mickey Mantle            1951-1968   116.7   204.6   21.7    Y
+  7    Stan Musial              1942-1963   114.5   200.9   18.3    Y
+  8    Hank Aaron               1954-1976   114.2   200.4   16.5    Y
+  9    Roger Clemens            1984-2007   111.3   195.2   15.9     
+  10   Tom Seaver               1967-1986   109.4   191.9   20.3    Y
+  11   Greg Maddux              1986-2008   109.0   191.2   13.3    Y
+  12   Steve Carlton            1965-1987   106.8   187.4   19.5    Y
+  13   Don Sutton               1966-1988   104.0   182.6   15.0    Y
+  14   Barry Bonds              1986-2007   103.6   181.8   17.7     
+  15   Bert Blyleven            1970-1992   101.4   177.9   18.7    Y
+  16   Joe Morgan               1965-1984    97.7   171.5   19.1    Y
+  17   Lou Gehrig               1925-1938    96.9   170.0   16.8    Y
+  18   Bob Gibson               1959-1975    96.7   169.7   25.8    Y
+  19   Mike Schmidt             1973-1989    95.2   167.0   16.2    Y
+  20   Alex Rodriguez           1994-2016    94.9   166.6   16.2     
+  21   Fergie Jenkins           1966-1983    90.8   159.4   20.2    Y
+  22   Albert Pujols            2001-2022    87.7   153.8   18.6     
+  23   Tommy John               1963-1989    87.5   153.5   11.2     
+  24   Rickey Henderson         1979-2003    87.2   152.9   17.8    Y
+  25   Mel Ott                  1926-1946    87.0   152.6   13.7    Y
+
+================================================================================
+  TOP 25 SINGLE SEASONS
+================================================================================
+  Rank Player                 YearPos    WAR-eq   BRAVS
+  -------------------------------------------------------
+  1    Bob Gibson             1968 P       14.7    25.8
+  2    Babe Ruth              1921 LF      14.2    24.9
+  3    Babe Ruth              1920 RF      13.1    22.9
+  4    Sandy Koufax           1965 P       12.9    22.6
+  5    Juan Marichal          1968 P       12.8    22.5
+  6    Mickey Mantle          1956 CF      12.4    21.7
+  7    Mickey Mantle          1961 CF      12.3    21.5
+  8    Babe Ruth              1923 RF      12.2    21.5
+  9    Bill Freehan           1968 C       12.0    21.1
+  10   Denny McLain           1968 P       11.9    20.9
+  11   Rogers Hornsby         1922 2B      11.8    20.8
+  12   Gaylord Perry          1968 P       11.8    20.7
+  13   Ted Williams           1946 LF      11.8    20.7
+  14   Sandy Koufax           1966 P       11.7    20.5
+  15   Carl Yastrzemski       1967 LF      11.7    20.4
+  16   Willie Mays            1962 CF      11.6    20.4
+  17   Tom Seaver             1968 P       11.6    20.3
+  18   Fergie Jenkins         1968 P       11.5    20.2
+  19   Dean Chance            1968 P       11.5    20.1
+  20   Willie Mays            1965 CF      11.3    19.8
+  21   Ron Santo              1966 3B      11.3    19.8
+  22   Ted Williams           1947 LF      11.2    19.7
+  23   Ron Santo              1967 3B      11.2    19.7
+  24   Ted Williams           1941 LF      11.2    19.6
+  25   Steve Carlton          1972 P       11.1    19.5
+
+  Total runtime: 57.6s
+  GPU compute: 2.80s
+  Data prep: 46.0s
