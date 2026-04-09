@@ -1,9 +1,4 @@
-"""Daily Pitcher Performance Card Generator — matches prototype exactly.
-
-Usage:
-    python scripts/pitcher_card.py --pitcher-id 543037 --date 2024-06-19
-    python scripts/pitcher_card.py --pitcher "Skubal" --date 2024-08-01
-"""
+"""Pixel-perfect Daily Pitcher Performance Card — matches prototype exactly."""
 
 import sys, os, argparse
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -15,18 +10,18 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.colors import to_rgba
-from matplotlib.table import Table
 from io import BytesIO
 import requests
 from pybaseball import statcast, cache
 cache.enable()
 
-PITCH_COLORS = {
-    "FF": "#c4363a", "SI": "#1a6b54", "CH": "#dba816", "ST": "#2ecc71",
-    "SL": "#32a4c8", "CU": "#7b44bc", "FC": "#e07020", "FS": "#8c564b",
-    "KC": "#a0a028", "SV": "#2ecc71", "KN": "#7f7f7f",
+# ── Colors exactly matching prototype ──
+C = {
+    "FF": "#c4363a", "SI": "#1a6b54", "CH": "#d4a017", "ST": "#2eaa60",
+    "SL": "#2e9ec4", "CU": "#7b44bc", "FC": "#d06830", "FS": "#8c564b",
+    "KC": "#7b44bc", "SV": "#2eaa60", "KN": "#888888",
 }
-PITCH_NAMES = {
+NAMES = {
     "FF": "4-Seam", "SI": "Sinker", "CH": "Changeup", "ST": "Sweeper",
     "SL": "Slider", "CU": "Curveball", "FC": "Cutter", "FS": "Splitter",
     "KC": "Knuckle Curve", "SV": "Slurve", "KN": "Knuckleball",
@@ -38,137 +33,98 @@ TEAM_IDS = {
     "ARI": 109, "BAL": 110, "CIN": 113, "COL": 115, "KC": 118,
     "LAA": 108, "MIA": 146, "MIL": 158, "OAK": 133, "PIT": 134,
     "SD": 135, "TB": 139, "TEX": 140, "WSH": 120, "CWS": 145,
-    "ATH": 133,
+    "ATH": 133, "CHW": 145,
 }
+FONT = "DejaVu Sans"
 
 
-def fetch_game_data(pitcher_id, date):
+def fetch(pitcher_id, date):
     df = statcast(date, date)
-    if df.empty:
-        raise ValueError(f"No Statcast data for {date}")
-    pitcher_df = df[df.pitcher == pitcher_id].copy()
-    if pitcher_df.empty:
-        raise ValueError(f"Pitcher {pitcher_id} did not pitch on {date}")
-    return pitcher_df
+    if df.empty: raise ValueError(f"No data for {date}")
+    p = df[df.pitcher == pitcher_id]
+    if p.empty: raise ValueError(f"Pitcher {pitcher_id} not found on {date}")
+    return p.copy()
 
 
-def find_pitcher_id(name, date):
+def find_pitcher(name, date):
     df = statcast(date, date)
-    if df.empty:
-        raise ValueError(f"No data for {date}")
-    name_lower = name.lower()
-    # Statcast names are "Last, First" — search both orders
-    matches = df[
-        df.player_name.str.lower().str.contains(name_lower, na=False) |
-        df.player_name.str.lower().str.replace(", ", " ").str.contains(name_lower, na=False)
-    ]
-    if matches.empty:
-        last = name.split()[-1].lower()
-        matches = df[df.player_name.str.lower().str.startswith(last, na=False)]
-    if matches.empty:
-        raise ValueError(f"No pitcher matching '{name}' on {date}")
-    # Pick the one who threw the most pitches
-    pid = matches.pitcher.value_counts().index[0]
-    return pid, matches[matches.pitcher == pid].player_name.iloc[0]
+    if df.empty: raise ValueError(f"No data for {date}")
+    nl = name.lower()
+    m = df[df.player_name.str.lower().str.contains(nl.split()[-1], na=False)]
+    if m.empty: raise ValueError(f"'{name}' not found on {date}")
+    pid = m.pitcher.value_counts().index[0]
+    return pid, m[m.pitcher == pid].player_name.iloc[0]
 
 
-def draw_zone(ax, df_subset, title):
-    """Draw strike zone with scatter dots and density blobs."""
-    ax.set_xlim(-2.2, 2.2)
-    ax.set_ylim(0.5, 4.5)
+def _zone(ax, sub, title):
+    """Strike zone chart with density blobs."""
+    ax.set_xlim(-2.0, 2.0); ax.set_ylim(0.8, 4.2)
     ax.set_aspect('equal')
-
-    # Strike zone box
-    zone = patches.Rectangle((-0.83, 1.5), 1.66, 2.0,
-                             lw=1.2, edgecolor='#333333', facecolor='none', zorder=3)
-    ax.add_patch(zone)
-    # Inner grid
+    # Zone box
+    ax.add_patch(patches.Rectangle((-0.83, 1.5), 1.66, 2.0, lw=1.0, ec='#333', fc='none', zorder=3))
     for x in [-0.28, 0.28]:
-        ax.plot([x, x], [1.5, 3.5], color='#cccccc', lw=0.5, zorder=2)
+        ax.plot([x, x], [1.5, 3.5], c='#d0d0d0', lw=0.4, zorder=2)
     for z in [2.17, 2.83]:
-        ax.plot([-0.83, 0.83], [z, z], color='#cccccc', lw=0.5, zorder=2)
-
-    # Density blobs per pitch type (using KDE-like gaussian scatter)
-    for pt in df_subset.pitch_type.unique():
-        sub = df_subset[df_subset.pitch_type == pt]
-        px = sub.plate_x.dropna()
-        pz = sub.plate_z.dropna()
-        if len(px) < 3:
-            continue
-        color = PITCH_COLORS.get(pt, "#999")
-        rgba = to_rgba(color, alpha=0.12)
-        # Draw filled scatter with large size as density proxy
-        ax.scatter(px, pz, s=350, c=[rgba], edgecolors='none', zorder=1)
-
-    # Actual dots
-    for pt in df_subset.pitch_type.unique():
-        sub = df_subset[df_subset.pitch_type == pt]
-        color = PITCH_COLORS.get(pt, "#999")
-        ax.scatter(sub.plate_x, sub.plate_z, c=color, s=18, alpha=0.85,
-                   edgecolors='white', linewidth=0.3, zorder=4)
-
-    ax.set_title(title, fontsize=7, fontfamily='sans-serif', fontweight='bold', pad=4)
-    ax.tick_params(labelsize=0, length=0)
-    for spine in ax.spines.values():
-        spine.set_visible(False)
+        ax.plot([-0.83, 0.83], [z, z], c='#d0d0d0', lw=0.4, zorder=2)
+    # Density blobs (big transparent circles)
+    for pt in sub.pitch_type.unique():
+        s = sub[sub.pitch_type == pt]
+        px, pz = s.plate_x.dropna(), s.plate_z.dropna()
+        if len(px) < 2: continue
+        col = C.get(pt, "#999")
+        ax.scatter(px.mean(), pz.mean(), s=2500, c=[to_rgba(col, 0.15)], ec='none', zorder=1)
+    # Dots
+    for pt in sub.pitch_type.unique():
+        s = sub[sub.pitch_type == pt]
+        col = C.get(pt, "#999")
+        ax.scatter(s.plate_x, s.plate_z, c=col, s=14, alpha=0.9, ec='white', lw=0.2, zorder=4)
+    n = len(sub)
+    ax.set_title(f"{title}\n({n} Pitches)", fontsize=6.5, fontfamily=FONT, fontweight='bold', pad=2, linespacing=1.4)
+    ax.tick_params(length=0, labelsize=0)
+    for sp in ax.spines.values(): sp.set_visible(False)
 
 
-def draw_breaks(ax, df, p_throws):
-    """Draw pitch movement chart with arm angle line."""
+def _breaks(ax, df, p_throws):
+    """Movement chart with arm angle line."""
     for pt in df.pitch_type.unique():
-        sub = df[df.pitch_type == pt]
-        hb = sub.pfx_x.dropna() * 12
-        ivb = sub.pfx_z.dropna() * 12
-        color = PITCH_COLORS.get(pt, "#999")
-        ax.scatter(hb, ivb, c=color, s=18, alpha=0.85,
-                   edgecolors='white', linewidth=0.3, zorder=4)
-
-    ax.axhline(0, color='#dddddd', lw=0.5, zorder=1)
-    ax.axvline(0, color='#dddddd', lw=0.5, zorder=1)
-
-    # Arm angle line (estimated from release point)
-    rel_x = df.release_pos_x.mean()
-    rel_z = df.release_pos_z.mean()
-    if pd.notna(rel_x) and pd.notna(rel_z):
-        angle_deg = np.degrees(np.arctan2(rel_z, abs(rel_x)))
-        angle_rad = np.radians(angle_deg)
-        line_len = 30
-        ax.plot([0, line_len * np.cos(angle_rad) * (1 if p_throws == "R" else -1)],
-                [0, line_len * np.sin(angle_rad)],
-                '--', color='#999999', lw=0.8, zorder=2)
-        ax.set_title(f"Pitch Breaks · Arm Angle: {angle_deg:.0f}°",
-                     fontsize=7, fontfamily='sans-serif', fontweight='bold', pad=4)
+        s = df[df.pitch_type == pt]
+        hb, ivb = s.pfx_x.dropna() * 12, s.pfx_z.dropna() * 12
+        ax.scatter(hb, ivb, c=C.get(pt, "#999"), s=14, alpha=0.9, ec='white', lw=0.2, zorder=4)
+    ax.axhline(0, c='#e0e0e0', lw=0.4); ax.axvline(0, c='#e0e0e0', lw=0.4)
+    # Arm angle
+    rx, rz = df.release_pos_x.mean(), df.release_pos_z.mean()
+    if pd.notna(rx) and pd.notna(rz):
+        ang = np.degrees(np.arctan2(rz, abs(rx)))
+        rad = np.radians(ang)
+        dx = 28 * np.cos(rad) * (1 if p_throws == "R" else -1)
+        ax.plot([0, dx], [0, 28 * np.sin(rad)], '--', c='#aaa', lw=0.6, zorder=2)
+        ax.set_title(f"Pitch Breaks · Arm Angle: {ang:.0f}°", fontsize=6.5, fontfamily=FONT, fontweight='bold', pad=2)
     else:
-        ax.set_title("Pitch Breaks", fontsize=7, fontfamily='sans-serif', fontweight='bold', pad=4)
-
-    ax.set_xlim(-25, 25)
-    ax.set_ylim(-25, 25)
-    ax.set_xlabel("Horizontal Break (in)", fontsize=5, fontfamily='sans-serif')
-    ax.set_ylabel("Induced Vert. Break (in)", fontsize=5, fontfamily='sans-serif')
-    ax.tick_params(labelsize=5)
+        ax.set_title("Pitch Breaks", fontsize=6.5, fontfamily=FONT, fontweight='bold', pad=2)
+    ax.set_xlim(-22, 22); ax.set_ylim(-22, 22)
+    ax.set_xlabel("Horizontal Break (in)", fontsize=5, fontfamily=FONT, labelpad=1)
+    ax.set_ylabel("Induced Vert. Break (in)", fontsize=5, fontfamily=FONT, labelpad=1)
+    ax.tick_params(labelsize=4.5, length=2, pad=1)
 
 
-def woba_color(val):
-    """Color code wOBA: green=good for pitcher (low), red=bad (high)."""
-    if val <= 0.250:
-        return "#2ecc71"
-    elif val <= 0.350:
-        return "#f0c808"
-    else:
-        return "#e74c3c"
+def _woba_bg(v):
+    if v <= 0.001: return "#3ddc84"
+    if v <= 0.280: return "#3ddc84"
+    if v <= 0.350: return "#f4d03f"
+    return "#e74c3c"
 
 
 def generate_card(pitcher_id, date, output_path=None):
-    print(f"Fetching data for pitcher {pitcher_id} on {date}...")
-    df = fetch_game_data(pitcher_id, date)
+    print(f"Fetching pitcher {pitcher_id} on {date}...")
+    df = fetch(pitcher_id, date)
     print(f"  {len(df)} pitches")
 
-    name_raw = df.player_name.iloc[0]
-    player_name = " ".join(reversed(name_raw.split(", "))) if ", " in name_raw else name_raw
+    # Player info
+    nm = df.player_name.iloc[0]
+    player_name = " ".join(reversed(nm.split(", "))) if ", " in nm else nm
     p_throws = df.p_throws.iloc[0]
     hand = "LHP" if p_throws == "L" else "RHP"
-    home = df.home_team.iloc[0]
-    away = df.away_team.iloc[0]
+    home, away = df.home_team.iloc[0], df.away_team.iloc[0]
     pitcher_team = home if df.inning_topbot.iloc[0] == "Top" else away
     opponent = away if pitcher_team == home else home
     year = int(df.game_year.iloc[0])
@@ -177,264 +133,231 @@ def generate_card(pitcher_id, date, output_path=None):
     pa = df.at_bat_number.nunique()
     k = len(df[df.events.isin(['strikeout', 'strikeout_double_play'])])
     bb = len(df[df.events.isin(['walk'])])
-    hits = len(df[df.events.isin(['single', 'double', 'triple', 'home_run'])])
-    hbp_count = len(df[df.events.isin(['hit_by_pitch'])])
-    er = len(df[df.events.isin(['home_run'])])  # crude
+    h = len(df[df.events.isin(['single', 'double', 'triple', 'home_run'])])
+    hbp = len(df[df.events.isin(['hit_by_pitch'])])
+    er = len(df[df.events.isin(['home_run'])])
     strikes = len(df[df.type.isin(['S', 'X'])])
-    strike_pct = strikes / len(df) * 100 if len(df) else 0
+    spct = strikes / len(df) * 100 if len(df) else 0
     whiffs = len(df[df.description.isin(['swinging_strike', 'swinging_strike_blocked', 'foul_tip'])])
     outs = 0
     for _, r in df[df.events.notna()].iterrows():
         e = r.events
         if e in ['strikeout', 'strikeout_double_play', 'field_out', 'force_out',
                  'grounded_into_double_play', 'fielders_choice_out', 'sac_fly',
-                 'sac_bunt', 'double_play', 'field_error', 'caught_stealing_2b']:
+                 'sac_bunt', 'double_play', 'field_error']:
             outs += 1
-            if 'double_play' in e:
-                outs += 1
+            if 'double_play' in e: outs += 1
     ip = outs / 3
 
-    # ====== FIGURE ======
-    fig = plt.figure(figsize=(12, 12), facecolor='white', dpi=150)
+    # ════════════════════════════════════════════════════
+    # FIGURE — 10×11 at 150 DPI = 1500×1650 px
+    # ════════════════════════════════════════════════════
+    fig = plt.figure(figsize=(10, 11), dpi=150, facecolor='white')
 
-    # -- HEADER --
+    # ── HEADER ──
     # Headshot
     try:
         url = f"https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_213,q_auto:best/v1/people/{pitcher_id}/headshot/67/current"
         from PIL import Image
         img = Image.open(BytesIO(requests.get(url, timeout=5).content))
-        ax_head = fig.add_axes([0.03, 0.88, 0.12, 0.10])
-        ax_head.imshow(img)
-        ax_head.axis('off')
-    except Exception:
-        pass
-
+        axh = fig.add_axes([0.04, 0.895, 0.11, 0.085])
+        axh.imshow(img); axh.axis('off')
+    except: pass
     # Team logo
     try:
         tid = TEAM_IDS.get(pitcher_team, 0)
         if tid:
-            logo_url = f"https://www.mlbstatic.com/team-logos/{tid}.svg"
-            # PNG fallback
-            logo_url = f"https://www.mlbstatic.com/team-logos/team-cap-on-light/{tid}.svg"
-            from PIL import Image
-            logo_img = Image.open(BytesIO(requests.get(
-                f"https://midfield.mlbstatic.com/v1/team/{tid}/spots/72", timeout=5).content))
-            ax_logo = fig.add_axes([0.82, 0.885, 0.13, 0.095])
-            ax_logo.imshow(logo_img)
-            ax_logo.axis('off')
-    except Exception:
-        pass
+            logo = Image.open(BytesIO(requests.get(f"https://midfield.mlbstatic.com/v1/team/{tid}/spots/72", timeout=5).content))
+            axl = fig.add_axes([0.83, 0.895, 0.12, 0.085])
+            axl.imshow(logo); axl.axis('off')
+    except: pass
 
-    fig.text(0.50, 0.96, player_name, ha='center', fontsize=24, fontweight='bold', fontfamily='sans-serif')
-    fig.text(0.50, 0.94, f"{hand}", ha='center', fontsize=9, color='#777777', fontfamily='sans-serif')
-    fig.text(0.50, 0.925, "Daily Pitching Summary", ha='center', fontsize=13, fontweight='bold', fontfamily='sans-serif')
-    fig.text(0.50, 0.91, f"{year} MLB Season", ha='center', fontsize=8, color='#999999', fontfamily='sans-serif',
-             bbox=dict(boxstyle='round,pad=0.3', fc='#eeeeee', ec='none'))
+    fig.text(0.50, 0.965, player_name, ha='center', fontsize=20, fontweight='bold', fontfamily=FONT)
+    fig.text(0.50, 0.948, hand, ha='center', fontsize=8, color='#888', fontfamily=FONT)
+    fig.text(0.50, 0.932, "Daily Pitching Summary", ha='center', fontsize=12, fontweight='bold', fontfamily=FONT)
+    fig.text(0.50, 0.917, f"{year} MLB Season", ha='center', fontsize=7, color='#aaa', fontfamily=FONT,
+             bbox=dict(boxstyle='round,pad=0.25', fc='#f0f0f0', ec='none'))
 
     # Game info
-    fig.text(0.50, 0.885, f"{date} vs {opponent}", ha='center', fontsize=11, fontweight='bold',
-             fontfamily='sans-serif', bbox=dict(boxstyle='round,pad=0.4', fc='#f5f5f5', ec='#cccccc', lw=0.8))
+    fig.text(0.50, 0.895, f"{date} vs {opponent}", ha='center', fontsize=10, fontweight='bold',
+             fontfamily=FONT, bbox=dict(boxstyle='round,pad=0.35', fc='#f8f8f8', ec='#ccc', lw=0.6))
 
-    # Box score bar
-    box_y = 0.86
-    box_items = [
-        ("IP", f"{ip:.1f}"), ("PA", str(pa)), ("ER", str(er)), ("H", str(hits)),
-        ("K", str(k)), ("BB", str(bb)), ("HBP", str(hbp_count)),
-        ("Strike%", f"{strike_pct:.1f}%"), ("Whiffs", str(whiffs)),
-    ]
-    n_items = len(box_items)
-    for i, (label, val) in enumerate(box_items):
-        x = 0.08 + i * (0.84 / n_items)
-        fig.text(x, box_y + 0.008, label, ha='center', fontsize=6.5, color='#999999', fontfamily='sans-serif')
-        fig.text(x, box_y - 0.008, val, ha='center', fontsize=9, fontweight='bold', fontfamily='sans-serif')
-        if i < n_items - 1:
-            sep_x = x + 0.84 / n_items / 2
-            line_ax = fig.add_axes([sep_x, box_y - 0.015, 0.001, 0.03])
-            line_ax.axvline(0, color='#dddddd', lw=0.5)
-            line_ax.axis('off')
+    # ── BOX SCORE BAR ──
+    by = 0.870
+    # Top line
+    fig.add_axes([0.06, by + 0.010, 0.88, 0.0005]).axhline(0, c='#ccc', lw=0.6); plt.gca().axis('off')
+    items = [("IP", f"{ip:.1f}"), ("PA", f"{pa:02d}"), ("ER", str(er)), ("H", str(h)),
+             ("K", str(k)), ("BB", str(bb)), ("HBP", str(hbp)), ("Strike%", f"{spct:.1f}%"), ("Whiffs", str(whiffs))]
+    w = 0.88 / len(items)
+    for i, (lbl, val) in enumerate(items):
+        cx = 0.06 + w * i + w / 2
+        fig.text(cx, by + 0.006, lbl, ha='center', fontsize=5.5, color='#999', fontfamily=FONT)
+        fig.text(cx, by - 0.008, val, ha='center', fontsize=8.5, fontweight='bold', fontfamily=FONT)
+        if i < len(items) - 1:
+            sx = 0.06 + w * (i + 1)
+            fig.add_axes([sx - 0.001, by - 0.012, 0.0005, 0.025]).axvline(0, c='#ddd', lw=0.4); plt.gca().axis('off')
+    # Bottom line
+    fig.add_axes([0.06, by - 0.016, 0.88, 0.0005]).axhline(0, c='#ccc', lw=0.6); plt.gca().axis('off')
 
-    # -- THREE CHARTS --
-    ax_lhh = fig.add_axes([0.04, 0.55, 0.28, 0.26])
-    draw_zone(ax_lhh, df[df.stand == "L"], "Pitch Locations vs LHH")
+    # ── THREE CHARTS ──
+    chart_y, chart_h = 0.575, 0.255
+    ax1 = fig.add_axes([0.05, chart_y, 0.27, chart_h])
+    _zone(ax1, df[df.stand == "L"], "Pitch Locations vs LHH")
 
-    ax_brk = fig.add_axes([0.37, 0.55, 0.26, 0.26])
-    draw_breaks(ax_brk, df, p_throws)
+    ax2 = fig.add_axes([0.37, chart_y, 0.26, chart_h])
+    _breaks(ax2, df, p_throws)
 
-    ax_rhh = fig.add_axes([0.68, 0.55, 0.28, 0.26])
-    draw_zone(ax_rhh, df[df.stand == "R"], "Pitch Locations vs RHH")
+    ax3 = fig.add_axes([0.69, chart_y, 0.27, chart_h])
+    _zone(ax3, df[df.stand == "R"], "Pitch Locations vs RHH")
 
-    # -- LEGEND --
-    used = [pt for pt in df.pitch_type.value_counts().index if pt in PITCH_NAMES]
-    lx_start = 0.5 - len(used) * 0.055
+    # ── LEGEND ──
+    used = [pt for pt in df.pitch_type.value_counts().index if pt in NAMES]
+    lx = 0.5 - len(used) * 0.05
     for i, pt in enumerate(used):
-        x = lx_start + i * 0.11
-        fig.text(x, 0.535, "●", ha='center', fontsize=11, color=PITCH_COLORS.get(pt, "#999"))
-        fig.text(x + 0.018, 0.535, PITCH_NAMES.get(pt, pt), ha='left', fontsize=7, fontfamily='sans-serif')
+        x = lx + i * 0.10
+        fig.text(x, 0.560, "●", ha='center', fontsize=9, color=C.get(pt, "#999"), fontfamily=FONT)
+        fig.text(x + 0.015, 0.560, NAMES.get(pt, pt), ha='left', fontsize=6, fontfamily=FONT, color='#444')
 
-    # -- STATS TABLE --
-    # Compute stats per pitch type
-    pitch_types = [pt for pt in df.pitch_type.value_counts().index if pt in PITCH_NAMES]
-    table_data = []
-    for pt in pitch_types:
+    # ── STATS TABLE ──
+    hdrs = ["Pitch Name", "Count", "Pitch%", "Velocity", "CSW", "BB", "SwStr%",
+            "MAX V", "MAX S", "MAX IVB", "Ext", "CSp", "SwngM%", "Zone%", "Chase%", "Heart%", "Shadow%", "wOBA"]
+    # Column x positions and widths
+    ncol = len(hdrs)
+    tbl_left, tbl_right = 0.04, 0.96
+    tbl_w = tbl_right - tbl_left
+    # First column wider for pitch name
+    cw = [0.08] + [tbl_w * 0.054] * (ncol - 1)
+    # Adjust to fill
+    remaining = tbl_w - sum(cw)
+    cw[0] += remaining
+
+    cx_starts = []
+    x = tbl_left
+    for w in cw:
+        cx_starts.append(x)
+        x += w
+
+    ty = 0.530  # table top y
+    rh = 0.026  # row height
+    hh = 0.020  # header height
+
+    # Header
+    fig.add_axes([tbl_left, ty - 0.001, tbl_w, 0.0005]).axhline(0, c='#bbb', lw=0.5); plt.gca().axis('off')
+    for i, (hdr, cx) in enumerate(zip(hdrs, cx_starts)):
+        fig.text(cx + cw[i] / 2, ty + 0.006, hdr, ha='center', va='center',
+                fontsize=4.5, fontweight='bold', color='#666', fontfamily=FONT)
+    fig.add_axes([tbl_left, ty - hh + 0.004, tbl_w, 0.0005]).axhline(0, c='#bbb', lw=0.5); plt.gca().axis('off')
+
+    # Compute and draw rows
+    pitch_types = [pt for pt in df.pitch_type.value_counts().index if pt in NAMES]
+    for j, pt in enumerate(pitch_types):
         sub = df[df.pitch_type == pt]
         n = len(sub)
-        velo = sub.release_speed.dropna()
-        spin = sub.release_spin_rate.dropna()
-        pfx_z_in = sub.pfx_z.dropna() * 12
+        vy = sub.release_speed.dropna()
+        sp = sub.release_spin_rate.dropna()
+        pz = sub.pfx_z.dropna() * 12
         ext = sub.release_extension.dropna()
         cs = len(sub[sub.description == 'called_strike'])
         ss = len(sub[sub.description.isin(['swinging_strike', 'swinging_strike_blocked', 'foul_tip'])])
         csw = (cs + ss) / n * 100 if n else 0
         swm = ss / n * 100 if n else 0
-        zone_in = len(sub[sub.zone.between(1, 9)])
-        zone_pct = zone_in / n * 100 if n else 0
-        out_zone = sub[~sub.zone.between(1, 9)]
-        chases = len(out_zone[out_zone.description.isin(['swinging_strike', 'swinging_strike_blocked', 'foul', 'foul_tip',
-                                                          'hit_into_play', 'hit_into_play_no_out', 'hit_into_play_score'])])
-        chase_pct = chases / len(out_zone) * 100 if len(out_zone) else 0
-        heart = len(sub[sub.zone.isin([2, 5, 8])]) / n * 100 if n else 0
-        shadow = len(sub[sub.zone.isin([11, 12, 13, 14])]) / n * 100 if n else 0
-
-        contact = sub[sub.events.notna()]
-        h_events = contact[contact.events.isin(['single', 'double', 'triple', 'home_run'])]
+        zn = len(sub[sub.zone.between(1, 9)])
+        zpct = zn / n * 100 if n else 0
+        oz = sub[~sub.zone.between(1, 9)]
+        ch = len(oz[oz.description.isin(['swinging_strike', 'swinging_strike_blocked', 'foul', 'foul_tip',
+                                          'hit_into_play', 'hit_into_play_no_out', 'hit_into_play_score'])])
+        cpct = ch / len(oz) * 100 if len(oz) else 0
+        ht = len(sub[sub.zone.isin([2, 5, 8])]) / n * 100 if n else 0
+        sh = len(sub[sub.zone.isin([11, 12, 13, 14])]) / n * 100 if n else 0
+        con = sub[sub.events.notna()]
+        hts = con[con.events.isin(['single', 'double', 'triple', 'home_run'])]
         woba = 0
-        if len(contact) > 0:
-            woba = (len(h_events[h_events.events == 'single']) * 0.88 +
-                    len(h_events[h_events.events == 'double']) * 1.25 +
-                    len(h_events[h_events.events == 'triple']) * 1.58 +
-                    len(h_events[h_events.events == 'home_run']) * 2.02) / len(contact)
+        if len(con) > 0:
+            woba = (len(hts[hts.events == 'single']) * 0.88 + len(hts[hts.events == 'double']) * 1.25 +
+                    len(hts[hts.events == 'triple']) * 1.58 + len(hts[hts.events == 'home_run']) * 2.02) / len(con)
+        bls = len(sub[sub.type == 'B'])
 
-        table_data.append({
-            "pt": pt, "name": PITCH_NAMES.get(pt, pt), "n": n,
-            "pct": f"{n / len(df) * 100:.1f}%",
-            "velo": f"{velo.mean():.1f}" if len(velo) else "-",
-            "csw": f"{csw:.1f}", "swm": f"{swm:.1f}",
-            "maxv": f"{velo.max():.1f}" if len(velo) else "-",
-            "spin": f"{spin.mean():.0f}" if len(spin) else "-",
-            "ivb": f"{pfx_z_in.mean():.1f}" if len(pfx_z_in) else "-",
-            "ext": f"{ext.mean():.1f}" if len(ext) else "-",
-            "zone": f"{zone_pct:.1f}", "chase": f"{chase_pct:.1f}",
-            "heart": f"{heart:.1f}", "shadow": f"{shadow:.1f}",
-            "woba": f"{woba:.3f}",
-            "color": PITCH_COLORS.get(pt, "#999"),
-        })
+        vals = [
+            NAMES.get(pt, pt), str(n), f"{n/len(df)*100:.1f}%",
+            f"{vy.mean():.1f}" if len(vy) else "-", f"{csw:.1f}", str(bls), f"{swm:.1f}",
+            f"{vy.max():.1f}" if len(vy) else "-", f"{sp.max():.0f}" if len(sp) else "-",
+            f"{pz.mean():.1f}" if len(pz) else "-", f"{ext.mean():.1f}" if len(ext) else "-",
+            f"{cs}", f"{swm:.1f}", f"{zpct:.1f}", f"{cpct:.1f}", f"{ht:.1f}", f"{sh:.1f}", f"{woba:.3f}",
+        ]
 
-    # Draw table manually with colored rows
-    headers = ["Pitch Name", "Count", "Pitch%", "Velo", "CSW", "SwStr%",
-               "MaxV", "Spin", "IVB", "Ext", "Zone%", "Chase%", "Heart%", "Shadow%", "wOBA"]
-    col_widths = [0.10, 0.05, 0.06, 0.05, 0.05, 0.06, 0.05, 0.06, 0.05, 0.05, 0.06, 0.06, 0.06, 0.06, 0.06]
-    x_start = 0.05
-    y_start = 0.50
-    row_h = 0.030
-    hdr_h = 0.025
+        ry = ty - hh - j * rh
+        col = C.get(pt, "#999")
 
-    # Header row
-    cx = x_start
-    for hdr, w in zip(headers, col_widths):
-        fig.text(cx + w / 2, y_start, hdr, ha='center', va='center',
-                fontsize=5.5, fontweight='bold', fontfamily='sans-serif', color='#555555')
-        cx += w
-
-    # Header separator
-    hdr_line = fig.add_axes([x_start, y_start - hdr_h / 2, sum(col_widths), 0.001])
-    hdr_line.axhline(0, color='#aaaaaa', lw=0.8)
-    hdr_line.axis('off')
-
-    # Data rows
-    for j, row in enumerate(table_data):
-        y = y_start - hdr_h - j * row_h
-        color = row["color"]
-        bg_rgba = to_rgba(color, alpha=0.15)
-
-        # Background stripe
-        bg = patches.FancyBboxPatch((x_start, y - row_h / 2), sum(col_widths), row_h,
-                                     boxstyle="round,pad=0.002", fc=bg_rgba, ec='none',
+        # Full row tinted background
+        bg = patches.FancyBboxPatch((tbl_left, ry - rh / 2 + 0.003), tbl_w, rh - 0.002,
+                                     boxstyle="square,pad=0", fc=to_rgba(col, 0.08), ec='none',
                                      transform=fig.transFigure, clip_on=False)
         fig.add_artist(bg)
 
-        # Pitch name cell with stronger color
-        name_bg = patches.FancyBboxPatch((x_start, y - row_h / 2), col_widths[0], row_h,
-                                          boxstyle="round,pad=0.002", fc=to_rgba(color, 0.35),
-                                          ec='none', transform=fig.transFigure, clip_on=False)
+        # Pitch name cell — stronger colored background
+        name_bg = patches.FancyBboxPatch((cx_starts[0], ry - rh / 2 + 0.003), cw[0], rh - 0.002,
+                                          boxstyle="square,pad=0", fc=to_rgba(col, 0.55), ec='none',
+                                          transform=fig.transFigure, clip_on=False)
         fig.add_artist(name_bg)
 
-        values = [row["name"], str(row["n"]), row["pct"], row["velo"], row["csw"], row["swm"],
-                  row["maxv"], row["spin"], row["ivb"], row["ext"],
-                  row["zone"], row["chase"], row["heart"], row["shadow"], row["woba"]]
+        # wOBA cell colored
+        try:
+            wv = float(vals[-1])
+            woba_cell = patches.FancyBboxPatch((cx_starts[-1], ry - rh / 2 + 0.003), cw[-1], rh - 0.002,
+                                                boxstyle="square,pad=0", fc=to_rgba(_woba_bg(wv), 0.40), ec='none',
+                                                transform=fig.transFigure, clip_on=False)
+            fig.add_artist(woba_cell)
+        except: pass
 
-        cx = x_start
-        for i, (val, w) in enumerate(zip(values, col_widths)):
-            font_color = '#222222'
+        for i, (val, cx, w) in enumerate(zip(vals, cx_starts, cw)):
+            fc = 'white' if i == 0 else '#222'
             fw = 'bold' if i == 0 else 'normal'
-            if i == 0:
-                font_color = 'white'
-            # Color code wOBA
-            if i == len(values) - 1:
-                try:
-                    wv = float(val)
-                    woba_bg = patches.FancyBboxPatch((cx, y - row_h / 2), w, row_h,
-                                                      boxstyle="round,pad=0.002",
-                                                      fc=to_rgba(woba_color(wv), 0.4),
-                                                      ec='none', transform=fig.transFigure, clip_on=False)
-                    fig.add_artist(woba_bg)
-                except ValueError:
-                    pass
-
-            fig.text(cx + w / 2, y, val, ha='center', va='center',
-                    fontsize=5.5, fontfamily='sans-serif', fontweight=fw, color=font_color)
-            cx += w
+            fig.text(cx + w / 2, ry, val, ha='center', va='center',
+                    fontsize=5, fontfamily=FONT, fontweight=fw, color=fc)
 
     # Totals row
-    total_y = y_start - hdr_h - len(table_data) * row_h - 0.005
-    tot_line = fig.add_axes([x_start, total_y + row_h / 2, sum(col_widths), 0.001])
-    tot_line.axhline(0, color='#aaaaaa', lw=0.8)
-    tot_line.axis('off')
-
-    total_vals = ["All", str(len(df)), "100.0%"] + ["-"] * 12
-    cx = x_start
-    for val, w in zip(total_vals, col_widths):
-        fig.text(cx + w / 2, total_y, val, ha='center', va='center',
-                fontsize=5.5, fontfamily='sans-serif', fontweight='bold', color='#333333')
-        cx += w
+    tot_y = ty - hh - len(pitch_types) * rh
+    fig.add_axes([tbl_left, tot_y + rh / 2 - 0.001, tbl_w, 0.0005]).axhline(0, c='#bbb', lw=0.5); plt.gca().axis('off')
+    fig.text(cx_starts[0] + cw[0] / 2, tot_y - 0.003, "All", ha='center', va='center',
+            fontsize=5.5, fontweight='bold', fontfamily=FONT)
+    fig.text(cx_starts[1] + cw[1] / 2, tot_y - 0.003, str(len(df)), ha='center', va='center',
+            fontsize=5, fontweight='bold', fontfamily=FONT)
+    fig.text(cx_starts[2] + cw[2] / 2, tot_y - 0.003, "100.0%", ha='center', va='center',
+            fontsize=5, fontfamily=FONT)
 
     # Footer
-    fig.text(0.95, 0.005, "Data: MLB", ha='right', fontsize=6, color='#bbbbbb',
-            fontfamily='sans-serif', style='italic')
+    fig.text(0.95, 0.005, "Data: MLB", ha='right', fontsize=5, color='#bbb', fontfamily=FONT, style='italic')
 
     # Border
-    border = patches.FancyBboxPatch((0.01, 0.003), 0.98, 0.993,
-                                     boxstyle="round,pad=0.008", lw=1.2,
-                                     edgecolor='#cccccc', facecolor='none',
-                                     transform=fig.transFigure, clip_on=False)
-    fig.add_artist(border)
+    fig.add_artist(patches.FancyBboxPatch((0.015, 0.003), 0.97, 0.993,
+                   boxstyle="round,pad=0.005", lw=1.0, ec='#ccc', fc='none',
+                   transform=fig.transFigure, clip_on=False))
 
     # Save
-    if output_path is None:
+    if not output_path:
         safe = player_name.replace(" ", "_").replace(",", "")
         output_path = f"output/{safe}_{date}.png"
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    fig.savefig(output_path, dpi=150, bbox_inches='tight', facecolor='white', pad_inches=0.1)
+    os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
+    fig.savefig(output_path, dpi=150, bbox_inches='tight', facecolor='white', pad_inches=0.05)
     plt.close(fig)
     print(f"  Saved: {output_path}")
     return output_path
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Pitcher Performance Card")
-    parser.add_argument("--pitcher", type=str, help="Pitcher name")
-    parser.add_argument("--pitcher-id", type=int, help="MLB pitcher ID")
-    parser.add_argument("--date", type=str, required=True, help="YYYY-MM-DD")
-    parser.add_argument("--output", type=str, help="Output path")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--pitcher", type=str)
+    parser.add_argument("--pitcher-id", type=int)
+    parser.add_argument("--date", type=str, required=True)
+    parser.add_argument("--output", type=str)
     args = parser.parse_args()
-
     if args.pitcher_id:
         pid = args.pitcher_id
     elif args.pitcher:
-        pid, found_name = find_pitcher_id(args.pitcher, args.date)
-        print(f"Found: {found_name} (ID: {pid})")
+        pid, found = find_pitcher(args.pitcher, args.date)
+        print(f"Found: {found} (ID: {pid})")
     else:
         parser.error("Need --pitcher or --pitcher-id")
-
     generate_card(pid, args.date, args.output)
 
 
