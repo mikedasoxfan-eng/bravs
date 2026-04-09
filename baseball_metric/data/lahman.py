@@ -17,15 +17,25 @@ import numpy as np
 
 from baseball_metric.core.types import PlayerSeason
 
-# Try updated dataset first (stormlightlabs, 1871-2024), fallback to original (1871-2021)
+# Try datasets in order of recency:
+#   1. lahman2025 (CRAN R package, 1871-2025) — most complete
+#   2. stormlightlabs (1871-2024)
+#   3. chadwickbureau (1871-2021)
 _BASE = Path(__file__).parent.parent.parent / "data"
+_2025 = _BASE / "lahman2025"
 _STORM = _BASE / "baseball-main" / "data" / "lahman" / "csv"
 _CHAD = _BASE / "baseballdatabank-master" / "core"
 _CHAD_CONTRIB = _BASE / "baseballdatabank-master" / "contrib"
 
-DATA_DIR = _STORM if _STORM.exists() else _CHAD
-# Contrib tables: stormlightlabs puts them in same dir, chadwick in contrib/
-CONTRIB_DIR = _STORM if (_STORM / "HallOfFame.csv").exists() else _CHAD_CONTRIB
+if _2025.exists() and (_2025 / "Batting.csv").exists():
+    DATA_DIR = _2025
+    CONTRIB_DIR = _2025
+elif _STORM.exists():
+    DATA_DIR = _STORM
+    CONTRIB_DIR = _STORM if (_STORM / "HallOfFame.csv").exists() else _CHAD_CONTRIB
+else:
+    DATA_DIR = _CHAD
+    CONTRIB_DIR = _CHAD_CONTRIB
 
 
 @lru_cache(maxsize=1)
