@@ -16,10 +16,31 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
 from flask import Flask, Response, render_template, jsonify, request as flask_request
 
+import pandas as pd
+
 from baseball_metric.core.model import compute_bravs
 from baseball_metric.core.types import PlayerSeason
 from baseball_metric.adjustments.era_adjustment import get_rpg
 from baseball_metric.adjustments.park_factors import get_park_factor
+
+# Load pre-computed BRAVS from GPU engine (instant, no API needed)
+_PRECOMPUTED = None
+_CAREERS = None
+
+
+def _load_precomputed():
+    global _PRECOMPUTED, _CAREERS
+    if _PRECOMPUTED is None:
+        try:
+            _PRECOMPUTED = pd.read_csv("data/bravs_all_seasons.csv")
+            _CAREERS = pd.read_csv("data/bravs_careers.csv")
+            logger.info("Loaded pre-computed BRAVS: %d seasons, %d careers", len(_PRECOMPUTED), len(_CAREERS))
+        except Exception as e:
+            logger.warning("Could not load pre-computed data: %s", e)
+            _PRECOMPUTED = pd.DataFrame()
+            _CAREERS = pd.DataFrame()
+    return _PRECOMPUTED, _CAREERS
+
 
 # Try Rust engine for faster computation
 try:
@@ -77,6 +98,65 @@ def _display_name(full_name: str) -> str:
     first = parts[0]
     last = parts[-1] if len(parts) > 1 else ""
     return " ".join([first, last] + last_parts).strip()
+
+
+def _get_precomputed_bravs(player_id_or_name, season):
+    """Look up pre-computed BRAVS from CSV. Returns dict or None."""
+    seasons, _ = _load_precomputed()
+    if seasons.empty:
+        return None
+
+    # Try by playerID first
+    row = seasons[(seasons.playerID == player_id_or_name) & (seasons.yearID == season)]
+    if row.empty:
+        # Try by name (partial match)
+        row = seasons[(seasons.name.str.contains(str(player_id_or_name), case=False, na=False)) & (seasons.yearID == season)]
+    if row.empty:
+        return None
+
+    r = row.iloc[0]
+
+    HEADSHOT = "https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_213,q_auto:best/v1/people/{}/headshot/67/current"
+
+    headshot = ""
+    team_logo = ""
+
+    result = {
+        "player_name": r.get("name", "Unknown"),
+        "season": int(r.yearID),
+        "position": r.get("position", ""),
+        "team": r.get("team", ""),
+        "team_abbrev": r.get("team", ""),
+        "lgID": r.get("lgID", ""),
+        "bravs": round(float(r.bravs), 1),
+        "bravs_era_std": round(float(r.bravs_era_std), 1),
+        "bravs_war_eq": round(float(r.bravs_war_eq), 1),
+        "ci90_lo": round(float(r.ci90_lo), 1),
+        "ci90_hi": round(float(r.ci90_hi), 1),
+        "total_runs": round(float(r.bravs) * float(r.rpw), 1),
+        "rpw": round(float(r.rpw), 2),
+        "leverage_mult": 1.0,
+        "park_factor": 1.0,
+        "engine": "gpu_precomputed",
+        "headshot": headshot,
+        "components": [
+            {"name": "hitting", "runs": round(float(r.get("hitting_runs", 0)), 1), "ci_lo": 0, "ci_hi": 0},
+            {"name": "pitching", "runs": round(float(r.get("pitching_runs", 0)), 1), "ci_lo": 0, "ci_hi": 0},
+            {"name": "baserunning", "runs": round(float(r.get("baserunning_runs", 0)), 1), "ci_lo": 0, "ci_hi": 0},
+            {"name": "fielding", "runs": round(float(r.get("fielding_runs", 0)), 1), "ci_lo": 0, "ci_hi": 0},
+            {"name": "positional", "runs": round(float(r.get("positional_runs", 0)), 1), "ci_lo": 0, "ci_hi": 0},
+            {"name": "durability", "runs": round(float(r.get("durability_runs", 0)), 1), "ci_lo": 0, "ci_hi": 0},
+            {"name": "approach_quality", "runs": round(float(r.get("aqi_runs", 0)), 1), "ci_lo": 0, "ci_hi": 0},
+            {"name": "leverage", "runs": round(float(r.get("leverage_runs", 0)), 1), "ci_lo": 0, "ci_hi": 0},
+        ],
+        "traditional": {
+            "batting": {"G": int(r.G), "PA": int(r.PA), "HR": int(r.HR), "SB": int(r.get("SB", 0))},
+        } if r.PA > 0 else {},
+    }
+    if r.IP > 0:
+        result["traditional"]["pitching"] = {"IP": round(float(r.IP), 1), "G": int(r.G)}
+
+    return result
 
 
 # Team abbreviation -> MLB team ID
@@ -277,6 +357,25 @@ def compute_player_bravs(player_id: int, season: int):
     if not player_info or "people" not in player_info:
         return jsonify({"error": "Player not found"}), 404
     pinfo = player_info["people"][0]
+
+    # Try pre-computed GPU data first (instant, no API calls for 1920-2025)
+    if season <= 2025 and season >= 1920:
+        # Need to find the Lahman playerID from the MLB API ID
+        # For now, try the career endpoint approach
+        precomputed = _get_precomputed_bravs(str(player_id), season)
+        if precomputed is None:
+            # Try by name
+            name = pinfo.get("fullName", "")
+            precomputed = _get_precomputed_bravs(name, season)
+        if precomputed:
+            precomputed["headshot"] = HEADSHOT_URL.format(pid=player_id)
+            _tid = TEAM_IDS.get(precomputed.get("team_abbrev", ""))
+            precomputed["team_logo"] = TEAM_LOGO_URL.format(tid=_tid) if _tid else None
+            precomputed["team_id"] = _tid or 0
+            precomputed["player_name"] = _display_name(pinfo.get("fullName", precomputed.get("player_name", "")))
+            precomputed["bats_throws"] = f"{pinfo.get('batSide', {}).get('code', '?')}/{pinfo.get('pitchHand', {}).get('code', '?')}"
+            precomputed["number"] = pinfo.get("primaryNumber", "")
+            return jsonify(precomputed)
 
     # Get season stats
     hitting_data = _mlb_get(
@@ -720,6 +819,31 @@ def player_career(player_id):
         return jsonify({"error": "Player not found"}), 404
     pinfo = player_info["people"][0]
     raw_name = pinfo.get("fullFMLName", pinfo.get("fullName", "Unknown"))
+
+    # Try pre-computed career data
+    seasons_df, careers_df = _load_precomputed()
+    if not careers_df.empty:
+        # Search by name since we have MLB ID but CSV has Lahman ID
+        name = _display_name(pinfo.get("fullName", ""))
+        career_match = careers_df[careers_df.name.str.contains(name.split()[-1], case=False, na=False)]
+        if not career_match.empty:
+            cr = career_match.iloc[0]
+            player_seasons = seasons_df[seasons_df.playerID == cr.playerID].sort_values("yearID", ascending=False)
+            seasons_list = []
+            for _, s in player_seasons.iterrows():
+                seasons_list.append({
+                    "season": int(s.yearID), "team": s.get("team", ""),
+                    "bravs": round(float(s.bravs), 1), "war_eq": round(float(s.bravs_war_eq), 1),
+                    "position": s.get("position", ""),
+                })
+            return jsonify({
+                "player_name": name,
+                "player_id": player_id,
+                "headshot": HEADSHOT_URL.format(pid=player_id),
+                "career_bravs": round(float(cr.career_bravs), 1),
+                "career_war_eq": round(float(cr.career_war_eq), 1),
+                "seasons": seasons_list,
+            })
 
     # Reuse player_seasons logic to get all MLB seasons
     hitting = _mlb_get(
@@ -1319,6 +1443,62 @@ def player_dynasty(player_id):
         return jsonify({"error": "Player not found"}), 404
     pinfo = player_info["people"][0]
     raw_name = pinfo.get("fullFMLName", pinfo.get("fullName", "Unknown"))
+
+    # Try pre-computed dynasty data
+    seasons_df, careers_df = _load_precomputed()
+    if not seasons_df.empty:
+        name = _display_name(pinfo.get("fullName", ""))
+        name_match = seasons_df[seasons_df.name.str.contains(name.split()[-1], case=False, na=False)]
+        if not name_match.empty:
+            pid_lahman = name_match.iloc[0].playerID
+            player_seasons = seasons_df[seasons_df.playerID == pid_lahman].sort_values("yearID")
+            all_seasons = []
+            season_map: dict[int, dict] = {}
+            for _, s in player_seasons.iterrows():
+                entry = {
+                    "season": int(s.yearID),
+                    "team": s.get("team", ""),
+                    "bravs": round(float(s.bravs), 1),
+                    "war_eq": round(float(s.bravs_war_eq), 1),
+                    "position": s.get("position", ""),
+                }
+                all_seasons.append(entry)
+                season_map[int(s.yearID)] = entry
+
+            # Find the best 5-consecutive-year window
+            best_total = -999.0
+            best_start = 0
+            best_end = 0
+            best_window: list[dict] = []
+            sorted_years = sorted(season_map.keys())
+            for i in range(len(sorted_years)):
+                window_years = [y for y in sorted_years if sorted_years[i] <= y < sorted_years[i] + 5]
+                if len(window_years) < 2:
+                    continue
+                window_bravs = sum(season_map[y]["bravs"] for y in window_years)
+                if window_bravs > best_total:
+                    best_total = window_bravs
+                    best_start = window_years[0]
+                    best_end = window_years[-1]
+                    best_window = [season_map[y] for y in window_years]
+
+            dynasty_years = len(best_window) if best_window else 0
+            dynasty_avg = round(best_total / dynasty_years, 1) if dynasty_years else 0.0
+
+            return jsonify({
+                "player_name": _display_name(raw_name),
+                "player_id": player_id,
+                "headshot": HEADSHOT_URL.format(pid=player_id),
+                "best_window": {
+                    "total_bravs": round(best_total, 1),
+                    "avg_per_year": dynasty_avg,
+                    "start": best_start,
+                    "end": best_end,
+                    "seasons": best_window,
+                },
+                "seasons": sorted(all_seasons, key=lambda x: x["season"]),
+                "career_bravs": round(sum(s["bravs"] for s in all_seasons), 1),
+            })
 
     # Get all MLB seasons via yearByYear
     hitting = _mlb_get(

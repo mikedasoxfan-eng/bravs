@@ -1,0 +1,112 @@
+Loading C:\Users\logiu\Desktop\testing\baseball\scripts\..\data\bravs_all_seasons.csv ...
+  Loaded 75,265 player-seasons, 1920-2025
+==========================================================================================
+  TALENT TRENDS: DECADE-BY-DECADE ANALYSIS
+==========================================================================================
+
+  Decade    Top10 Hit  Top5 Pit  Std Dev  8+ WAR  Neg WAR  #1-#10 Gap  Qual H  Qual P
+  -----------------------------------------------------------------------------------
+  1920s         15.15     10.29     2.46     129      121        5.93    1594    1246
+  1930s         12.04      7.95     2.37     100      159        1.56    1398    1067
+  1940s         13.24     10.58     2.39      71      226        3.07    1352    1036
+  1950s         12.24      6.96     2.26      51      273        2.38    1342     961
+  1960s         11.65     13.01     2.66     128      363        2.90    1707    1186
+  1970s         10.98     11.26     2.35      81      503        2.46    2208    1441
+  1980s         10.28      9.93     2.09      48      460        2.30    2296    1473
+  1990s          9.70      9.14     2.06      36      455        1.42    2464    1355
+  2000s         10.47      8.32     2.11      55      487        2.73    2760    1431
+  2010s         10.33      9.80     2.14      50      488        2.75    2713    1417
+  2020s         10.40      7.64     2.04      18      305        2.41    1394     646
+
+==========================================================================================
+  SUMMARY FINDINGS
+==========================================================================================
+
+  Top-10 hitter WAR-eq (avg of 1920s-1940s): 13.47
+  Top-10 hitter WAR-eq (avg of 2000s-2020s): 10.40
+  -> Top-end hitting talent appears LOWER in recent decades (+3.08)
+     This likely reflects talent SPREADING (more parity), not declining ability.
+
+  WAR-eq std dev (1920s-1940s avg): 2.41
+  WAR-eq std dev (2000s-2020s avg): 2.10
+  -> Talent is MORE EVENLY DISTRIBUTED in the modern era.
+     The gap between stars and average players has narrowed.
+
+  8+ WAR-eq seasons (1920s-1940s total): 300
+  8+ WAR-eq seasons (2000s-2020s total): 123
+  -> Fewer superstar seasons today — consistent with talent compression.
+
+------------------------------------------------------------------------------------------
+  COMPETITIVENESS ANALYSIS
+------------------------------------------------------------------------------------------
+
+  Most competitive decade (smallest #1-#10 gap):
+    1990s  gap = 1.42 WAR-eq
+
+  Most top-heavy decade (biggest #1-#10 gap):
+    1920s  gap = 5.93 WAR-eq
+
+  All decades ranked by competitiveness (ascending gap):
+    1990s    1.42
+    1930s    1.56
+    1980s    2.30
+    1950s    2.38
+    2020s    2.41
+    1970s    2.46
+    2000s    2.73
+    2010s    2.75
+    1960s    2.90
+    1940s    3.07
+    1920s    5.93
+
+------------------------------------------------------------------------------------------
+  PITCHING vs HITTING DOMINANCE SHIFT
+------------------------------------------------------------------------------------------
+
+  Decade    Top10 Hit  Top5 Pit Ratio P/H     Dominance
+  -----------------------------------------------------
+  1920s         15.15     10.29      0.68       HITTING
+  1930s         12.04      7.95      0.66       HITTING
+  1940s         13.24     10.58      0.80       HITTING
+  1950s         12.24      6.96      0.57       HITTING
+  1960s         11.65     13.01      1.12      PITCHING
+  1970s         10.98     11.26      1.02      BALANCED
+  1980s         10.28      9.93      0.97      BALANCED
+  1990s          9.70      9.14      0.94      BALANCED
+  2000s         10.47      8.32      0.80       HITTING
+  2010s         10.33      9.80      0.95      BALANCED
+  2020s         10.40      7.64      0.73       HITTING
+
+  Avg pitching/hitting ratio (1920s-1940s): 0.713
+  Avg pitching/hitting ratio (2000s-2020s): 0.826
+  -> Pitching has become MORE dominant relative to hitting over time.
+
+------------------------------------------------------------------------------------------
+  REPLACEMENT-LEVEL PLAY
+------------------------------------------------------------------------------------------
+
+  Decade     Neg WAR  Qualifiers  Pct Neg
+  ---------------------------------------
+  1920s          121        2840     4.3%
+  1930s          159        2465     6.5%
+  1940s          226        2388     9.5%
+  1950s          273        2303    11.9%
+  1960s          363        2893    12.5%
+  1970s          503        3649    13.8%
+  1980s          460        3769    12.2%
+  1990s          455        3819    11.9%
+  2000s          487        4191    11.6%
+  2010s          488        4130    11.8%
+  2020s          305        2040    15.0%
+
+==========================================================================================
+  VERDICT
+==========================================================================================
+
+  Baseball talent is becoming MORE EVENLY DISTRIBUTED.
+  The talent pool is deeper, making it harder for individuals to stand out.
+  The top-end WAR-eq numbers have declined as the average quality of play
+  has risen — the classic 'Stephen Jay Gould' theory of vanishing .400 hitters.
+
+
+[Saved to C:\Users\logiu\Desktop\testing\baseball\scripts\..\logs\talent_trends.log]
