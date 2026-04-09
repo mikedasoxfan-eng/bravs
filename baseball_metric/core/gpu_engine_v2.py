@@ -301,6 +301,7 @@ def batch_compute_bravs_v2(
             "yearID": d.get("yearID", 0),
             "name": d.get("name", ""),
             "team": d.get("team", ""),
+            "lgID": d.get("lgID", ""),
             "position": d.get("position", ""),
             "G": int(d.get("G", 0) or 0),
             "PA": int(d.get("PA", 0) or 0),

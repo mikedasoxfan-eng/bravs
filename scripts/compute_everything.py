@@ -44,7 +44,7 @@ def main():
     pit_season = pit[pit.yearID >= 1920].groupby(["playerID", "yearID"]).agg({
         "IPouts": "sum", "ER": "sum", "H": "sum", "HR": "sum",
         "BB": "sum", "SO": "sum", "G": "sum", "GS": "sum", "SV": "sum",
-        "HBP": "sum", "teamID": "last",
+        "HBP": "sum", "teamID": "last", "lgID": "last",
     }).reset_index()
     pit_season["IP"] = pit_season.IPouts / 3.0
     pit_season = pit_season[pit_season.IP >= 20]
@@ -114,7 +114,7 @@ def main():
         all_records[key] = {
             "playerID": r.playerID, "yearID": int(r.yearID),
             "name": name_map.get(r.playerID, r.playerID),
-            "team": r.teamID, "position": pos,
+            "team": r.teamID, "lgID": str(r.get("lgID", "")), "position": pos,
             "PA": int(r.PA), "AB": int(r.AB), "H": int(r.H),
             "2B": int(r["2B"]), "3B": int(r["3B"]), "HR": int(r.HR),
             "BB": int(r.BB), "IBB": int(r.get("IBB", 0) or 0),
@@ -151,7 +151,7 @@ def main():
             all_records[key] = {
                 "playerID": r.playerID, "yearID": int(r.yearID),
                 "name": name_map.get(r.playerID, r.playerID),
-                "team": r.teamID, "position": pos,
+                "team": r.teamID, "lgID": str(r.get("lgID", "")), "position": pos,
                 "PA": 0, "AB": 0, "H": 0, "2B": 0, "3B": 0, "HR": 0,
                 "BB": 0, "IBB": 0, "HBP": 0, "SO": 0, "SF": 0, "SH": 0,
                 "SB": 0, "CS": 0, "GIDP": 0, "G": int(r.G),
