@@ -11,7 +11,7 @@ import numpy as np
 import torch
 
 from baseball_metric.data import lahman
-from baseball_metric.core.gpu_engine import batch_compute_bravs, DEVICE
+from baseball_metric.core.gpu_engine_v2 import batch_compute_bravs_v2 as batch_compute_bravs, DEVICE
 
 
 def main():

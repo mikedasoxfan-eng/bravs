@@ -1,0 +1,85 @@
+================================================================================
+  COMPUTING BRAVS FOR EVERY PLAYER-SEASON IN MLB HISTORY
+  Device: cuda (NVIDIA GeForce RTX 5060 Ti)
+================================================================================
+  Fielding estimates computed for 116,953 player-seasons
+
+  Player-seasons to compute: 75,265
+  Year range: 1920-2025
+
+  Launching GPU computation...
+
+  GPU computation: 2.66s for 75,265 player-seasons
+  Rate: 28,261 player-seasons/second
+  Per player: 35 microseconds
+
+  Saved: data/bravs_all_seasons.csv (75,265 rows)
+  Saved: data/bravs_all_batting.csv (37,011 rows)
+  Saved: data/bravs_all_pitching.csv (29,940 rows)
+  Saved: data/bravs_careers.csv (14,092 rows)
+
+================================================================================
+  TOP 25 CAREERS BY WAR-EQUIVALENT
+================================================================================
+  Rank Player                          Years  WAR-eq   BRAVS   Peak  HOF
+  ------------------------------------------------------------------------
+  1    Willie Mays              1951-1973   166.3   255.7   20.2    Y
+  2    Stan Musial              1942-1963   162.1   249.5   23.3    Y
+  3    Babe Ruth                1920-1935   159.3   245.1   29.3    Y
+  4    Ted Williams             1939-1960   149.8   230.4   21.9    Y
+  5    Lou Gehrig               1925-1938   141.8   218.2   22.2    Y
+  6    Nolan Ryan               1968-1993   135.7   208.8   16.6    Y
+  7    Barry Bonds              1986-2007   134.8   207.4   19.0     
+  8    Hank Aaron               1954-1976   133.6   205.6   15.5    Y
+  9    Mickey Mantle            1951-1968   132.1   203.3   20.8    Y
+  10   Roger Clemens            1984-2007   128.2   197.2   15.5     
+  11   Gaylord Perry            1962-1983   126.7   194.9   16.8    Y
+  12   Steve Carlton            1965-1987   120.6   185.6   19.4    Y
+  13   Joe Morgan               1965-1984   120.5   185.4   18.8    Y
+  14   Jimmie Foxx              1927-1945   119.5   183.8   18.8    Y
+  15   Tom Seaver               1967-1986   118.0   181.4   17.2    Y
+  16   Mel Ott                  1926-1946   115.0   177.0   14.8    Y
+  17   Greg Maddux              1986-2008   114.9   176.7   12.2    Y
+  18   Rogers Hornsby           1920-1937   113.6   174.8   24.3    Y
+  19   Don Sutton               1966-1988   112.9   173.8   13.8    Y
+  20   Bert Blyleven            1970-1992   112.1   172.4   17.7    Y
+  21   Joe DiMaggio             1936-1951   109.7   168.7   19.9    Y
+  22   Charlie Gehringer        1926-1942   109.6   168.6   17.0    Y
+  23   Alex Rodriguez           1994-2016   109.3   168.2   14.9     
+  24   Pete Rose                1963-1986   108.5   166.9   14.8     
+  25   Frank Robinson           1956-1976   105.8   162.9   14.8    Y
+
+================================================================================
+  TOP 25 SINGLE SEASONS
+================================================================================
+  Rank Player                 YearPos    WAR-eq   BRAVS
+  -------------------------------------------------------
+  1    Babe Ruth              1921 LF      19.0    29.3
+  2    Babe Ruth              1923 RF      16.4    25.2
+  3    Babe Ruth              1920 RF      16.2    25.0
+  4    Rogers Hornsby         1922 2B      15.8    24.3
+  5    Stan Musial            1948 RF      15.1    23.3
+  6    Rogers Hornsby         1921 2B      14.9    22.9
+  7    Bob Gibson             1968 P       14.8    22.7
+  8    Lou Gehrig             1927 1B      14.4    22.2
+  9    George Sisler          1920 1B      14.4    22.1
+  10   Ted Williams           1946 LF      14.2    21.9
+  11   Sandy Koufax           1965 P       14.1    21.7
+  12   Stan Musial            1946 1B      14.0    21.6
+  13   Ted Williams           1947 LF      13.9    21.4
+  14   Rogers Hornsby         1924 2B      13.9    21.3
+  15   Mickey Mantle          1961 CF      13.5    20.8
+  16   Mickey Mantle          1956 CF      13.5    20.8
+  17   Babe Ruth              1924 RF      13.4    20.6
+  18   Stan Musial            1943 RF      13.1    20.2
+  19   Willie Mays            1957 CF      13.1    20.2
+  20   Shoeless Joe Jackson   1920 LF      13.1    20.2
+  21   Rogers Hornsby         1920 2B      13.0    20.1
+  22   Tris Speaker           1920 CF      13.0    20.0
+  23   Kiki Cuyler            1925 RF      13.0    20.0
+  24   Joe DiMaggio           1937 CF      12.9    19.9
+  25   Ted Williams           1941 LF      12.9    19.9
+
+  Total runtime: 60.7s
+  GPU compute: 2.66s
+  Data prep: 48.9s
