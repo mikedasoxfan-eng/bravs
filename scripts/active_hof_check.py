@@ -95,7 +95,7 @@ def compute_career(player_id, name):
                 if yr not in pos_map or inn > pos_map[yr][1]:
                     pos_map[yr] = (pos, inn)
 
-    # Collect all MLB seasons
+    # Collect all MLB seasons — prefer total rows (numTeams > 1) for traded players
     seasons = {}
     if "stats" in h_data:
         for g in h_data["stats"]:
@@ -105,9 +105,10 @@ def compute_career(player_id, name):
                 s = sp.get("stat", {})
                 pa = safe_int(s.get("plateAppearances"))
                 if pa < 20: continue
-                if safe_int(sp.get("numTeams", 1)) <= 1 and yr in seasons:
-                    continue  # skip team splits if we already have data
-                seasons[yr] = {"hitting": s, "pitching": None}
+                is_total = safe_int(sp.get("numTeams", 1)) > 1
+                # Always prefer the total row; otherwise take first per-team split
+                if is_total or yr not in seasons:
+                    seasons[yr] = {"hitting": s, "pitching": None}
 
     if "stats" in p_data:
         for g in p_data["stats"]:
@@ -116,10 +117,11 @@ def compute_career(player_id, name):
                 if yr < 2000: continue
                 s = sp.get("stat", {})
                 ip = parse_ip(s.get("inningsPitched", 0))
-                if ip < 5: continue
+                if ip < 10: continue  # need meaningful innings
+                is_total = safe_int(sp.get("numTeams", 1)) > 1
                 if yr not in seasons:
                     seasons[yr] = {"hitting": None, "pitching": s}
-                else:
+                elif is_total or seasons[yr]["pitching"] is None:
                     seasons[yr]["pitching"] = s
 
     # Compute BRAVS for each season
@@ -134,9 +136,17 @@ def compute_career(player_id, name):
         h = seasons[yr].get("hitting") or {}
         p = seasons[yr].get("pitching") or {}
 
-        pos, inn = pos_map.get(yr, (primary_pos or "DH", 0))
-        if parse_ip(p.get("inningsPitched", 0)) > 40 and safe_int(h.get("plateAppearances", 0)) < 30:
+        pos, inn = pos_map.get(yr, ("DH", 0))
+        # Determine if this is a pitcher season
+        pit_ip = parse_ip(p.get("inningsPitched", 0)) if p else 0
+        hit_pa = safe_int(h.get("plateAppearances", 0)) if h else 0
+        if pit_ip > 40 and hit_pa < 50:
             pos = "P"
+        elif pos == "DH" and hit_pa > 100:
+            # No fielding data but they played — use primary position as last resort
+            # But only if it's not obviously wrong (not P for a hitter)
+            if primary_pos and primary_pos != "P":
+                pos = primary_pos
 
         rpg = RPG.get(yr, 4.5)
         sg = SHORT_SEASONS.get(yr, 162)
