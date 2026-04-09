@@ -22,3 +22,5 @@ bravs_engine/target/
 *.whl
 data/baseballdatabank-master/
 data/lahman.zip
+data/baseball-main/
+data/stormlight.zip

@@ -17,8 +17,15 @@ import numpy as np
 
 from baseball_metric.core.types import PlayerSeason
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data" / "baseballdatabank-master" / "core"
-CONTRIB_DIR = Path(__file__).parent.parent.parent / "data" / "baseballdatabank-master" / "contrib"
+# Try updated dataset first (stormlightlabs, 1871-2024), fallback to original (1871-2021)
+_BASE = Path(__file__).parent.parent.parent / "data"
+_STORM = _BASE / "baseball-main" / "data" / "lahman" / "csv"
+_CHAD = _BASE / "baseballdatabank-master" / "core"
+_CHAD_CONTRIB = _BASE / "baseballdatabank-master" / "contrib"
+
+DATA_DIR = _STORM if _STORM.exists() else _CHAD
+# Contrib tables: stormlightlabs puts them in same dir, chadwick in contrib/
+CONTRIB_DIR = _STORM if (_STORM / "HallOfFame.csv").exists() else _CHAD_CONTRIB
 
 
 @lru_cache(maxsize=1)
