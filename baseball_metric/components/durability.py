@@ -30,7 +30,7 @@ def _prorate_expected(full_season_expected: int, season_games: int) -> int:
     should be ~57, not 155. This prevents penalizing players for
     games that simply didn't exist.
     """
-    if season_games >= GAMES_PER_SEASON:
+    if season_games >= 150:
         return full_season_expected
     # Scale expected proportionally to actual season length, with 95% factor
     # (a healthy player should play ~95% of available games)

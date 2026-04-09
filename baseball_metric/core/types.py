@@ -167,7 +167,8 @@ class BRAVSResult:
     total_samples: NDArray[np.floating[object]] | None = None
 
     # Calibration factor: scales raw BRAVS to WAR-equivalent range.
-    WAR_CALIBRATION_FACTOR: float = 0.62
+    # Optimized via least-squares against 22 benchmark fWAR values.
+    WAR_CALIBRATION_FACTOR: float = 0.57
 
     # Fixed modern RPW for era-standardized comparison
     STANDARD_RPW: float = 5.90  # ~2023 run environment

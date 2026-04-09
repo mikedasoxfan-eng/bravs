@@ -953,7 +953,7 @@ def what_if():
         "position": pos_override,
         "original_position": old_pos,
         "bravs": round(new_bravs, 1),
-        "bravs_war_eq": round(new_bravs * 0.62, 1),
+        "bravs_war_eq": round(new_bravs * 0.57, 1),
         "positional_diff_runs": round(pos_diff, 1),
     })
 
@@ -1290,7 +1290,7 @@ def live_mvp(league):
             "bravs_pace": pace_bravs,
             "bravs_raw": raw_bravs,
             "bravs_era_std": r.get("bravs_era_std", 0),
-            "bravs_war_eq": round(pace_bravs * 0.62, 1),
+            "bravs_war_eq": round(pace_bravs * 0.57, 1),
             "games_played": games,
             "team_games": team_games_est,
             "components": r.get("components", []),

@@ -1,0 +1,92 @@
+=====================================================================================
+  HALL OF FAME CLASSIFIER — FULL LAHMAN DATABASE
+  Every inducted player vs qualified non-HOFers
+=====================================================================================
+
+  Computing career BRAVS for 256 HOF inductees...
+  Computed: 178 HOFers with 3+ seasons
+  Computing non-HOF comparison group...
+    Processing non-HOF 0/200...
+    Processing non-HOF 50/200...
+    Processing non-HOF 100/200...
+    Processing non-HOF 150/200...
+  Computed: 165 non-HOFers
+
+  Total computation time: 75s
+
+=====================================================================================
+  RESULTS
+=====================================================================================
+
+  HOF group:     n= 178  mean=  52.1  median=  48.5  sd= 26.6
+  Non-HOF group: n= 165  mean=   5.5  median=   3.8  sd= 17.5
+
+  AUC (Mann-Whitney): 0.9415
+  p-value: 1.20e-45
+  Cohen's d: 2.07
+
+  Optimal threshold: 29.5 career WAR-eq
+  Accuracy at threshold: 87.5%
+
+  Confusion matrix:
+    True Positives  (HOF correctly classified): 150
+    False Negatives (HOF missed):               28
+    False Positives (non-HOF classified as HOF): 15
+    True Negatives  (non-HOF correct):          150
+    Precision: 90.9%
+    Recall:    84.3%
+
+  TOP 25 HALL OF FAMERS BY CAREER WAR-eq:
+  Rank  Player ID           WAR-eq   BRAVS   Peak  Yrs
+  -------------------------------------------------------
+  1     mayswi01             130.4   228.7   18.5   22
+  2     willite01            124.7   218.7   20.8   18
+  3     ryanno01             123.1   215.9   17.3   26
+  4     perryga01            119.7   210.0   19.7   22
+  5     ruthba01             119.6   209.8   25.0   16
+  6     aaronha01            118.6   208.0   15.9   23
+  7     musiast01            114.7   201.2   18.5   22
+  8     seaveto01            112.3   197.0   20.1   20
+  9     mantlmi01            111.4   195.4   21.1   18
+  10    carltst01            106.4   186.7   20.0   24
+  11    suttodo01            106.2   186.2   15.5   23
+  12    blylebe01            103.2   181.0   18.5   22
+  13    henderi01            102.0   178.9   17.6   25
+  14    maddugr01            100.2   175.9   12.5   23
+  15    gibsobo01             98.8   173.3   26.9   17
+  16    gehrilo01             93.8   164.6   17.0   15
+  17    matheed01             87.1   152.9   15.4   17
+  18    schmimi01             86.6   152.0   14.5   18
+  19    jenkife01             86.3   151.4   20.8   19
+  20    ottme01               86.2   151.3   13.7   21
+  21    yastrca01             85.8   150.6   21.2   23
+  22    jonesch06             83.7   146.8   14.1   18
+  23    johnsra05             83.2   145.9   13.2   22
+  24    drysddo01             82.7   145.1   18.2   14
+  25    boggswa01             81.1   142.2   16.4   18
+
+  LOWEST-RATED HOFers (questionable inductees by BRAVS):
+    mazerbi01            -2.7 WAR-eq  (17 seasons)
+    irvinmo01             3.3 WAR-eq  (8 seasons)
+    paigesa01             4.7 WAR-eq  (5 seasons)
+    maranra01             8.0 WAR-eq  (15 seasons)
+    schalra01             8.1 WAR-eq  (7 seasons)
+    perezto01            10.1 WAR-eq  (22 seasons)
+    hafeych01            12.3 WAR-eq  (13 seasons)
+    marquru01            15.0 WAR-eq  (6 seasons)
+    roushed01            15.8 WAR-eq  (11 seasons)
+    lombaer01            16.2 WAR-eq  (17 seasons)
+
+  HIGHEST-RATED NON-HOFers (potential snubs):
+    bandosa01            59.5 WAR-eq  (15 seasons)
+    gonzalu01            50.3 WAR-eq  (18 seasons)
+    ortizda01            47.4 WAR-eq  (19 seasons)
+    delgaca01            45.6 WAR-eq  (16 seasons)
+    kendaja01            44.5 WAR-eq  (15 seasons)
+    belleal01            41.6 WAR-eq  (11 seasons)
+    singlke01            40.7 WAR-eq  (15 seasons)
+    grandcu01            39.1 WAR-eq  (15 seasons)
+    youngmi02            38.9 WAR-eq  (13 seasons)
+    lynnfr01             38.9 WAR-eq  (17 seasons)
+
+  Total runtime: 75s

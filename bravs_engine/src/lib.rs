@@ -43,7 +43,7 @@ const GAME_MARGINAL_POS: f64 = 0.030;
 const GAME_MARGINAL_PIT: f64 = 0.015;
 const N_SAMPLES_FULL: usize = 10000;
 const N_SAMPLES_FAST: usize = 2000;
-const WAR_CAL: f64 = 0.62;
+const WAR_CAL: f64 = 0.57;
 const STD_RPW: f64 = 5.90;
 
 static POS_ADJ: &[(&str, f64)] = &[
