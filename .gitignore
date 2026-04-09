@@ -20,3 +20,5 @@ output/*.svg
 *.DS_Store
 bravs_engine/target/
 *.whl
+data/baseballdatabank-master/
+data/lahman.zip
