@@ -38,9 +38,15 @@ else:
     CONTRIB_DIR = _CHAD_CONTRIB
 
 
+def _normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Normalize column names: X2B->2B, X3B->3B (R adds X prefix to numeric names)."""
+    renames = {"X2B": "2B", "X3B": "3B"}
+    return df.rename(columns={k: v for k, v in renames.items() if k in df.columns})
+
+
 @lru_cache(maxsize=1)
 def _batting() -> pd.DataFrame:
-    return pd.read_csv(DATA_DIR / "Batting.csv")
+    return _normalize_columns(pd.read_csv(DATA_DIR / "Batting.csv"))
 
 
 @lru_cache(maxsize=1)
