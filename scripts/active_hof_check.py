@@ -11,6 +11,8 @@ MLB_API = "https://statsapi.mlb.com/api/v1"
 HEADSHOT = "https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_213,q_auto:best/v1/people/{}/headshot/67/current"
 
 RPG = {
+    1998: 4.79, 1999: 5.08, 2000: 5.14, 2001: 4.78, 2002: 4.62,
+    2003: 4.73, 2004: 4.81,
     2005: 4.59, 2006: 4.86, 2007: 4.80, 2008: 4.65, 2009: 4.61,
     2010: 4.38, 2011: 4.28, 2012: 4.32, 2013: 4.17, 2014: 4.07,
     2015: 4.25, 2016: 4.48, 2017: 4.65, 2018: 4.45, 2019: 4.83,
@@ -21,31 +23,36 @@ SHORT_SEASONS = {2020: 60}
 
 # Active veterans most likely to be HOF candidates
 CANDIDATES = [
+    # Position players
     (545361, "Mike Trout"),
     (660271, "Shohei Ohtani"),
     (605141, "Mookie Betts"),
     (592450, "Aaron Judge"),
     (571448, "Freddie Freeman"),
-    (502110, "J.T. Realmuto"),
     (518626, "Jose Altuve"),
-    (543829, "Nolan Arenado"),
-    (621043, "Trea Turner"),
     (624413, "Jose Ramirez"),
-    (543685, "Paul Goldschmidt"),
     (547180, "Bryce Harper"),
     (543037, "Manny Machado"),
-    (608336, "Corey Seager"),
-    (592178, "Max Scherzer"),
-    (477132, "Clayton Kershaw"),
-    (519317, "Giancarlo Stanton"),
     (596019, "Francisco Lindor"),
-    (543294, "Matt Olson"),
-    (666971, "Ronald Acuna Jr."),
     (665742, "Juan Soto"),
+    (519317, "Giancarlo Stanton"),
+    (543829, "Nolan Arenado"),
+    (621043, "Trea Turner"),
+    (608336, "Corey Seager"),
+    (543685, "Paul Goldschmidt"),
+    (502110, "J.T. Realmuto"),
     (608369, "Xander Bogaerts"),
-    (641355, "Corbin Burnes"),
+    (666971, "Ronald Acuna Jr."),
     (669373, "Bobby Witt Jr."),
-    (673540, "Julio Rodriguez"),
+    # Pitchers — critical additions
+    (477132, "Clayton Kershaw"),
+    (592178, "Max Scherzer"),
+    (434378, "Justin Verlander"),
+    (425844, "Zack Greinke"),
+    (519242, "Chris Sale"),
+    (641355, "Corbin Burnes"),
+    (594798, "Jacob deGrom"),
+    (622663, "Gerrit Cole"),
 ]
 
 
@@ -96,33 +103,34 @@ def compute_career(player_id, name):
                     pos_map[yr] = (pos, inn)
 
     # Collect all MLB seasons — prefer total rows (numTeams > 1) for traded players
+    # Process PITCHING FIRST so pitcher-only seasons aren't missed
     seasons = {}
-    if "stats" in h_data:
-        for g in h_data["stats"]:
-            for sp in g.get("splits", []):
-                yr = int(sp.get("season", 0))
-                if yr < 2000: continue
-                s = sp.get("stat", {})
-                pa = safe_int(s.get("plateAppearances"))
-                if pa < 20: continue
-                is_total = safe_int(sp.get("numTeams", 1)) > 1
-                # Always prefer the total row; otherwise take first per-team split
-                if is_total or yr not in seasons:
-                    seasons[yr] = {"hitting": s, "pitching": None}
 
     if "stats" in p_data:
         for g in p_data["stats"]:
             for sp in g.get("splits", []):
                 yr = int(sp.get("season", 0))
-                if yr < 2000: continue
+                if yr < 1998: continue
                 s = sp.get("stat", {})
                 ip = parse_ip(s.get("inningsPitched", 0))
-                if ip < 10: continue  # need meaningful innings
+                if ip < 10: continue
+                is_total = safe_int(sp.get("numTeams", 1)) > 1
+                if is_total or yr not in seasons:
+                    seasons[yr] = {"hitting": None, "pitching": s}
+
+    if "stats" in h_data:
+        for g in h_data["stats"]:
+            for sp in g.get("splits", []):
+                yr = int(sp.get("season", 0))
+                if yr < 1998: continue
+                s = sp.get("stat", {})
+                pa = safe_int(s.get("plateAppearances"))
+                if pa < 10: continue  # lowered threshold for pitchers who bat
                 is_total = safe_int(sp.get("numTeams", 1)) > 1
                 if yr not in seasons:
-                    seasons[yr] = {"hitting": None, "pitching": s}
-                elif is_total or seasons[yr]["pitching"] is None:
-                    seasons[yr]["pitching"] = s
+                    seasons[yr] = {"hitting": s, "pitching": None}
+                elif is_total or seasons[yr].get("hitting") is None:
+                    seasons[yr]["hitting"] = s
 
     # Compute BRAVS for each season
     career_bravs = 0.0
