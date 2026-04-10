@@ -84,10 +84,23 @@ def batch_compute_bravs_v3(player_data: list[dict], n_samples: int = N_SAMPLES, 
     rpg = torch.tensor([_get_rpg(int(d.get("yearID", 2023))) for d in player_data],
                        dtype=torch.float32, device=DEVICE)
 
-    # FIX 2: Era adjustment — cube root dampening (much less inflation for old eras)
+    # FIX 2: Era adjustment — cube root RPG dampening + talent dilution factor
     raw_era_mult = 4.62 / rpg
-    era_mult = raw_era_mult.pow(1.0 / 3.0)  # cube root
-    era_mult = era_mult / era_mult.mean()  # normalize to mean 1.0
+    era_mult = raw_era_mult.pow(1.0 / 3.0)
+    era_mult = era_mult / era_mult.mean()
+
+    # Talent dilution: pre-expansion eras had fewer teams = shallower talent pool
+    # Being X runs above FAT was easier with 16 teams (pre-1961) vs 30 teams (today)
+    # Scale factor: sqrt(current_teams / era_teams) — penalizes shallow talent pools
+    years = torch.tensor([int(d.get("yearID", 2023)) for d in player_data], dtype=torch.float32, device=DEVICE)
+    n_teams = torch.where(years < 1961, 16.0,
+              torch.where(years < 1969, 20.0,
+              torch.where(years < 1977, 24.0,
+              torch.where(years < 1993, 26.0,
+              torch.where(years < 1998, 28.0, 30.0)))))
+    dilution_factor = (30.0 / n_teams).pow(0.25)  # 4th root — very mild adjustment
+    # Apply inversely: old eras get scaled down slightly
+    era_mult = era_mult / dilution_factor
 
     pos_adj = torch.tensor([POS_ADJ_V3.get(d.get("position", "DH"), 0.0)
                            for d in player_data], dtype=torch.float32, device=DEVICE)
