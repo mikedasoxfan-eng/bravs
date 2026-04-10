@@ -1875,6 +1875,171 @@ def api_lineup_teams(year):
         return jsonify({"error": str(e)}), 500
 
 
+# ---------------------------------------------------------------------------
+# MiLB endpoints — lazy-loaded data
+# ---------------------------------------------------------------------------
+_MILB_SEASONS = None
+_PROSPECT_RANKINGS = None
+
+
+def _load_milb_seasons():
+    global _MILB_SEASONS
+    if _MILB_SEASONS is None:
+        try:
+            _MILB_SEASONS = pd.read_csv("data/bravs_milb_seasons.csv")
+            logger.info("Loaded MiLB seasons: %d records", len(_MILB_SEASONS))
+        except Exception as e:
+            logger.warning("Could not load MiLB seasons: %s", e)
+            _MILB_SEASONS = pd.DataFrame()
+    return _MILB_SEASONS
+
+
+def _load_prospect_rankings():
+    global _PROSPECT_RANKINGS
+    if _PROSPECT_RANKINGS is None:
+        try:
+            _PROSPECT_RANKINGS = pd.read_csv("data/prospect_rankings.csv")
+            logger.info("Loaded prospect rankings: %d records", len(_PROSPECT_RANKINGS))
+        except Exception as e:
+            logger.warning("Could not load prospect rankings: %s", e)
+            _PROSPECT_RANKINGS = pd.DataFrame()
+    return _PROSPECT_RANKINGS
+
+
+@app.route("/api/milb/player/<player_id>")
+def milb_player(player_id):
+    """Look up a player's MiLB career from bravs_milb_seasons.csv."""
+    df = _load_milb_seasons()
+    if df.empty:
+        return jsonify({"error": "MiLB data not available"}), 500
+
+    # Try matching as numeric ID or string
+    try:
+        pid_num = float(player_id)
+        rows = df[df["playerID"] == pid_num]
+    except (ValueError, TypeError):
+        rows = df[df["playerID"].astype(str) == player_id]
+
+    if rows.empty:
+        # Try name match
+        rows = df[df["name"].str.contains(str(player_id), case=False, na=False)]
+
+    if rows.empty:
+        return jsonify({"error": f"No MiLB data found for {player_id}"}), 404
+
+    seasons = []
+    for _, r in rows.sort_values("yearID", ascending=False).iterrows():
+        season = {
+            "playerID": str(r.get("playerID", "")),
+            "yearID": int(r["yearID"]),
+            "name": str(r.get("name", "")),
+            "team": str(r.get("team", "")),
+            "team_name": str(r.get("team_name", "")),
+            "lgID": str(r.get("lgID", "")),
+            "level": str(r.get("level", "")),
+            "position": str(r.get("position", "")),
+            "G": int(r.get("G", 0)),
+            "bravs_war_eq": round(float(r.get("bravs_war_eq", 0)), 2),
+            "translation_rate": round(float(r.get("translation_rate", 0)), 2),
+            "PA": int(r.get("PA", 0)) if pd.notna(r.get("PA")) else 0,
+            "HR": int(r.get("HR", 0)) if pd.notna(r.get("HR")) else 0,
+            "SB": int(r.get("SB", 0)) if pd.notna(r.get("SB")) else 0,
+            "wOBA": round(float(r.get("wOBA", 0)), 3) if pd.notna(r.get("wOBA")) else None,
+            "hitting_runs": round(float(r.get("hitting_runs", 0)), 1) if pd.notna(r.get("hitting_runs")) else 0,
+            "IP": round(float(r.get("IP", 0)), 1) if pd.notna(r.get("IP")) else 0,
+            "ERA": round(float(r.get("ERA", 0)), 2) if pd.notna(r.get("ERA")) else None,
+            "pitching_runs": round(float(r.get("pitching_runs", 0)), 1) if pd.notna(r.get("pitching_runs")) else 0,
+        }
+        seasons.append(season)
+
+    player_name = seasons[0]["name"] if seasons else player_id
+    return jsonify({
+        "player_id": player_id,
+        "player_name": player_name,
+        "total_seasons": len(seasons),
+        "seasons": seasons,
+    })
+
+
+@app.route("/api/milb/leaderboard/<int:year>/<level>")
+def milb_leaderboard(year, level):
+    """Return top MiLB players for a given year and level sorted by bravs_war_eq."""
+    df = _load_milb_seasons()
+    if df.empty:
+        return jsonify({"error": "MiLB data not available"}), 500
+
+    # Filter by year and level (case-insensitive level match)
+    filtered = df[(df["yearID"] == year) & (df["level"].str.upper() == level.upper())]
+
+    if filtered.empty:
+        return jsonify({"error": f"No data for {year} {level}"}), 404
+
+    # Sort by bravs_war_eq descending, top 50
+    top = filtered.nlargest(50, "bravs_war_eq")
+
+    players = []
+    for _, r in top.iterrows():
+        players.append({
+            "playerID": str(r.get("playerID", "")),
+            "name": str(r.get("name", "")),
+            "team": str(r.get("team", "")),
+            "team_name": str(r.get("team_name", "")),
+            "position": str(r.get("position", "")),
+            "G": int(r.get("G", 0)),
+            "bravs_war_eq": round(float(r.get("bravs_war_eq", 0)), 2),
+            "PA": int(r.get("PA", 0)) if pd.notna(r.get("PA")) else 0,
+            "HR": int(r.get("HR", 0)) if pd.notna(r.get("HR")) else 0,
+            "wOBA": round(float(r.get("wOBA", 0)), 3) if pd.notna(r.get("wOBA")) else None,
+            "IP": round(float(r.get("IP", 0)), 1) if pd.notna(r.get("IP")) else 0,
+            "ERA": round(float(r.get("ERA", 0)), 2) if pd.notna(r.get("ERA")) else None,
+        })
+
+    return jsonify({
+        "year": year,
+        "level": level.upper(),
+        "count": len(players),
+        "players": players,
+    })
+
+
+@app.route("/api/milb/prospects")
+def milb_prospects():
+    """Return top 50 current prospects from prospect_rankings.csv."""
+    df = _load_prospect_rankings()
+    if df.empty:
+        return jsonify({"error": "Prospect rankings not available"}), 500
+
+    # Filter to non-MLB players, sort by projected_mlb_war descending
+    prospects = df.copy()
+    if "in_mlb" in prospects.columns:
+        prospects = prospects[prospects["in_mlb"] == False]
+
+    if "projected_mlb_war" in prospects.columns:
+        prospects = prospects.nlargest(50, "projected_mlb_war")
+    else:
+        prospects = prospects.head(50)
+
+    result = []
+    for rank, (_, r) in enumerate(prospects.iterrows(), 1):
+        result.append({
+            "rank": rank,
+            "playerID": str(r.get("playerID", "")),
+            "name": str(r.get("name", "")),
+            "highest_level": str(r.get("highest_level", r.get("milb_highest_level", ""))),
+            "milb_seasons": int(r.get("milb_seasons", 0)) if pd.notna(r.get("milb_seasons")) else 0,
+            "milb_total_war": round(float(r.get("milb_total_war", 0)), 2) if pd.notna(r.get("milb_total_war")) else 0,
+            "milb_peak_war": round(float(r.get("milb_peak_war", 0)), 2) if pd.notna(r.get("milb_peak_war")) else 0,
+            "milb_avg_woba": round(float(r.get("milb_avg_woba", 0)), 3) if pd.notna(r.get("milb_avg_woba")) else None,
+            "projected_mlb_war": round(float(r.get("projected_mlb_war", 0)), 1) if pd.notna(r.get("projected_mlb_war")) else None,
+            "years_in_minors": int(r.get("years_in_minors", 0)) if pd.notna(r.get("years_in_minors")) else 0,
+        })
+
+    return jsonify({
+        "count": len(result),
+        "prospects": result,
+    })
+
+
 if __name__ == "__main__":
     print("\n  BRAVS Web App")
     print(f"  Engine: {'Rust (bravs_engine)' if USE_RUST else 'Python (fallback)'}")

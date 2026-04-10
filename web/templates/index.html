@@ -644,6 +644,7 @@ nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
   <button class="nav-tab" data-tab="dynasty" onclick="switchTab('dynasty')">Dynasties</button>
   <button class="nav-tab" data-tab="dream" onclick="switchTab('dream')">Dream Team</button>
   <button class="nav-tab" data-tab="lineup" onclick="switchTab('lineup')">Lineup Optimizer</button>
+  <button class="nav-tab" data-tab="milb" onclick="switchTab('milb')">MiLB</button>
 </div>
 
 <!-- === PLAYER TAB === -->
@@ -790,6 +791,36 @@ nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
   </div>
 </div>
 
+<!-- === MiLB TAB === -->
+<div id="tab-milb" style="display:none">
+  <div style="max-width:860px;margin:32px auto 0;padding:0 24px;">
+    <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center;">
+      <button onclick="loadProspects()" style="padding:8px 18px;font-family:inherit;font-size:12px;font-weight:600;background:var(--text);color:var(--surface);border:none;border-radius:6px;cursor:pointer">Top Prospects</button>
+      <span style="color:var(--text-3);font-size:12px">|</span>
+      <select id="milb-level" style="font-family:inherit;font-size:13px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);">
+        <option value="AAA">AAA</option>
+        <option value="AA">AA</option>
+        <option value="A+">A+</option>
+        <option value="A">A</option>
+        <option value="A-">A-</option>
+        <option value="R">Rookie</option>
+      </select>
+      <input id="milb-year" type="number" value="2023" min="2005" max="2025" style="font-family:inherit;font-size:13px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);width:80px">
+      <button onclick="loadMiLBLeaderboard()" style="padding:8px 18px;font-family:inherit;font-size:12px;font-weight:600;background:transparent;color:var(--text);border:1px solid var(--border);border-radius:6px;cursor:pointer">Level Leaderboard</button>
+      <span style="color:var(--text-3);font-size:12px">|</span>
+      <input id="milb-player-search" placeholder="Player ID or name" style="font-family:inherit;font-size:13px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);width:180px">
+      <button onclick="loadMiLBPlayer()" style="padding:8px 18px;font-family:inherit;font-size:12px;font-weight:600;background:transparent;color:var(--text);border:1px solid var(--border);border-radius:6px;cursor:pointer">Lookup</button>
+    </div>
+    <div class="loading" id="milb-loading"><span>Loading MiLB data<span class="dots"></span></span></div>
+    <div id="milb-results"></div>
+    <div class="empty" id="milb-empty">
+      <h2>Minor League Analytics</h2>
+      <p>Explore MiLB data powered by BRAVS. View top prospects with MLB WAR projections, browse level leaderboards, or look up any minor league player's career.</p>
+      <p style="font-size:11px;color:var(--text-3);margin-top:12px">Data includes translated BRAVS WAR equivalent, adjusted for level quality. Translation rates: AAA 0.75x, AA 0.6x, A+ 0.5x, A 0.4x.</p>
+    </div>
+  </div>
+</div>
+
 <script>
 const $ = id => document.getElementById(id);
 let debounceTimer = null;
@@ -808,6 +839,7 @@ function switchTab(tab) {
   $('tab-dynasty').style.display = tab === 'dynasty' ? 'block' : 'none';
   $('tab-dream').style.display = tab === 'dream' ? 'block' : 'none';
   $('tab-lineup').style.display = tab === 'lineup' ? 'block' : 'none';
+  $('tab-milb').style.display = tab === 'milb' ? 'block' : 'none';
 }
 
 // --- Search ---
@@ -1685,6 +1717,148 @@ function renderSeasonResults(data) {
   }
 
   wrap.innerHTML = html;
+}
+
+// --- MiLB Functions ---
+async function loadProspects() {
+  $('milb-loading').style.display = 'block';
+  $('milb-empty').style.display = 'none';
+  $('milb-results').innerHTML = '';
+  try {
+    const res = await fetch('/api/milb/prospects');
+    const data = await res.json();
+    if (data.error) { $('milb-results').innerHTML = '<div class="error-card">' + esc(data.error) + '</div>'; return; }
+    renderProspects(data);
+  } catch(e) {
+    $('milb-results').innerHTML = '<div class="error-card">Error: ' + esc(e.message) + '</div>';
+  } finally {
+    $('milb-loading').style.display = 'none';
+  }
+}
+
+function renderProspects(data) {
+  let html = '<div style="margin-bottom:16px;font-size:14px;font-weight:700">Top ' + data.count + ' Prospects</div>';
+  html += '<table style="width:100%;border-collapse:collapse;font-size:12px">';
+  html += '<tr style="border-bottom:2px solid var(--border);color:var(--text-3);font-size:10px;text-transform:uppercase">';
+  html += '<th style="text-align:left;padding:6px 4px">#</th><th style="text-align:left;padding:6px 4px">Name</th>';
+  html += '<th style="text-align:center;padding:6px 4px">Level</th><th style="text-align:right;padding:6px 4px">MiLB WAR</th>';
+  html += '<th style="text-align:right;padding:6px 4px">Peak WAR</th><th style="text-align:right;padding:6px 4px">Avg wOBA</th>';
+  html += '<th style="text-align:right;padding:6px 4px;font-weight:700">Proj MLB WAR</th></tr>';
+  (data.prospects || []).forEach(p => {
+    html += '<tr style="border-bottom:1px solid var(--border-light)">';
+    html += '<td style="padding:6px 4px;color:var(--text-3)">' + p.rank + '</td>';
+    html += '<td style="padding:6px 4px;font-weight:600;cursor:pointer" onclick="milbPlayerLookup(\'' + p.playerID + '\')">' + esc(p.name) + '</td>';
+    html += '<td style="text-align:center;padding:6px 4px;font-size:10px;background:var(--bg);border-radius:3px">' + esc(p.highest_level) + '</td>';
+    html += '<td style="text-align:right;padding:6px 4px">' + (p.milb_total_war != null ? p.milb_total_war.toFixed(1) : '-') + '</td>';
+    html += '<td style="text-align:right;padding:6px 4px">' + (p.milb_peak_war != null ? p.milb_peak_war.toFixed(1) : '-') + '</td>';
+    html += '<td style="text-align:right;padding:6px 4px">' + (p.milb_avg_woba != null ? p.milb_avg_woba.toFixed(3) : '-') + '</td>';
+    html += '<td style="text-align:right;padding:6px 4px;font-weight:700;color:var(--green)">' + (p.projected_mlb_war != null ? p.projected_mlb_war.toFixed(1) : '-') + '</td>';
+    html += '</tr>';
+  });
+  html += '</table>';
+  $('milb-results').innerHTML = html;
+}
+
+async function loadMiLBLeaderboard() {
+  const year = parseInt($('milb-year').value);
+  const level = $('milb-level').value;
+  $('milb-loading').style.display = 'block';
+  $('milb-empty').style.display = 'none';
+  $('milb-results').innerHTML = '';
+  try {
+    const res = await fetch('/api/milb/leaderboard/' + year + '/' + encodeURIComponent(level));
+    const data = await res.json();
+    if (data.error) { $('milb-results').innerHTML = '<div class="error-card">' + esc(data.error) + '</div>'; return; }
+    renderMiLBLeaderboard(data);
+  } catch(e) {
+    $('milb-results').innerHTML = '<div class="error-card">Error: ' + esc(e.message) + '</div>';
+  } finally {
+    $('milb-loading').style.display = 'none';
+  }
+}
+
+function renderMiLBLeaderboard(data) {
+  let html = '<div style="margin-bottom:16px;font-size:14px;font-weight:700">' + data.year + ' ' + esc(data.level) + ' Leaderboard (' + data.count + ' players)</div>';
+  html += '<table style="width:100%;border-collapse:collapse;font-size:12px">';
+  html += '<tr style="border-bottom:2px solid var(--border);color:var(--text-3);font-size:10px;text-transform:uppercase">';
+  html += '<th style="text-align:left;padding:6px 4px">#</th><th style="text-align:left;padding:6px 4px">Name</th>';
+  html += '<th style="text-align:center;padding:6px 4px">Pos</th><th style="text-align:left;padding:6px 4px">Team</th>';
+  html += '<th style="text-align:right;padding:6px 4px">G</th><th style="text-align:right;padding:6px 4px">PA</th>';
+  html += '<th style="text-align:right;padding:6px 4px">HR</th><th style="text-align:right;padding:6px 4px">wOBA</th>';
+  html += '<th style="text-align:right;padding:6px 4px;font-weight:700">WAR-eq</th></tr>';
+  (data.players || []).forEach((p, i) => {
+    html += '<tr style="border-bottom:1px solid var(--border-light)">';
+    html += '<td style="padding:6px 4px;color:var(--text-3)">' + (i+1) + '</td>';
+    html += '<td style="padding:6px 4px;font-weight:600;cursor:pointer" onclick="milbPlayerLookup(\'' + p.playerID + '\')">' + esc(p.name) + '</td>';
+    html += '<td style="text-align:center;padding:6px 4px;font-size:10px;background:var(--bg);border-radius:3px">' + esc(p.position) + '</td>';
+    html += '<td style="padding:6px 4px;color:var(--text-3)">' + esc(p.team_name) + '</td>';
+    html += '<td style="text-align:right;padding:6px 4px">' + p.G + '</td>';
+    html += '<td style="text-align:right;padding:6px 4px">' + p.PA + '</td>';
+    html += '<td style="text-align:right;padding:6px 4px">' + p.HR + '</td>';
+    html += '<td style="text-align:right;padding:6px 4px">' + (p.wOBA != null ? p.wOBA.toFixed(3) : '-') + '</td>';
+    html += '<td style="text-align:right;padding:6px 4px;font-weight:700;color:var(--green)">' + p.bravs_war_eq.toFixed(2) + '</td>';
+    html += '</tr>';
+  });
+  html += '</table>';
+  $('milb-results').innerHTML = html;
+}
+
+function milbPlayerLookup(pid) {
+  $('milb-player-search').value = pid;
+  loadMiLBPlayer();
+}
+
+async function loadMiLBPlayer() {
+  const q = $('milb-player-search').value.trim();
+  if (!q) return;
+  $('milb-loading').style.display = 'block';
+  $('milb-empty').style.display = 'none';
+  $('milb-results').innerHTML = '';
+  try {
+    const res = await fetch('/api/milb/player/' + encodeURIComponent(q));
+    const data = await res.json();
+    if (data.error) { $('milb-results').innerHTML = '<div class="error-card">' + esc(data.error) + '</div>'; return; }
+    renderMiLBPlayer(data);
+  } catch(e) {
+    $('milb-results').innerHTML = '<div class="error-card">Error: ' + esc(e.message) + '</div>';
+  } finally {
+    $('milb-loading').style.display = 'none';
+  }
+}
+
+function renderMiLBPlayer(data) {
+  let html = '<div style="margin-bottom:16px"><span style="font-size:16px;font-weight:700">' + esc(data.player_name) + '</span>';
+  html += ' <span style="font-size:12px;color:var(--text-3)">' + data.total_seasons + ' MiLB season(s)</span></div>';
+  html += '<table style="width:100%;border-collapse:collapse;font-size:12px">';
+  html += '<tr style="border-bottom:2px solid var(--border);color:var(--text-3);font-size:10px;text-transform:uppercase">';
+  html += '<th style="text-align:left;padding:6px 4px">Year</th><th style="text-align:center;padding:6px 4px">Level</th>';
+  html += '<th style="text-align:left;padding:6px 4px">Team</th><th style="text-align:center;padding:6px 4px">Pos</th>';
+  html += '<th style="text-align:right;padding:6px 4px">G</th><th style="text-align:right;padding:6px 4px">PA</th>';
+  html += '<th style="text-align:right;padding:6px 4px">HR</th><th style="text-align:right;padding:6px 4px">wOBA</th>';
+  html += '<th style="text-align:right;padding:6px 4px">IP</th><th style="text-align:right;padding:6px 4px">ERA</th>';
+  html += '<th style="text-align:right;padding:6px 4px;font-weight:700">WAR-eq</th></tr>';
+  let totalWar = 0;
+  (data.seasons || []).forEach(s => {
+    totalWar += s.bravs_war_eq;
+    html += '<tr style="border-bottom:1px solid var(--border-light)">';
+    html += '<td style="padding:6px 4px;font-weight:600">' + s.yearID + '</td>';
+    html += '<td style="text-align:center;padding:6px 4px;font-size:10px;background:var(--bg);border-radius:3px">' + esc(s.level) + '</td>';
+    html += '<td style="padding:6px 4px;color:var(--text-3)">' + esc(s.team_name) + '</td>';
+    html += '<td style="text-align:center;padding:6px 4px;font-size:10px">' + esc(s.position) + '</td>';
+    html += '<td style="text-align:right;padding:6px 4px">' + s.G + '</td>';
+    html += '<td style="text-align:right;padding:6px 4px">' + s.PA + '</td>';
+    html += '<td style="text-align:right;padding:6px 4px">' + s.HR + '</td>';
+    html += '<td style="text-align:right;padding:6px 4px">' + (s.wOBA != null ? s.wOBA.toFixed(3) : '-') + '</td>';
+    html += '<td style="text-align:right;padding:6px 4px">' + (s.IP > 0 ? s.IP.toFixed(1) : '-') + '</td>';
+    html += '<td style="text-align:right;padding:6px 4px">' + (s.ERA != null && s.IP > 0 ? s.ERA.toFixed(2) : '-') + '</td>';
+    html += '<td style="text-align:right;padding:6px 4px;font-weight:700;color:var(--green)">' + s.bravs_war_eq.toFixed(2) + '</td>';
+    html += '</tr>';
+  });
+  html += '<tr style="border-top:2px solid var(--border);font-weight:700">';
+  html += '<td colspan="10" style="padding:6px 4px;text-align:right">Career Total</td>';
+  html += '<td style="text-align:right;padding:6px 4px;color:var(--green)">' + totalWar.toFixed(2) + '</td></tr>';
+  html += '</table>';
+  $('milb-results').innerHTML = html;
 }
 
 // Auto-load from URL if permalink
