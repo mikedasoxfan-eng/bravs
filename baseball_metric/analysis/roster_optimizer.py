@@ -207,21 +207,30 @@ def optimize_roster(
     used_ids: set[str] = set()
     remaining_budget = budget
 
+    # Total slots to fill
+    total_slots = len(REQUIRED_POSITIONS) + NUM_BENCH + NUM_SP + NUM_RP  # 26
+
     # ── Helper: pick best available for a position ──
-    def pick_best(target_pos: str, is_pitcher_slot: bool = False) -> RosterSlot | None:
+    def pick_best(
+        target_pos: str,
+        is_pitcher_slot: bool = False,
+        slot_budget: float | None = None,
+    ) -> RosterSlot | None:
         nonlocal remaining_budget
+        max_spend = min(remaining_budget, slot_budget) if slot_budget else remaining_budget
+
         if is_pitcher_slot:
             candidates = pool[
                 pool["position"].apply(_is_pitcher)
                 & ~pool["player_id"].isin(used_ids)
-                & (pool["salary"] <= remaining_budget)
+                & (pool["salary"] <= max_spend)
                 & (pool["projected_war"] > 0)
             ].copy()
         else:
             candidates = pool[
                 pool["position"].apply(lambda p: _position_eligible(p, target_pos))
                 & ~pool["player_id"].isin(used_ids)
-                & (pool["salary"] <= remaining_budget)
+                & (pool["salary"] <= max_spend)
                 & (pool["projected_war"] > 0)
             ].copy()
 
@@ -231,21 +240,21 @@ def optimize_roster(
                 candidates = pool[
                     pool["position"].apply(_is_pitcher)
                     & ~pool["player_id"].isin(used_ids)
-                    & (pool["salary"] <= remaining_budget)
+                    & (pool["salary"] <= max_spend)
                 ].copy()
             else:
                 candidates = pool[
                     pool["position"].apply(lambda p: _position_eligible(p, target_pos))
                     & ~pool["player_id"].isin(used_ids)
-                    & (pool["salary"] <= remaining_budget)
+                    & (pool["salary"] <= max_spend)
                 ].copy()
             if candidates.empty:
                 return None
             # Pick cheapest
             best = candidates.nsmallest(1, "salary").iloc[0]
         else:
-            # Pick best $/WAR (lowest cost per win)
-            best = candidates.nsmallest(1, "dollar_per_war").iloc[0]
+            # Pick highest projected WAR within budget
+            best = candidates.nlargest(1, "projected_war").iloc[0]
 
         slot = RosterSlot(
             position=target_pos if not is_pitcher_slot else best["position"],
@@ -262,30 +271,37 @@ def optimize_roster(
 
     # ── Fill required position slots (scarcest positions first) ──
     # Catchers are scarce, fill them first; then middle infield, etc.
+    # Starters get a larger share of per-slot budget; bench/RP get less.
     position_priority = ["C", "SS", "2B", "CF", "3B", "1B", "LF", "RF", "DH"]
+    # Allocate budget: starters get 60%, pitchers 30%, bench 10%
+    starter_budget_each = (budget * 0.60) / len(position_priority)
+    bench_budget_each = (budget * 0.10) / NUM_BENCH
+    sp_budget_each = (budget * 0.20) / NUM_SP
+    rp_budget_each = (budget * 0.10) / NUM_RP
+
     for pos in position_priority:
-        slot = pick_best(pos)
+        slot = pick_best(pos, slot_budget=starter_budget_each)
         if slot:
-            slot.position = pos  # Label with the slot, not the player's listed pos
+            slot.position = pos
             roster.position_players.append(slot)
 
     # ── Fill bench spots (best available position players) ──
     for _ in range(NUM_BENCH):
-        slot = pick_best("BENCH")
+        slot = pick_best("BENCH", slot_budget=bench_budget_each)
         if slot:
             slot.position = "BENCH"
             roster.position_players.append(slot)
 
     # ── Fill starting pitchers ──
     for _ in range(NUM_SP):
-        slot = pick_best("SP", is_pitcher_slot=True)
+        slot = pick_best("SP", is_pitcher_slot=True, slot_budget=sp_budget_each)
         if slot:
             slot.position = "SP"
             roster.pitchers.append(slot)
 
     # ── Fill relief pitchers ──
     for _ in range(NUM_RP):
-        slot = pick_best("RP", is_pitcher_slot=True)
+        slot = pick_best("RP", is_pitcher_slot=True, slot_budget=rp_budget_each)
         if slot:
             slot.position = "RP"
             roster.pitchers.append(slot)

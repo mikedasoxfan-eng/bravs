@@ -2512,6 +2512,30 @@ def api_team_rankings(year):
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/api/roster-optimizer")
+def api_roster_optimizer():
+    """Optimize a 26-man roster under a payroll budget.
+
+    Query params:
+        budget: Payroll budget in millions (default: 200)
+    """
+    try:
+        from baseball_metric.analysis.roster_optimizer import (
+            optimize_roster, load_projections, load_salaries,
+        )
+        budget_m = float(flask_request.args.get("budget", 200))
+        budget_m = max(30, min(500, budget_m))  # clamp to reasonable range
+        budget = budget_m * 1_000_000
+
+        projections = load_projections()
+        salaries = load_salaries()
+        roster = optimize_roster(budget, projections=projections, salaries=salaries)
+        return jsonify(roster.to_dict())
+    except Exception as e:
+        logger.exception("Roster optimizer error")
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == "__main__":
     print("\n  BRAVS Web App")
     print(f"  Engine: {'Rust (bravs_engine)' if USE_RUST else 'Python (fallback)'}")

@@ -453,6 +453,31 @@ nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
 .cmp-table .winner { color: var(--green); font-weight: 700; }
 .cmp-photo { width: 32px; height: 32px; border-radius: 50%; vertical-align: middle; margin-right: 6px; }
 
+.radar-chart-wrap {
+  margin: 20px auto;
+  text-align: center;
+}
+.radar-chart-wrap svg { max-width: 100%; }
+.radar-legend {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+.radar-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text-3);
+}
+.radar-legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
 /* Award race */
 .award-wrap {
   max-width: 760px;
@@ -1180,10 +1205,108 @@ function runCompare() {
       '<th><img class="cmp-photo" src="' + p.headshot + '" onerror="this.style.display=\'none\'">' +
       esc(p.name) + '<br><span style="font-weight:400;font-size:9px">' + p.season + ' ' + p.team_abbrev + '</span></th>'
     ).join('') +
-    '</tr></thead><tbody>' + rowsHTML + '</tbody></table>';
+    '</tr></thead><tbody>' + rowsHTML + '</tbody></table>' +
+    '<div class="radar-chart-wrap" id="radar-chart-wrap"></div>';
+
+  renderRadarChart(players);
 
   grid.classList.add('visible');
   grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// --- Radar Chart ---
+function renderRadarChart(players) {
+  var wrap = document.getElementById('radar-chart-wrap');
+  if (!wrap) return;
+
+  // 6 axes for the radar
+  var axes = [
+    { key: 'hitting',    label: 'Hitting',     max: 80 },
+    { key: 'baserunning', label: 'Baserunning', max: 10 },
+    { key: 'fielding',   label: 'Fielding',    max: 10 },
+    { key: 'positional', label: 'Positional',  max: 6 },
+    { key: 'approach_quality', label: 'Durability', max: 5 },
+    { key: 'bravs_war',  label: 'Total WAR',   max: 12 }
+  ];
+  var numAxes = axes.length;
+  var colors = ['#e74c3c', '#3498db', '#27ae60', '#f39c12', '#9b59b6', '#1abc9c'];
+  var cx = 160, cy = 160, radius = 120;
+
+  // Extract component values for each player, normalize to 0-100
+  var playerData = players.map(function(p) {
+    var vals = {};
+    (p.components || []).forEach(function(c) { vals[c.name] = c.runs; });
+    return axes.map(function(ax) {
+      var raw;
+      if (ax.key === 'bravs_war') {
+        raw = p.bravs_war_eq || 0;
+      } else {
+        raw = vals[ax.key] || 0;
+      }
+      // Normalize: clamp to 0-100 where max = 100
+      return Math.max(0, Math.min(100, (raw / ax.max) * 100));
+    });
+  });
+
+  // Build SVG
+  var svg = '<svg viewBox="0 0 320 340" xmlns="http://www.w3.org/2000/svg" style="font-family:inherit">';
+
+  // Draw grid rings (20, 40, 60, 80, 100)
+  for (var ring = 1; ring <= 5; ring++) {
+    var r = radius * ring / 5;
+    var pts = [];
+    for (var a = 0; a < numAxes; a++) {
+      var angle = (Math.PI * 2 * a / numAxes) - Math.PI / 2;
+      pts.push((cx + r * Math.cos(angle)).toFixed(1) + ',' + (cy + r * Math.sin(angle)).toFixed(1));
+    }
+    svg += '<polygon points="' + pts.join(' ') + '" fill="none" stroke="#555" stroke-width="0.5" opacity="0.3"/>';
+  }
+
+  // Draw axis lines and labels
+  for (var a = 0; a < numAxes; a++) {
+    var angle = (Math.PI * 2 * a / numAxes) - Math.PI / 2;
+    var x2 = cx + radius * Math.cos(angle);
+    var y2 = cy + radius * Math.sin(angle);
+    svg += '<line x1="' + cx + '" y1="' + cy + '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '" stroke="#555" stroke-width="0.5" opacity="0.3"/>';
+    // Label
+    var lx = cx + (radius + 16) * Math.cos(angle);
+    var ly = cy + (radius + 16) * Math.sin(angle);
+    var anchor = 'middle';
+    if (Math.cos(angle) < -0.3) anchor = 'end';
+    else if (Math.cos(angle) > 0.3) anchor = 'start';
+    svg += '<text x="' + lx.toFixed(1) + '" y="' + (ly + 4).toFixed(1) + '" text-anchor="' + anchor + '" fill="#999" font-size="9">' + axes[a].label + '</text>';
+  }
+
+  // Draw player polygons
+  players.forEach(function(p, pi) {
+    var vals = playerData[pi];
+    var color = colors[pi % colors.length];
+    var pts = [];
+    for (var a = 0; a < numAxes; a++) {
+      var angle = (Math.PI * 2 * a / numAxes) - Math.PI / 2;
+      var r = radius * vals[a] / 100;
+      pts.push((cx + r * Math.cos(angle)).toFixed(1) + ',' + (cy + r * Math.sin(angle)).toFixed(1));
+    }
+    svg += '<polygon points="' + pts.join(' ') + '" fill="' + color + '" fill-opacity="0.15" stroke="' + color + '" stroke-width="2"/>';
+    // Dots at vertices
+    for (var a = 0; a < numAxes; a++) {
+      var angle = (Math.PI * 2 * a / numAxes) - Math.PI / 2;
+      var r = radius * vals[a] / 100;
+      svg += '<circle cx="' + (cx + r * Math.cos(angle)).toFixed(1) + '" cy="' + (cy + r * Math.sin(angle)).toFixed(1) + '" r="3" fill="' + color + '"/>';
+    }
+  });
+
+  svg += '</svg>';
+
+  // Legend
+  var legend = '<div class="radar-legend">';
+  players.forEach(function(p, pi) {
+    var color = colors[pi % colors.length];
+    legend += '<div class="radar-legend-item"><div class="radar-legend-swatch" style="background:' + color + '"></div>' + esc(p.name) + ' ' + p.season + '</div>';
+  });
+  legend += '</div>';
+
+  wrap.innerHTML = svg + legend;
 }
 
 // --- Award Race ---
