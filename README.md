@@ -138,6 +138,26 @@ Correctly identifies 2023 Braves as the best lineup (411.7), 2024 White Sox as t
 
 See `docs/lineup-optimizer-methodology.md` for full technical details and `docs/lineup-optimizer-findings.md` for analysis.
 
+## Minor League Data (MiLB)
+
+283,141 minor league player-seasons (2005-2026) across all affiliated levels:
+
+| Level | Batting Seasons | Avg wOBA |
+|-------|----------------|----------|
+| AAA | 12,803 | .334 |
+| AA | 9,093 | .314 |
+| A+ | 9,101 | .313 |
+| A | 9,235 | .307 |
+| A- | 4,121 | .302 |
+| Rk | 16,769 | .310 |
+
+Level translation rates calibrated to "The Book" (Tango/Lichtman/Dolphin):
+AAA 75%, AA 60%, A+ 50%, A 42%, Rk 25%.
+
+Includes prospect projection model (GBM) predicting MLB career WAR from MiLB stats.
+
+Source: [armstjc/milb-data-repository](https://github.com/armstjc/milb-data-repository)
+
 ## GPU Engine
 
 The v3.7 GPU engine processes all 75,265 qualified player-seasons in 1.38 seconds on an RTX 5060 Ti:
