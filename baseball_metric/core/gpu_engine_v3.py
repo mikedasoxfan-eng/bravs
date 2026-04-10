@@ -218,8 +218,10 @@ def batch_compute_bravs_v3(player_data: list[dict], n_samples: int = N_SAMPLES, 
     bravs = total_runs / rpw
     bravs_era_std = total_runs / 5.90
 
-    # Calibration: optimal least-squares factor from 23 benchmark careers
-    bravs_war_eq = bravs * 0.665
+    # Position-specific calibration (pitchers inflate more than hitters)
+    is_mainly_pitcher = (ip >= pa.clamp(min=1) * 0.3).float()
+    cal_factor = is_mainly_pitcher * 0.615 + (1 - is_mainly_pitcher) * 0.654
+    bravs_war_eq = bravs * cal_factor
 
     bravs_samples = total_samples / rpw.unsqueeze(1)
     ci90_lo = torch.quantile(bravs_samples, 0.05, dim=1)
