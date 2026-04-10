@@ -166,12 +166,12 @@ def batch_compute_bravs_v3(player_data: list[dict], n_samples: int = N_SAMPLES, 
     # FIX 5: FIELDING — tighter shrinkage, position caps + Gold Glove bonus
     fielding_runs = (fielding_rf * pos_fld_val + fielding_e * 0.4) * era_mult
     fielding_runs = fielding_runs * 0.45  # tighter shrinkage
-    fielding_runs = fielding_runs.clamp(-15.0, 15.0)
-    # Gold Glove bonus: +7 runs for GG winners (increased from 5)
-    gg_bonus = _f("gold_glove", 0) * 7.0 * era_mult
-    # All-Star fielding proxy: +2 runs (All-Stars are likely above-avg fielders)
+    fielding_runs = fielding_runs.clamp(-12.0, 12.0)  # tighter cap
+    # Gold Glove bonus: +5 runs (reverted from 7 — was overcrediting)
+    gg_bonus = _f("gold_glove", 0) * 5.0 * era_mult
+    # All-Star fielding proxy: +1.5 runs (reduced from 2.0)
     has_batting_early = (pa >= 50).float()
-    as_bonus = _f("all_star", 0) * 2.0 * era_mult * has_batting_early
+    as_bonus = _f("all_star", 0) * 1.5 * era_mult * has_batting_early
     fielding_runs = fielding_runs + gg_bonus + as_bonus
 
     # FIX 4: POSITIONAL
