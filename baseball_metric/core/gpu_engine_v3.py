@@ -118,11 +118,17 @@ def batch_compute_bravs_v3(player_data: list[dict], n_samples: int = N_SAMPLES, 
     woba_den = (ab + bb + sf + hbp).clamp(min=1)
     obs_woba = woba_num / woba_den / park_factor
 
+    # v3.9: Blend with Statcast xwOBA where available (2015+)
+    xwoba = _f("xwOBA", 0)
+    has_xwoba = (xwoba > 0.100).float()  # flag: player has Statcast data
+    # Blend: 70% observed wOBA + 30% xwOBA (luck-adjusted)
+    blended_woba = obs_woba * (1 - has_xwoba * 0.3) + xwoba * has_xwoba * 0.3
+
     prior_prec = 1.0 / (0.035 ** 2)
     data_prec = pa.clamp(min=50) / 0.09
     post_prec = prior_prec + data_prec
     post_var = 1.0 / post_prec
-    post_mean = post_var * (prior_prec * 0.315 + data_prec * obs_woba)
+    post_mean = post_var * (prior_prec * 0.315 + data_prec * blended_woba)
 
     fat_runs = -20.0 * (pa / 600.0)
     hitting_runs = ((post_mean - 0.315) / 1.157 * pa - fat_runs) * era_mult
@@ -163,14 +169,23 @@ def batch_compute_bravs_v3(player_data: list[dict], n_samples: int = N_SAMPLES, 
     gidp_runs = (gidp_exp - gidp) * 0.37
     baserunning_runs = (sb_runs + gidp_runs) * era_mult
 
-    # FIX 5: FIELDING — v3.8: improved fielding estimation
-    # Use range factor and errors with position-specific weights
-    fielding_runs = (fielding_rf * pos_fld_val + fielding_e * 0.4) * era_mult
-    fielding_runs = fielding_runs * 0.45  # tighter shrinkage
-    fielding_runs = fielding_runs.clamp(-12.0, 12.0)  # tighter cap
+    # FIX 5: FIELDING — v3.9: Statcast OAA integration
+    # Use real OAA (fielding_runs_prevented) where available, fall back to box-score
+    oaa_frp = _f("fielding_runs_prevented", 0)
+    has_oaa = (oaa_frp.abs() > 0.01).float()
+
+    # Box-score based fielding (for pre-Statcast eras)
+    box_fielding = (fielding_rf * pos_fld_val + fielding_e * 0.4) * era_mult
+    box_fielding = box_fielding * 0.45
+    box_fielding = box_fielding.clamp(-12.0, 12.0)
+
+    # Statcast OAA-based fielding (2016+)
+    oaa_fielding = oaa_frp * era_mult
+
+    # Blend: use OAA where available, box-score otherwise
+    fielding_runs = has_oaa * (0.8 * oaa_fielding + 0.2 * box_fielding) + (1 - has_oaa) * box_fielding
 
     # v3.8: Innings-weighted fielding credit for premium positions
-    # Only C and CF get the bonus — SS excluded (Jeter overcredited without real defensive data)
     innings_frac = (games / 162.0).clamp(max=1.0)
     premium_pos = torch.tensor([1.0 if d.get("position") in ("C", "CF") else 0.0
                                for d in player_data], device=DEVICE)
