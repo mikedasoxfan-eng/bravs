@@ -2933,6 +2933,213 @@ def api_leaderboard_all(year):
         return jsonify({"error": str(e)}), 500
 
 
+# ── Live Game Feed ──────────────────────────────────────────────────
+from datetime import date as _date
+
+
+def _win_probability(score_ahead, score_behind, inning, top_bottom="top"):
+    """Pythagorean-style live win probability.
+
+    WP ≈ 0.5 + D * (I/9) * 0.08, clamped to [0.01, 0.99].
+    *inning* is the current inning number (1-based).
+    """
+    diff = score_ahead - score_behind
+    inn = max(inning, 1)
+    wp = 0.5 + diff * (inn / 9.0) * 0.08
+    return max(0.01, min(0.99, wp))
+
+
+@app.route("/api/live/scoreboard")
+def api_live_scoreboard():
+    """Return today's MLB games with scores, status, and win probability."""
+    today = flask_request.args.get("date", _date.today().isoformat())
+    try:
+        url = f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={today}&hydrate=linescore,team"
+        resp = requests.get(url, timeout=10)
+        resp.raise_for_status()
+        data = resp.json()
+        games = []
+        for d in data.get("dates", []):
+            for g in d.get("games", []):
+                away = g.get("teams", {}).get("away", {})
+                home = g.get("teams", {}).get("home", {})
+                status = g.get("status", {})
+                linescore = g.get("linescore", {})
+                inning = linescore.get("currentInning", 0) or 0
+                half = linescore.get("inningHalf", "Top")
+                away_score = away.get("score", 0) or 0
+                home_score = home.get("score", 0) or 0
+
+                abstract = status.get("abstractGameState", "Preview")
+                detail = status.get("detailedState", "Scheduled")
+
+                # Win probability (home perspective)
+                if abstract == "Live":
+                    home_wp = _win_probability(home_score, away_score, inning, half)
+                    away_wp = 1.0 - home_wp
+                elif abstract == "Final":
+                    home_wp = 1.0 if home_score > away_score else (0.5 if home_score == away_score else 0.0)
+                    away_wp = 1.0 - home_wp
+                else:
+                    home_wp = 0.5
+                    away_wp = 0.5
+
+                away_team = away.get("team", {})
+                home_team = home.get("team", {})
+
+                games.append({
+                    "gamePk": g.get("gamePk"),
+                    "status": abstract,
+                    "detailedState": detail,
+                    "inning": inning,
+                    "inningHalf": half,
+                    "away": {
+                        "name": away_team.get("name", "?"),
+                        "abbreviation": away_team.get("abbreviation", "?"),
+                        "id": away_team.get("id"),
+                        "score": away_score,
+                        "wp": round(away_wp, 3),
+                    },
+                    "home": {
+                        "name": home_team.get("name", "?"),
+                        "abbreviation": home_team.get("abbreviation", "?"),
+                        "id": home_team.get("id"),
+                        "score": home_score,
+                        "wp": round(home_wp, 3),
+                    },
+                })
+        has_live = any(g["status"] == "Live" for g in games)
+        return jsonify({"date": today, "games": games, "hasLive": has_live})
+    except Exception as e:
+        logger.error("Live scoreboard error: %s", e)
+        return jsonify({"error": str(e), "games": []}), 500
+
+
+@app.route("/api/live/game/<int:game_pk>")
+def api_live_game(game_pk):
+    """Return detailed live game data: linescore, current batter/pitcher, scoring plays."""
+    try:
+        url = f"https://statsapi.mlb.com/api/v1/game/{game_pk}/linescore"
+        resp = requests.get(url, timeout=10)
+        resp.raise_for_status()
+        ls = resp.json()
+
+        # Also fetch boxscore for current matchup
+        box_url = f"https://statsapi.mlb.com/api/v1/game/{game_pk}/boxscore"
+        try:
+            box_resp = requests.get(box_url, timeout=10)
+            box_resp.raise_for_status()
+            box = box_resp.json()
+        except Exception:
+            box = {}
+
+        innings = []
+        for inn in ls.get("innings", []):
+            innings.append({
+                "num": inn.get("num"),
+                "away": {"runs": (inn.get("away", {}) or {}).get("runs", 0)},
+                "home": {"runs": (inn.get("home", {}) or {}).get("runs", 0)},
+            })
+
+        offense = ls.get("offense", {})
+        defense = ls.get("defense", {})
+
+        current_batter = None
+        current_pitcher = None
+        if offense.get("batter"):
+            b = offense["batter"]
+            current_batter = {"id": b.get("id"), "name": b.get("fullName", "?")}
+        if defense.get("pitcher"):
+            p = defense["pitcher"]
+            current_pitcher = {
+                "id": p.get("id"),
+                "name": p.get("fullName", "?"),
+                "pitchCount": (ls.get("defense", {}).get("pitcher", {}) or {}).get("pitchCount"),
+            }
+
+        # Scoring plays from feed
+        scoring = []
+        try:
+            feed_url = f"https://statsapi.mlb.com/api/v1.1/game/{game_pk}/feed/live"
+            feed_resp = requests.get(feed_url, timeout=10)
+            feed_data = feed_resp.json()
+            for play in feed_data.get("liveData", {}).get("plays", {}).get("scoringPlays", []):
+                if isinstance(play, int):
+                    all_plays = feed_data.get("liveData", {}).get("plays", {}).get("allPlays", [])
+                    if play < len(all_plays):
+                        p = all_plays[play]
+                        scoring.append({
+                            "inning": p.get("about", {}).get("halfInning", "") + " " + str(p.get("about", {}).get("inning", "")),
+                            "description": p.get("result", {}).get("description", ""),
+                        })
+                elif isinstance(play, dict):
+                    scoring.append({
+                        "inning": play.get("about", {}).get("halfInning", "") + " " + str(play.get("about", {}).get("inning", "")),
+                        "description": play.get("result", {}).get("description", ""),
+                    })
+        except Exception:
+            pass
+
+        return jsonify({
+            "gamePk": game_pk,
+            "innings": innings,
+            "currentInning": ls.get("currentInning"),
+            "inningHalf": ls.get("inningHalf", "Top"),
+            "balls": ls.get("balls", 0),
+            "strikes": ls.get("strikes", 0),
+            "outs": ls.get("outs", 0),
+            "currentBatter": current_batter,
+            "currentPitcher": current_pitcher,
+            "scoringPlays": scoring,
+        })
+    except Exception as e:
+        logger.error("Live game %d error: %s", game_pk, e)
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/simulate", methods=["POST"])
+def api_simulate_game():
+    """Simulate a game between two teams.
+
+    POST body: {"home_team": "NYA", "away_team": "LAN", "year": 2024, "n_sims": 5000}
+    """
+    try:
+        from baseball_metric.analysis.game_simulator import simulate_matchup
+
+        data = flask_request.get_json(force=True)
+        home_t = data.get("home_team", "NYA")
+        away_t = data.get("away_team", "LAN")
+        year = int(data.get("year", 2024))
+        n_sims = min(int(data.get("n_sims", 5000)), 20000)
+
+        seasons, _ = _load_precomputed()
+        home_data = seasons[(seasons.yearID == year) & (seasons.team == home_t) & (seasons.PA >= 100)]
+        away_data = seasons[(seasons.yearID == year) & (seasons.team == away_t) & (seasons.PA >= 100)]
+
+        if len(home_data) < 5 or len(away_data) < 5:
+            return jsonify({"error": f"Not enough data for {home_t} or {away_t} in {year}"}), 400
+
+        result = simulate_matchup(
+            home_data.to_dict("records"),
+            away_data.to_dict("records"),
+            n_sims=n_sims,
+        )
+
+        return jsonify({
+            "home_team": home_t,
+            "away_team": away_t,
+            "year": year,
+            "n_sims": n_sims,
+            "home_win_pct": round(result.home_win_pct, 3),
+            "avg_home_runs": round(result.avg_home_runs, 1),
+            "avg_away_runs": round(result.avg_away_runs, 1),
+            "summary": result.summary,
+        })
+    except Exception as e:
+        logger.exception("Simulation error")
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == "__main__":
     print("\n  BRAVS Web App")
     print(f"  Engine: {'Rust (bravs_engine)' if USE_RUST else 'Python (fallback)'}")
