@@ -652,6 +652,193 @@ nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
   .components-section { padding: 20px 16px; }
   .stat-cell { min-width: 50px; }
 }
+
+/* --- DARK MODE --- */
+body.dark {
+  --bg: #0a0a0a;
+  --surface: #1a1a1a;
+  --text: #e0e0e0;
+  --text-2: #999;
+  --text-3: #666;
+  --text-4: #555;
+  --border: #333;
+  --border-light: #262626;
+  --green: #4caf50;
+  --green-bg: #1a2e1a;
+  --red: #f44336;
+  --red-bg: #2e1a1a;
+  --accent: #e0e0e0;
+  --orange: #ff9800;
+}
+body.dark .nav-tab.active { background: #e0e0e0; color: #0a0a0a; border-color: #e0e0e0; }
+body.dark .compare-btn { background: #e0e0e0; color: #0a0a0a; }
+body.dark img { opacity: 0.92; }
+
+.dark-toggle {
+  margin-left: auto;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--text-3);
+  transition: all 0.15s;
+  line-height: 1;
+}
+.dark-toggle:hover { border-color: var(--text-3); color: var(--text); }
+
+/* --- MOBILE RESPONSIVE (768px) --- */
+@media (max-width: 768px) {
+  nav { padding: 12px 16px; gap: 8px; flex-wrap: wrap; }
+  nav .logo { font-size: 14px; }
+  nav .tagline { font-size: 10px; display: none; }
+
+  .nav-tabs {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 0 12px;
+    gap: 0;
+  }
+  .nav-tabs::-webkit-scrollbar { display: none; }
+  .nav-tab { padding: 6px 10px; font-size: 10px; flex-shrink: 0; }
+
+  .search-wrap { padding: 0 12px; margin-top: 24px; }
+  .search-input { font-size: 14px; padding: 12px 14px; width: 100%; }
+
+  .result-wrap { padding: 0 12px; margin: 20px auto 40px; }
+  .player-header { padding: 16px; gap: 12px; flex-direction: column; text-align: center; }
+  .player-photo { width: 64px; height: 64px; }
+  .player-name { font-size: 18px; }
+  .bravs-block { text-align: center; }
+  .bravs-number { font-size: 36px; }
+  .metrics { grid-template-columns: repeat(3, 1fr); }
+  .metric { padding: 10px 8px; }
+  .metric .val { font-size: 14px; }
+  .components-section { padding: 16px 12px; }
+  .comp-row { grid-template-columns: 80px 1fr 44px; gap: 6px; font-size: 11px; }
+  .trad-stats { padding: 14px 12px; }
+  .stat-cell { min-width: 44px; padding: 6px 2px; }
+  .stat-cell .val { font-size: 13px; }
+
+  .compare-grid { padding: 0 12px; }
+  .cmp-table th, .cmp-table td { padding: 6px 6px; font-size: 11px; }
+
+  .sparkline-wrap { padding: 0 12px; }
+  .award-wrap { padding: 0 12px; }
+  .award-controls { flex-direction: column; align-items: stretch; }
+  .race-row { grid-template-columns: 28px 32px 1fr 56px 56px 56px; gap: 6px; padding: 8px 10px; font-size: 11px; }
+  .race-header { grid-template-columns: 28px 32px 1fr 56px 56px 56px; gap: 6px; padding: 6px 10px; font-size: 8px; }
+
+  .live-grid { grid-template-columns: 1fr !important; }
+  .live-game-card { min-width: unset !important; }
+}
+
+/* --- LIVE TAB --- */
+.live-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+.live-game-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: box-shadow 0.15s;
+  cursor: pointer;
+}
+.live-game-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+.live-game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 10px;
+  color: var(--text-3);
+}
+.live-badge {
+  display: inline-block;
+  background: var(--red);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  animation: livePulse 2s ease-in-out infinite;
+}
+@keyframes livePulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+.live-team-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  font-size: 14px;
+}
+.live-team-row.winning { font-weight: 700; }
+.live-team-row.winning .live-score { color: var(--green); }
+.live-team-row.losing .live-score { color: var(--text-3); }
+.live-team-name { font-weight: 600; letter-spacing: 0.5px; }
+.live-score { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.wp-bar-wrap {
+  padding: 4px 14px 10px;
+}
+.wp-bar {
+  height: 6px;
+  background: var(--bg);
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+}
+.wp-fill-away {
+  background: var(--red);
+  opacity: 0.6;
+  transition: width 0.5s ease;
+}
+.wp-fill-home {
+  background: var(--green);
+  opacity: 0.6;
+  transition: width 0.5s ease;
+}
+.wp-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: var(--text-4);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.live-detail {
+  display: none;
+  border-top: 1px solid var(--border);
+  padding: 12px 14px;
+  font-size: 11px;
+}
+.live-detail.open { display: block; animation: fadeUp 0.25s ease; }
+.linescore-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 8px;
+}
+.linescore-table th, .linescore-table td {
+  text-align: center;
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--border-light);
+}
+.linescore-table th {
+  font-size: 9px;
+  text-transform: uppercase;
+  color: var(--text-4);
+  letter-spacing: 1px;
+}
+.linescore-table td:first-child { text-align: left; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -659,6 +846,7 @@ nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
 <nav>
   <span class="logo">BRAVS</span>
   <span class="tagline">Bayesian Runs Above Value Standard</span>
+  <button class="dark-toggle" id="dark-toggle" onclick="toggleDarkMode()" title="Toggle dark mode">&#9790;</button>
 </nav>
 
 <div class="nav-tabs" id="nav-tabs">
@@ -671,6 +859,7 @@ nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
   <button class="nav-tab" data-tab="lineup" onclick="switchTab('lineup')">Lineup Optimizer</button>
   <button class="nav-tab" data-tab="milb" onclick="switchTab('milb')">MiLB</button>
   <button class="nav-tab" data-tab="video" onclick="switchTab('video')">Video</button>
+  <button class="nav-tab" data-tab="live" onclick="switchTab('live')">Live</button>
 </div>
 
 <!-- === PLAYER TAB === -->
@@ -865,6 +1054,25 @@ nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
   </div>
 </div>
 
+<!-- === LIVE TAB === -->
+<div id="tab-live" style="display:none">
+  <div style="max-width:960px;margin:32px auto 0;padding:0 24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+      <div style="font-size:16px;font-weight:700;">Today's Games</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span id="live-status" style="font-size:11px;color:var(--text-4)"></span>
+        <button onclick="loadLiveScoreboard()" style="padding:6px 14px;font-family:inherit;font-size:11px;font-weight:600;background:var(--text);color:var(--surface);border:none;border-radius:6px;cursor:pointer">Refresh</button>
+      </div>
+    </div>
+    <div class="loading" id="live-loading"><span>Loading live games<span class="dots"></span></span></div>
+    <div id="live-results"></div>
+    <div class="empty" id="live-empty">
+      <h2>Live Game Feed</h2>
+      <p>Real-time MLB scores with Pythagorean win probability. Click any game to expand the linescore. Auto-refreshes every 60 seconds when games are in progress.</p>
+    </div>
+  </div>
+</div>
+
 <script>
 const $ = id => document.getElementById(id);
 let debounceTimer = null;
@@ -885,6 +1093,8 @@ function switchTab(tab) {
   $('tab-lineup').style.display = tab === 'lineup' ? 'block' : 'none';
   $('tab-milb').style.display = tab === 'milb' ? 'block' : 'none';
   $('tab-video').style.display = tab === 'video' ? 'block' : 'none';
+  $('tab-live').style.display = tab === 'live' ? 'block' : 'none';
+  if (tab === 'live' && !liveLoaded) { loadLiveScoreboard(); }
 }
 
 // --- Search ---
@@ -2228,6 +2438,207 @@ if (urlMatch) {
   currentPlayerId = pid;
   loadBRAVS(pid, szn);
 }
+
+// === LIVE GAME FEED ===
+let liveLoaded = false;
+let liveRefreshInterval = null;
+
+async function loadLiveScoreboard() {
+  $('live-loading').classList.add('visible');
+  $('live-empty').style.display = 'none';
+  $('live-status').textContent = 'Loading...';
+  try {
+    const res = await fetch('/api/live/scoreboard');
+    const data = await res.json();
+    $('live-loading').classList.remove('visible');
+    liveLoaded = true;
+
+    if (data.error) {
+      $('live-results').innerHTML = '<div class="error-card visible">' + esc(data.error) + '</div>';
+      return;
+    }
+
+    if (!data.games || data.games.length === 0) {
+      $('live-results').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-4);font-size:13px">No games scheduled for ' + esc(data.date) + '</div>';
+      $('live-status').textContent = 'No games today';
+      return;
+    }
+
+    renderLiveScoreboard(data);
+
+    // Auto-refresh if live games
+    if (liveRefreshInterval) clearInterval(liveRefreshInterval);
+    if (data.hasLive) {
+      liveRefreshInterval = setInterval(loadLiveScoreboard, 60000);
+      $('live-status').textContent = 'Auto-refresh ON (60s)';
+    } else {
+      $('live-status').textContent = 'Updated ' + new Date().toLocaleTimeString();
+    }
+  } catch(e) {
+    $('live-loading').classList.remove('visible');
+    $('live-results').innerHTML = '<div class="error-card visible">Failed to load: ' + esc(e.message) + '</div>';
+    $('live-status').textContent = 'Error';
+  }
+}
+
+function renderLiveScoreboard(data) {
+  let html = '<div class="live-grid">';
+
+  data.games.forEach(g => {
+    const isLive = g.status === 'Live';
+    const isFinal = g.status === 'Final';
+    const isPreview = !isLive && !isFinal;
+
+    const awayWin = g.away.score > g.home.score;
+    const homeWin = g.home.score > g.away.score;
+    const tied = g.away.score === g.home.score;
+
+    const awayRowCls = isLive || isFinal ? (awayWin ? 'winning' : (tied ? '' : 'losing')) : '';
+    const homeRowCls = isLive || isFinal ? (homeWin ? 'winning' : (tied ? '' : 'losing')) : '';
+
+    let statusLabel = '';
+    if (isLive) {
+      statusLabel = '<span class="live-badge">LIVE</span> ' + g.inningHalf + ' ' + g.inning;
+    } else if (isFinal) {
+      statusLabel = g.detailedState || 'Final';
+    } else {
+      statusLabel = g.detailedState || 'Scheduled';
+    }
+
+    const awayWpPct = (g.away.wp * 100).toFixed(0);
+    const homeWpPct = (g.home.wp * 100).toFixed(0);
+
+    html += '<div class="live-game-card" onclick="toggleLiveDetail(this, ' + g.gamePk + ')">';
+    html += '<div class="live-game-header"><span>' + statusLabel + '</span><span>WP</span></div>';
+
+    // Away row
+    html += '<div class="live-team-row ' + awayRowCls + '">';
+    html += '<span class="live-team-name">' + esc(g.away.abbreviation) + '</span>';
+    html += '<span class="live-score">' + (isPreview ? '-' : g.away.score) + '</span>';
+    html += '</div>';
+
+    // Home row
+    html += '<div class="live-team-row ' + homeRowCls + '">';
+    html += '<span class="live-team-name">' + esc(g.home.abbreviation) + '</span>';
+    html += '<span class="live-score">' + (isPreview ? '-' : g.home.score) + '</span>';
+    html += '</div>';
+
+    // WP bar
+    if (!isPreview) {
+      html += '<div class="wp-bar-wrap">';
+      html += '<div class="wp-bar">';
+      html += '<div class="wp-fill-away" style="width:' + awayWpPct + '%"></div>';
+      html += '<div class="wp-fill-home" style="width:' + homeWpPct + '%"></div>';
+      html += '</div>';
+      html += '<div class="wp-labels"><span>' + esc(g.away.abbreviation) + ' ' + awayWpPct + '%</span><span>' + homeWpPct + '% ' + esc(g.home.abbreviation) + '</span></div>';
+      html += '</div>';
+    }
+
+    // Detail panel (hidden until click)
+    html += '<div class="live-detail" id="live-detail-' + g.gamePk + '"></div>';
+
+    html += '</div>';
+  });
+
+  html += '</div>';
+  $('live-results').innerHTML = html;
+}
+
+async function toggleLiveDetail(card, gamePk) {
+  const detail = document.getElementById('live-detail-' + gamePk);
+  if (!detail) return;
+
+  if (detail.classList.contains('open')) {
+    detail.classList.remove('open');
+    return;
+  }
+
+  detail.innerHTML = '<span style="color:var(--text-4)">Loading linescore...</span>';
+  detail.classList.add('open');
+
+  try {
+    const res = await fetch('/api/live/game/' + gamePk);
+    const data = await res.json();
+    if (data.error) { detail.innerHTML = '<span style="color:var(--red)">' + esc(data.error) + '</span>'; return; }
+    renderLiveDetail(detail, data);
+  } catch(e) {
+    detail.innerHTML = '<span style="color:var(--red)">Failed: ' + esc(e.message) + '</span>';
+  }
+}
+
+function renderLiveDetail(el, data) {
+  let html = '';
+
+  // Linescore table
+  if (data.innings && data.innings.length > 0) {
+    html += '<table class="linescore-table"><thead><tr><th></th>';
+    data.innings.forEach(inn => { html += '<th>' + inn.num + '</th>'; });
+    html += '<th>R</th></tr></thead><tbody>';
+
+    // Away
+    let awayTotal = 0;
+    html += '<tr><td>AWAY</td>';
+    data.innings.forEach(inn => { awayTotal += (inn.away.runs || 0); html += '<td>' + (inn.away.runs != null ? inn.away.runs : '') + '</td>'; });
+    html += '<td style="font-weight:700">' + awayTotal + '</td></tr>';
+
+    // Home
+    let homeTotal = 0;
+    html += '<tr><td>HOME</td>';
+    data.innings.forEach(inn => { homeTotal += (inn.home.runs || 0); html += '<td>' + (inn.home.runs != null ? inn.home.runs : '') + '</td>'; });
+    html += '<td style="font-weight:700">' + homeTotal + '</td></tr>';
+
+    html += '</tbody></table>';
+  }
+
+  // Count + Outs
+  if (data.currentInning) {
+    html += '<div style="display:flex;gap:16px;margin-bottom:6px;color:var(--text-3);font-size:11px">';
+    html += '<span>' + (data.inningHalf || '') + ' ' + data.currentInning + '</span>';
+    html += '<span>Count: ' + (data.balls||0) + '-' + (data.strikes||0) + '</span>';
+    html += '<span>Outs: ' + (data.outs||0) + '</span>';
+    html += '</div>';
+  }
+
+  // Current matchup
+  if (data.currentBatter || data.currentPitcher) {
+    html += '<div style="display:flex;gap:16px;margin-bottom:6px;font-size:11px">';
+    if (data.currentPitcher) html += '<span>Pitching: <strong>' + esc(data.currentPitcher.name) + '</strong></span>';
+    if (data.currentBatter) html += '<span>Batting: <strong>' + esc(data.currentBatter.name) + '</strong></span>';
+    html += '</div>';
+  }
+
+  // Scoring plays
+  if (data.scoringPlays && data.scoringPlays.length > 0) {
+    html += '<div style="margin-top:8px;border-top:1px solid var(--border-light);padding-top:8px">';
+    html += '<div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text-4);margin-bottom:4px">Scoring Plays</div>';
+    data.scoringPlays.forEach(sp => {
+      html += '<div style="font-size:11px;margin-bottom:3px;color:var(--text-2)">';
+      html += '<span style="color:var(--text-4);font-weight:600">' + esc(sp.inning) + '</span> ';
+      html += esc(sp.description);
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  el.innerHTML = html || '<span style="color:var(--text-4)">No linescore data available yet.</span>';
+}
+
+// === DARK MODE ===
+function toggleDarkMode() {
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  localStorage.setItem('darkMode', isDark);
+  document.getElementById('dark-toggle').textContent = isDark ? '\u2600' : '\u263E';
+}
+
+// Init dark mode from localStorage
+(function() {
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark');
+    var btn = document.getElementById('dark-toggle');
+    if (btn) btn.textContent = '\u2600';
+  }
+})();
 </script>
 </body>
 </html>
