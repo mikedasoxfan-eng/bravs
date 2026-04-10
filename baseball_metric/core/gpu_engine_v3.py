@@ -238,7 +238,7 @@ def batch_compute_bravs_v3(player_data: list[dict], n_samples: int = N_SAMPLES, 
 
     # Position-specific calibration (reoptimized with talent dilution)
     is_mainly_pitcher = (ip >= pa.clamp(min=1) * 0.3).float()
-    cal_factor = is_mainly_pitcher * 0.639 + (1 - is_mainly_pitcher) * 0.715
+    cal_factor = is_mainly_pitcher * 0.625 + (1 - is_mainly_pitcher) * 0.690
     bravs_war_eq = bravs * cal_factor
 
     bravs_samples = total_samples / rpw.unsqueeze(1)
