@@ -2,7 +2,7 @@
 
 A probabilistic baseball player valuation framework. Computes posterior distributions over player value for every MLB player from 1920 to present.
 
-**75,265 player-seasons. 1.38 seconds on GPU. r=0.890 correlation with fWAR.**
+**299,120 MLB + 223,855 MiLB player-seasons. GPU-accelerated. 11 trained models. 9-tab web app.**
 
 ## What It Does
 
@@ -105,7 +105,7 @@ data/                       # Lahman CSVs (128K batting, 57K pitching, 174K fiel
 
 ## Web App
 
-7 tabs: Player search, Award Races, Team Roster, Live MVP, Dynasties, Dream Team, Lineup Optimizer.
+9 tabs: Player, Award Races, Team, Live MVP, Dynasties, Dream Team, Lineup Optimizer, MiLB, Video.
 
 - Search any player in MLB history, instant results from pre-computed CSV data
 - Player headshots and team logos from MLB CDN
@@ -157,6 +157,22 @@ AAA 75%, AA 60%, A+ 50%, A 42%, Rk 25%.
 Includes prospect projection model (GBM) predicting MLB career WAR from MiLB stats.
 
 Source: [armstjc/milb-data-repository](https://github.com/armstjc/milb-data-repository)
+
+## Trained Models
+
+| Model | Type | Performance | Purpose |
+|-------|------|-------------|---------|
+| BRAVS v3.8 GPU Engine | PyTorch CUDA | r=0.873 vs fWAR | Core player valuation |
+| Win Prediction | Neural Net | r=0.903, 6.6 RMSE | Team wins from roster |
+| HOF Classifier | Neural Net | 97.4% accuracy | Hall of Fame probability |
+| Prospect Projector (GBM) | GradientBoosting | R²=0.20 | MiLB→MLB career WAR |
+| Prospect Projector (NN) | PyTorch | r=0.405 | MiLB→MLB with uncertainty |
+| Breakout Predictor | GradientBoosting | AUC=0.774 | Predict 3+ WAR jumps |
+| Player Embeddings | Autoencoder | 16-dim latent | Historical player similarity |
+| Lineup Value | Neural Net + Transformer | r=0.905 vs runs | Optimal batting order |
+| Pitch Arsenal Grades | Percentile model | 6,573 pitch-types | Per-pitch effectiveness |
+| Fatigue Model | Continuous/differentiable | Calibrated to known rates | Workload management |
+| Platoon Model | Bayesian hierarchical | Shrunk to population priors | L/R split estimation |
 
 ## GPU Engine
 
