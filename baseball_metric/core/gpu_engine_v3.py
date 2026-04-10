@@ -165,9 +165,11 @@ def batch_compute_bravs_v3(player_data: list[dict], n_samples: int = N_SAMPLES, 
     fielding_runs = (fielding_rf * pos_fld_val + fielding_e * 0.4) * era_mult
     fielding_runs = fielding_runs * 0.45  # tighter shrinkage
     fielding_runs = fielding_runs.clamp(-15.0, 15.0)
-    # Gold Glove bonus: +5 runs for GG winners in that season
-    gg_bonus = _f("gold_glove", 0) * 5.0 * era_mult
-    fielding_runs = fielding_runs + gg_bonus
+    # Gold Glove bonus: +7 runs for GG winners (increased from 5)
+    gg_bonus = _f("gold_glove", 0) * 7.0 * era_mult
+    # All-Star fielding proxy: +2 runs (All-Stars are likely above-avg fielders)
+    as_bonus = _f("all_star", 0) * 2.0 * era_mult * has_batting
+    fielding_runs = fielding_runs + gg_bonus + as_bonus
 
     # FIX 4: POSITIONAL
     games_frac = games / 162.0
@@ -231,9 +233,9 @@ def batch_compute_bravs_v3(player_data: list[dict], n_samples: int = N_SAMPLES, 
     bravs = total_runs / rpw
     bravs_era_std = total_runs / 5.90
 
-    # Position-specific calibration (pitchers inflate more than hitters)
+    # Position-specific calibration (reoptimized with talent dilution)
     is_mainly_pitcher = (ip >= pa.clamp(min=1) * 0.3).float()
-    cal_factor = is_mainly_pitcher * 0.615 + (1 - is_mainly_pitcher) * 0.654
+    cal_factor = is_mainly_pitcher * 0.639 + (1 - is_mainly_pitcher) * 0.715
     bravs_war_eq = bravs * cal_factor
 
     bravs_samples = total_samples / rpw.unsqueeze(1)
