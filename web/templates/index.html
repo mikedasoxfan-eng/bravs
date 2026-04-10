@@ -827,7 +827,8 @@ nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
   <div style="max-width:960px;margin:32px auto 0;padding:0 24px;">
     <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
       <input id="video-search" placeholder="Search player highlights..." style="font-family:inherit;font-size:13px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);flex:1;min-width:200px">
-      <button onclick="searchVideos()" style="padding:8px 18px;font-family:inherit;font-size:12px;font-weight:600;background:var(--text);color:var(--surface);border:none;border-radius:6px;cursor:pointer">Search</button>
+      <button onclick="searchVideos()" style="padding:8px 18px;font-family:inherit;font-size:12px;font-weight:600;background:var(--text);color:var(--surface);border:none;border-radius:6px;cursor:pointer">Highlights</button>
+      <button onclick="searchPitchByPitch()" style="padding:8px 18px;font-family:inherit;font-size:12px;font-weight:600;background:transparent;color:var(--text);border:1px solid var(--border);border-radius:6px;cursor:pointer">Pitch-by-Pitch</button>
     </div>
     <div class="loading" id="video-loading"><span>Finding highlights<span class="dots"></span></span></div>
     <div id="video-results"></div>
@@ -1944,6 +1945,142 @@ function renderVideos(data) {
   html += '</div>';
 
   wrap.innerHTML = html;
+}
+
+async function searchPitchByPitch() {
+  const q = $('video-search').value.trim();
+  if (!q) return;
+  $('video-loading').style.display = 'block';
+  $('video-empty').style.display = 'none';
+  $('video-results').innerHTML = '';
+  try {
+    // First find the player
+    const searchRes = await fetch('/api/video/search/' + encodeURIComponent(q));
+    const searchData = await searchRes.json();
+    if (!searchData.player_id) { $('video-results').innerHTML = '<div class="error-card">Player not found</div>'; return; }
+
+    // Get their game log to find recent games
+    const pid = searchData.player_id;
+    const logRes = await fetch('https://statsapi.mlb.com/api/v1/people/' + pid + '/stats?stats=gameLog&season=2026&group=pitching');
+    const logData = await logRes.json();
+    const games = [];
+    (logData.stats || []).forEach(sg => {
+      (sg.splits || []).forEach(s => {
+        if (s.game && s.game.gamePk) games.push({pk: s.game.gamePk, date: s.date, opp: (s.opponent||{}).name||'?', stat: s.stat||{}});
+      });
+    });
+
+    if (games.length === 0) {
+      // Try hitting
+      const logRes2 = await fetch('https://statsapi.mlb.com/api/v1/people/' + pid + '/stats?stats=gameLog&season=2026&group=hitting');
+      const logData2 = await logRes2.json();
+      (logData2.stats || []).forEach(sg => {
+        (sg.splits || []).forEach(s => {
+          if (s.game && s.game.gamePk) games.push({pk: s.game.gamePk, date: s.date, opp: (s.opponent||{}).name||'?', stat: s.stat||{}});
+        });
+      });
+    }
+
+    if (games.length === 0) { $('video-results').innerHTML = '<div class="error-card">No 2026 games found</div>'; return; }
+
+    // Show game selector
+    let html = '<div style="font-size:16px;font-weight:700;margin-bottom:12px">' + esc(searchData.player) + ' - Pitch-by-Pitch Video</div>';
+    html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">';
+    games.slice(-10).reverse().forEach(g => {
+      const ip = g.stat.inningsPitched || '';
+      const k = g.stat.strikeOuts || '';
+      const label = g.date + ' vs ' + g.opp + (ip ? ' (' + ip + ' IP, ' + k + ' K)' : '');
+      html += '<button onclick="loadPitchByPitch(' + g.pk + ',' + pid + ')" style="padding:6px 14px;font-family:inherit;font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:6px;cursor:pointer">' + esc(label) + '</button>';
+    });
+    html += '</div><div id="pbp-results"></div>';
+    $('video-results').innerHTML = html;
+  } catch(e) {
+    $('video-results').innerHTML = '<div class="error-card">Error: ' + esc(e.message) + '</div>';
+  } finally {
+    $('video-loading').style.display = 'none';
+  }
+}
+
+async function loadPitchByPitch(gamePk, pitcherId) {
+  const wrap = document.getElementById('pbp-results') || $('video-results');
+  wrap.innerHTML = '<div class="loading" style="display:block"><span>Loading pitch-by-pitch video<span class="dots"></span></span></div>';
+  try {
+    const res = await fetch('/api/video/pitches/' + gamePk + '/' + pitcherId);
+    const data = await res.json();
+    if (data.error) { wrap.innerHTML = '<div class="error-card">' + esc(data.error) + '</div>'; return; }
+    renderPitchByPitch(data, wrap);
+  } catch(e) {
+    wrap.innerHTML = '<div class="error-card">Error: ' + esc(e.message) + '</div>';
+  }
+}
+
+function renderPitchByPitch(data, wrap) {
+  let html = '';
+  html += '<div style="margin-bottom:16px;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:8px">';
+  html += '<div style="font-size:14px;font-weight:700">' + esc(data.pitcher_name) + ' - ' + esc(data.date) + '</div>';
+  html += '<div style="font-size:12px;color:var(--text-3)">' + esc(data.matchup) + ' | ' + data.total_pitches + ' pitches | ' + data.total_at_bats + ' batters faced</div>';
+  html += '</div>';
+
+  const typeColors = {'Four-Seam Fastball':'#e74c3c','Sinker':'#e67e22','Cutter':'#f39c12','Curveball':'#2ecc71','Slider':'#3498db','Changeup':'#9b59b6','Sweeper':'#1abc9c','Knuckle Curve':'#27ae60','Splitter':'#8e44ad'};
+  let pitchNum = 0;
+
+  (data.at_bats || []).forEach((ab, abIdx) => {
+    html += '<div style="margin-bottom:12px;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:8px">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
+    html += '<div style="font-size:13px;font-weight:600">vs ' + esc(ab.batter) + '</div>';
+    const resultColor = ab.result.includes('Strikeout') ? 'var(--green)' : ab.result.includes('Home Run') ? 'var(--red)' : ab.result.includes('out') ? 'var(--text-3)' : 'var(--orange)';
+    html += '<div style="font-size:12px;font-weight:600;color:' + resultColor + '">' + esc(ab.result) + '</div>';
+    html += '</div>';
+
+    // Pitch sequence
+    html += '<div style="display:flex;gap:4px;flex-wrap:wrap">';
+    (ab.pitches || []).forEach(p => {
+      pitchNum++;
+      const bg = typeColors[p.typeName] || '#777';
+      const border = p.isStrike ? '2px solid ' + bg : p.isInPlay ? '2px solid var(--text)' : '2px solid var(--border)';
+      const speed = p.speed ? Math.round(p.speed) : '?';
+      const hasVideo = p.videoUrl || p.savantUrl;
+      const cursor = hasVideo ? 'cursor:pointer' : '';
+      const onclick = p.videoUrl ? 'onclick="playPitchVideo(this,\'' + esc(p.videoUrl) + '\')"' : (p.playId ? 'onclick="resolvePitchVideo(this,\'' + esc(p.playId) + '\')"' : '');
+      html += '<div ' + onclick + ' style="display:flex;flex-direction:column;align-items:center;padding:4px 6px;border-radius:6px;border:' + border + ';background:var(--bg);min-width:50px;' + cursor + '" title="' + esc(p.typeName + ' ' + speed + 'mph - ' + p.result) + '">';
+      html += '<div style="font-size:9px;font-weight:700;color:' + bg + '">' + esc(p.typeName.replace('Four-Seam ','4S-').replace('Fastball','FB').replace('Sinker','SI').replace('Cutter','FC').replace('Curveball','CU').replace('Slider','SL').replace('Changeup','CH')) + '</div>';
+      html += '<div style="font-size:14px;font-weight:700">' + speed + '</div>';
+      html += '<div style="font-size:9px;color:var(--text-3)">' + esc(p.result.replace('Called Strike','K(L)').replace('Swinging Strike','K(S)').replace('Foul','Foul').replace('Ball','Ball').replace('In play','Hit')) + '</div>';
+      if (hasVideo) html += '<div style="font-size:8px;color:var(--green)">VIDEO</div>';
+      html += '</div>';
+    });
+    html += '</div></div>';
+  });
+
+  wrap.innerHTML = html;
+}
+
+async function resolvePitchVideo(el, playId) {
+  el.style.opacity = '0.5';
+  try {
+    const res = await fetch('/api/video/pitch/' + playId);
+    const data = await res.json();
+    if (data.videoUrl) {
+      playPitchVideo(el, data.videoUrl);
+    } else {
+      el.style.opacity = '1';
+    }
+  } catch(e) { el.style.opacity = '1'; }
+}
+
+function playPitchVideo(el, url) {
+  // Create modal overlay
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer';
+  modal.onclick = () => modal.remove();
+  const vid = document.createElement('video');
+  vid.src = url;
+  vid.controls = true;
+  vid.autoplay = true;
+  vid.style.cssText = 'max-width:90%;max-height:85%;border-radius:8px';
+  vid.onclick = e => e.stopPropagation();
+  modal.appendChild(vid);
+  document.body.appendChild(modal);
 }
 
 function playVideo(el, url) {

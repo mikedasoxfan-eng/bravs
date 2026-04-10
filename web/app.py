@@ -2261,6 +2261,154 @@ def api_video_search(query):
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/api/video/pitches/<int:game_pk>/<int:pitcher_id>")
+def api_video_pitches(game_pk, pitcher_id):
+    """Get pitch-by-pitch data with video URLs for a pitcher's outing.
+
+    Returns every pitch thrown by the pitcher in the game, including:
+    - Pitch type, velocity, result
+    - Statcast data (spin, break, zone)
+    - Video URL for each individual pitch (from Baseball Savant)
+    """
+    try:
+        import re as _re
+
+        # Get live feed with pitch-by-pitch data
+        r = requests.get(f"{MLB_API}.1/game/{game_pk}/feed/live", timeout=15)
+        data = r.json()
+
+        all_plays = data.get("liveData", {}).get("plays", {}).get("allPlays", [])
+
+        at_bats = []
+        pitch_count = 0
+
+        for play in all_plays:
+            matchup = play.get("matchup", {})
+            pitcher = matchup.get("pitcher", {})
+
+            if pitcher.get("id") != pitcher_id:
+                continue
+
+            batter = matchup.get("batter", {})
+            result = play.get("result", {})
+
+            pitches = []
+            for ev in play.get("playEvents", []):
+                if not ev.get("isPitch"):
+                    continue
+
+                pitch_data = ev.get("pitchData", {})
+                details = ev.get("details", {})
+                pitch_count += 1
+
+                pitch = {
+                    "pitchNumber": pitch_count,
+                    "abPitchNumber": ev.get("pitchNumber", 0),
+                    "type": details.get("type", {}).get("code", ""),
+                    "typeName": details.get("type", {}).get("description", ""),
+                    "speed": pitch_data.get("startSpeed"),
+                    "result": details.get("description", ""),
+                    "isStrike": details.get("isStrike", False),
+                    "isBall": details.get("isBall", False),
+                    "isInPlay": details.get("isInPlay", False),
+                    "zone": pitch_data.get("zone"),
+                    "spinRate": pitch_data.get("breaks", {}).get("spinRate"),
+                    "breakLength": pitch_data.get("breaks", {}).get("breakLength"),
+                    "playId": ev.get("playId", ""),
+                    "videoUrl": "",  # populated below
+                }
+
+                # Build video URL from playId
+                if pitch["playId"]:
+                    pitch["savantUrl"] = (
+                        f"https://baseballsavant.mlb.com/sporty-videos"
+                        f"?playId={pitch['playId']}"
+                    )
+
+                pitches.append(pitch)
+
+            if pitches:
+                at_bats.append({
+                    "batter": batter.get("fullName", "?"),
+                    "batterId": batter.get("id"),
+                    "result": result.get("event", ""),
+                    "description": result.get("description", ""),
+                    "rbi": result.get("rbi", 0),
+                    "pitches": pitches,
+                })
+
+        # Resolve video URLs in batch (grab from Savant)
+        # Only resolve the first N to avoid hammering Savant
+        resolved = 0
+        for ab in at_bats:
+            for pitch in ab["pitches"]:
+                if pitch.get("savantUrl") and resolved < 50:
+                    try:
+                        rv = requests.get(
+                            pitch["savantUrl"], timeout=5,
+                            headers={"User-Agent": "Mozilla/5.0"},
+                        )
+                        if rv.status_code == 200:
+                            match = _re.search(
+                                r'src="(https://sporty-clips\.mlb\.com/[^"]+\.mp4)"',
+                                rv.text,
+                            )
+                            if match:
+                                pitch["videoUrl"] = match.group(1)
+                                resolved += 1
+                    except Exception:
+                        pass
+
+        # Game info
+        game_data = data.get("gameData", {})
+        teams = game_data.get("teams", {})
+        away_name = teams.get("away", {}).get("name", "?")
+        home_name = teams.get("home", {}).get("name", "?")
+        date = game_data.get("datetime", {}).get("originalDate", "?")
+
+        pitcher_name = ""
+        if at_bats:
+            # Get pitcher name from the play data
+            for play in all_plays:
+                if play.get("matchup", {}).get("pitcher", {}).get("id") == pitcher_id:
+                    pitcher_name = play["matchup"]["pitcher"].get("fullName", "?")
+                    break
+
+        return jsonify({
+            "game_pk": game_pk,
+            "pitcher_id": pitcher_id,
+            "pitcher_name": pitcher_name,
+            "date": date,
+            "matchup": f"{away_name} @ {home_name}",
+            "total_pitches": pitch_count,
+            "total_at_bats": len(at_bats),
+            "videos_resolved": resolved,
+            "at_bats": at_bats,
+        })
+
+    except Exception as e:
+        logger.exception("Pitch video error")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/video/pitch/<play_id>")
+def api_video_single_pitch(play_id):
+    """Get the video URL for a single pitch by its playId."""
+    try:
+        import re as _re
+        url = f"https://baseballsavant.mlb.com/sporty-videos?playId={play_id}"
+        r = requests.get(url, timeout=8, headers={"User-Agent": "Mozilla/5.0"})
+        if r.status_code == 200:
+            match = _re.search(
+                r'src="(https://sporty-clips\.mlb\.com/[^"]+\.mp4)"', r.text
+            )
+            if match:
+                return jsonify({"playId": play_id, "videoUrl": match.group(1)})
+        return jsonify({"playId": play_id, "videoUrl": "", "error": "Video not found"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == "__main__":
     print("\n  BRAVS Web App")
     print(f"  Engine: {'Rust (bravs_engine)' if USE_RUST else 'Python (fallback)'}")
