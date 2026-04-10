@@ -645,6 +645,7 @@ nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
   <button class="nav-tab" data-tab="dream" onclick="switchTab('dream')">Dream Team</button>
   <button class="nav-tab" data-tab="lineup" onclick="switchTab('lineup')">Lineup Optimizer</button>
   <button class="nav-tab" data-tab="milb" onclick="switchTab('milb')">MiLB</button>
+  <button class="nav-tab" data-tab="video" onclick="switchTab('video')">Video</button>
 </div>
 
 <!-- === PLAYER TAB === -->
@@ -821,6 +822,23 @@ nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
   </div>
 </div>
 
+<!-- === VIDEO TAB === -->
+<div id="tab-video" style="display:none">
+  <div style="max-width:960px;margin:32px auto 0;padding:0 24px;">
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+      <input id="video-search" placeholder="Search player highlights..." style="font-family:inherit;font-size:13px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);flex:1;min-width:200px">
+      <button onclick="searchVideos()" style="padding:8px 18px;font-family:inherit;font-size:12px;font-weight:600;background:var(--text);color:var(--surface);border:none;border-radius:6px;cursor:pointer">Search</button>
+    </div>
+    <div class="loading" id="video-loading"><span>Finding highlights<span class="dots"></span></span></div>
+    <div id="video-results"></div>
+    <div class="empty" id="video-empty">
+      <h2>MLB Video Highlights</h2>
+      <p>Search for any player to see their recent highlight clips from MLB. Videos are sourced directly from the MLB Stats API and include home runs, strikeouts, defensive plays, and more.</p>
+      <p style="font-size:11px;color:var(--text-3);margin-top:12px">Powered by MLB Film Room. Enter a player name to search.</p>
+    </div>
+  </div>
+</div>
+
 <script>
 const $ = id => document.getElementById(id);
 let debounceTimer = null;
@@ -840,6 +858,7 @@ function switchTab(tab) {
   $('tab-dream').style.display = tab === 'dream' ? 'block' : 'none';
   $('tab-lineup').style.display = tab === 'lineup' ? 'block' : 'none';
   $('tab-milb').style.display = tab === 'milb' ? 'block' : 'none';
+  $('tab-video').style.display = tab === 'video' ? 'block' : 'none';
 }
 
 // --- Search ---
@@ -1859,6 +1878,86 @@ function renderMiLBPlayer(data) {
   html += '<td style="text-align:right;padding:6px 4px;color:var(--green)">' + totalWar.toFixed(2) + '</td></tr>';
   html += '</table>';
   $('milb-results').innerHTML = html;
+}
+
+// === VIDEO TAB ===
+$('video-search').addEventListener('keydown', e => { if (e.key === 'Enter') searchVideos(); });
+
+async function searchVideos() {
+  const q = $('video-search').value.trim();
+  if (!q) return;
+  $('video-loading').style.display = 'block';
+  $('video-empty').style.display = 'none';
+  $('video-results').innerHTML = '';
+  try {
+    const res = await fetch('/api/video/search/' + encodeURIComponent(q));
+    const data = await res.json();
+    if (data.error && (!data.videos || data.videos.length === 0)) {
+      $('video-results').innerHTML = '<div class="error-card">' + esc(data.error) + '</div>';
+      return;
+    }
+    renderVideos(data);
+  } catch(e) {
+    $('video-results').innerHTML = '<div class="error-card">Error: ' + esc(e.message) + '</div>';
+  } finally {
+    $('video-loading').style.display = 'none';
+  }
+}
+
+function renderVideos(data) {
+  const wrap = $('video-results');
+  let html = '';
+
+  if (data.player) {
+    html += '<div style="font-size:16px;font-weight:700;margin-bottom:16px">' + esc(data.player) + ' - Recent Highlights</div>';
+  }
+
+  if (!data.videos || data.videos.length === 0) {
+    html += '<div style="color:var(--text-3);font-size:13px">No videos found. Try a different player name.</div>';
+    wrap.innerHTML = html;
+    return;
+  }
+
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px">';
+  data.videos.forEach(v => {
+    html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden">';
+    // Thumbnail + play button
+    if (v.thumbnail) {
+      html += '<div style="position:relative;cursor:pointer" onclick="playVideo(this,\'' + esc(v.mp4 || v.hls) + '\')">';
+      html += '<img src="' + esc(v.thumbnail) + '" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover">';
+      html += '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50px;height:50px;background:rgba(0,0,0,0.7);border-radius:50%;display:flex;align-items:center;justify-content:center">';
+      html += '<div style="width:0;height:0;border-top:12px solid transparent;border-bottom:12px solid transparent;border-left:20px solid white;margin-left:4px"></div>';
+      html += '</div>';
+      if (v.duration) {
+        html += '<div style="position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.8);color:white;font-size:10px;padding:2px 6px;border-radius:3px">' + esc(v.duration) + '</div>';
+      }
+      html += '</div>';
+    }
+    // Info
+    html += '<div style="padding:10px">';
+    html += '<div style="font-size:13px;font-weight:600;margin-bottom:4px;line-height:1.3">' + esc(v.title) + '</div>';
+    if (v.description) {
+      html += '<div style="font-size:11px;color:var(--text-3);line-height:1.4">' + esc(v.description).substring(0, 120) + '</div>';
+    }
+    html += '</div></div>';
+  });
+  html += '</div>';
+
+  wrap.innerHTML = html;
+}
+
+function playVideo(el, url) {
+  if (!url) return;
+  const container = el.parentElement;
+  // Replace thumbnail with video player
+  if (url.endsWith('.m3u8')) {
+    // HLS stream - use video tag (works in most browsers with MSE)
+    container.querySelector('div[style*="position:relative"]').innerHTML =
+      '<video controls autoplay style="width:100%;aspect-ratio:16/9;background:#000" src="' + esc(url) + '"></video>';
+  } else {
+    // MP4
+    el.innerHTML = '<video controls autoplay style="width:100%;aspect-ratio:16/9;background:#000"><source src="' + esc(url) + '" type="video/mp4"></video>';
+  }
 }
 
 // Auto-load from URL if permalink

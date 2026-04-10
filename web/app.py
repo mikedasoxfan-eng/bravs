@@ -2040,6 +2040,227 @@ def milb_prospects():
     })
 
 
+# ═══════════════════════════════════════════════════════════════════
+#  VIDEO ENDPOINTS — MLB highlight clips from Stats API
+# ══════════════════════════════════════════════════════════════════���
+
+@app.route("/api/video/player/<int:player_id>/<int:season>")
+def api_video_player(player_id, season):
+    """Get highlight videos for a player's season.
+
+    Fetches game log, then pulls highlight clips from each game's
+    content feed. Returns video URLs (MP4 + HLS), thumbnails, titles.
+    """
+    try:
+        # Get player's game log for the season
+        gamelog_url = f"{MLB_API}/people/{player_id}/stats"
+        r = requests.get(gamelog_url, params={
+            "stats": "gameLog", "season": season, "group": "hitting,pitching"
+        }, timeout=10)
+        data = r.json()
+
+        game_pks = []
+        for sg in data.get("stats", []):
+            for split in sg.get("splits", []):
+                gp = split.get("game", {}).get("gamePk")
+                if gp and gp not in game_pks:
+                    game_pks.append(gp)
+
+        # Pull highlights from each game (limit to 10 most recent)
+        videos = []
+        for gp in game_pks[-10:]:
+            try:
+                r2 = requests.get(f"{MLB_API}/game/{gp}/content", timeout=8)
+                items = r2.json().get("highlights", {}).get("highlights", {}).get("items", [])
+                for item in items:
+                    # Get video URLs
+                    mp4 = ""
+                    hls = ""
+                    for pb in item.get("playbacks", []):
+                        if pb.get("name") == "HTTP_CLOUD_WIRED_60":
+                            mp4 = pb["url"]
+                        elif pb.get("name") == "hlsCloud":
+                            hls = pb["url"]
+
+                    # Get thumbnail
+                    thumb = ""
+                    cuts = item.get("image", {}).get("cuts", [])
+                    if isinstance(cuts, dict):
+                        thumb = (cuts.get("640x360", {}).get("src", "")
+                                or cuts.get("960x540", {}).get("src", ""))
+                    elif isinstance(cuts, list):
+                        for cut in cuts:
+                            if cut.get("width", 0) == 640:
+                                thumb = cut.get("src", "")
+                                break
+
+                    if mp4 or hls:
+                        videos.append({
+                            "gamePk": gp,
+                            "title": item.get("title", ""),
+                            "description": item.get("description", ""),
+                            "duration": item.get("duration", ""),
+                            "mp4": mp4,
+                            "hls": hls,
+                            "thumbnail": thumb,
+                            "mediaId": item.get("mediaPlaybackId", ""),
+                        })
+            except Exception:
+                pass
+
+        return jsonify({
+            "player_id": player_id,
+            "season": season,
+            "games": len(game_pks),
+            "videos": videos,
+        })
+    except Exception as e:
+        logger.exception("Video player error")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/video/game/<int:game_pk>")
+def api_video_game(game_pk):
+    """Get all highlight videos for a specific game."""
+    try:
+        r = requests.get(f"{MLB_API}/game/{game_pk}/content", timeout=10)
+        items = r.json().get("highlights", {}).get("highlights", {}).get("items", [])
+
+        videos = []
+        for item in items:
+            mp4 = ""
+            hls = ""
+            for pb in item.get("playbacks", []):
+                if pb.get("name") == "HTTP_CLOUD_WIRED_60":
+                    mp4 = pb["url"]
+                elif pb.get("name") == "hlsCloud":
+                    hls = pb["url"]
+
+            thumb = ""
+            cuts = item.get("image", {}).get("cuts", [])
+            if isinstance(cuts, dict):
+                thumb = (cuts.get("640x360", {}).get("src", "")
+                        or cuts.get("960x540", {}).get("src", ""))
+            elif isinstance(cuts, list):
+                for cut in cuts:
+                    if cut.get("width", 0) == 640:
+                        thumb = cut.get("src", "")
+                        break
+
+            if mp4 or hls:
+                videos.append({
+                    "gamePk": game_pk,
+                    "title": item.get("title", ""),
+                    "description": item.get("description", ""),
+                    "duration": item.get("duration", ""),
+                    "mp4": mp4,
+                    "hls": hls,
+                    "thumbnail": thumb,
+                })
+
+        return jsonify({"game_pk": game_pk, "videos": videos})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/video/search/<query>")
+def api_video_search(query):
+    """Search for highlight videos by player name or keyword.
+
+    Searches recent games for clips mentioning the query term.
+    """
+    try:
+        # Find the player first
+        r = requests.get(f"{MLB_API}/people/search", params={
+            "names": query, "sportIds": "1"
+        }, timeout=10)
+        people = r.json().get("people", [])
+
+        if not people:
+            return jsonify({"error": "Player not found", "videos": []})
+
+        player = people[0]
+        pid = player["id"]
+        name = player["fullName"]
+
+        # Get their recent games
+        import datetime
+        today = datetime.date.today()
+        start = today - datetime.timedelta(days=30)
+
+        schedule = requests.get(f"{MLB_API}/schedule", params={
+            "sportId": 1, "startDate": start.isoformat(),
+            "endDate": today.isoformat(),
+            "gameType": "R",
+        }, timeout=10).json()
+
+        # Find games this player appeared in
+        game_pks = []
+        gamelog = requests.get(f"{MLB_API}/people/{pid}/stats", params={
+            "stats": "gameLog", "season": today.year,
+            "group": "hitting,pitching"
+        }, timeout=10).json()
+        for sg in gamelog.get("stats", []):
+            for split in sg.get("splits", []):
+                gp = split.get("game", {}).get("gamePk")
+                if gp:
+                    game_pks.append(gp)
+
+        # Get highlights mentioning the player
+        videos = []
+        for gp in game_pks[-5:]:
+            try:
+                r2 = requests.get(f"{MLB_API}/game/{gp}/content", timeout=8)
+                items = r2.json().get("highlights", {}).get("highlights", {}).get("items", [])
+                for item in items:
+                    title = item.get("title", "")
+                    desc = item.get("description", "")
+                    # Filter to clips mentioning the player
+                    last_name = name.split()[-1]
+                    if last_name.lower() not in (title + desc).lower():
+                        continue
+
+                    mp4 = ""
+                    hls = ""
+                    for pb in item.get("playbacks", []):
+                        if pb.get("name") == "HTTP_CLOUD_WIRED_60":
+                            mp4 = pb["url"]
+                        elif pb.get("name") == "hlsCloud":
+                            hls = pb["url"]
+
+                    thumb = ""
+                    cuts = item.get("image", {}).get("cuts", [])
+                    if isinstance(cuts, dict):
+                        thumb = cuts.get("640x360", {}).get("src", "")
+                    elif isinstance(cuts, list):
+                        for cut in cuts:
+                            if cut.get("width", 0) == 640:
+                                thumb = cut.get("src", "")
+                                break
+
+                    if mp4 or hls:
+                        videos.append({
+                            "gamePk": gp,
+                            "title": title,
+                            "description": desc,
+                            "duration": item.get("duration", ""),
+                            "mp4": mp4,
+                            "hls": hls,
+                            "thumbnail": thumb,
+                        })
+            except Exception:
+                pass
+
+        return jsonify({
+            "query": query,
+            "player": name,
+            "player_id": pid,
+            "videos": videos,
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == "__main__":
     print("\n  BRAVS Web App")
     print(f"  Engine: {'Rust (bravs_engine)' if USE_RUST else 'Python (fallback)'}")
