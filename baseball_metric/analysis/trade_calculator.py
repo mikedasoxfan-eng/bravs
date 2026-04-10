@@ -365,14 +365,20 @@ def compute_value_by_name(
         pid = match.iloc[0]["playerID"]
         return compute_player_value(pid, projections, salaries, prospects)
 
-    # Partial match
-    match = projections[projections["name"].str.lower().str.contains(name_lower, na=False)]
+    # Partial match: query contained in CSV name, or CSV name contained in query
+    match = projections[
+        projections["name"].str.lower().str.contains(name_lower, na=False)
+        | projections["name"].str.lower().apply(lambda x: x in name_lower)
+    ]
     if len(match) > 0:
         pid = match.iloc[0]["playerID"]
         return compute_player_value(pid, projections, salaries, prospects)
 
-    # Try prospects by name
-    match = prospects[prospects["name"].str.lower().str.contains(name_lower, na=False)]
+    # Try prospects by name (both directions)
+    match = prospects[
+        prospects["name"].str.lower().str.contains(name_lower, na=False)
+        | prospects["name"].str.lower().apply(lambda x: x in name_lower)
+    ]
     if len(match) > 0:
         return compute_player_value(match.iloc[0]["name"], projections, salaries, prospects)
 
