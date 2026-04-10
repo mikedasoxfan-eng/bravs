@@ -1,0 +1,70 @@
+Building empirical aging curves from 14,092 careers...
+  C: peak=1.00, 5yr post-peak=0.03
+  IF: peak=1.00, 5yr post-peak=0.10
+  OF: peak=1.00, 5yr post-peak=0.11
+  DH: peak=1.00, 5yr post-peak=-0.04
+  P: peak=1.00, 5yr post-peak=0.22
+
+================================================================================
+  TRADE VALUE CALCULATOR — Top Active Players
+================================================================================
+
+Rank Player                   Age Rem WAR  Salary  Surplus
+------------------------------------------------------------
+1    Elly De La Cruz           24     3.6    4.0M    24.8M
+2    Cal Raleigh               30     6.4   29.0M    22.2M
+3    Jarren Duran              30     4.4   16.5M    18.7M
+4    Geraldo Perdomo           27     6.0   29.4M    18.6M
+5    CJ Abrams                 26     4.9   21.0M    18.2M
+6    Kyle Schwarber            33     8.9   53.6M    17.6M
+7    Nico Hoerner              29     5.2   25.0M    16.6M
+8    Jazz Chisholm             28     3.7   15.0M    14.6M
+9    Jeremy Peña               29     4.7   25.5M    12.1M
+10   Gunnar Henderson          25     5.4   33.5M     9.7M
+11   Riley Greene              26     2.8   15.2M     7.2M
+12   Garrett Crochet           27     1.0    2.0M     6.0M
+13   Seiya Suzuki              32     2.8   16.8M     5.6M
+14   Alec Bohm                 30     1.7    8.4M     5.2M
+15   Paul Skenes               24     0.9    2.0M     5.2M
+16   Randy Arozarena           31     1.9   12.0M     3.2M
+17   Aaron Judge               34    10.8   83.3M     3.1M
+18   Byron Buxton              33     3.5   25.0M     3.0M
+19   Ian Happ                  32     2.4   16.5M     2.7M
+20   Kyle Tucker               29     2.2   15.9M     1.7M
+21   Willy Adames              31     3.3   24.8M     1.6M
+22   William Contreras         29     3.1   23.2M     1.6M
+23   Tyler Rogers              36     0.9    5.6M     1.6M
+24   Bryson Stott              29     1.1    7.6M     1.2M
+25   Spencer Strider           28     0.2    1.0M     0.6M
+26   Brandon Nimmo             33     2.0   15.6M     0.4M
+27   Corbin Carroll            26     4.3   34.2M     0.2M
+28   Trent Grisham             30     2.5   20.0M     0.0M
+29   Tyler Stephenson          30     0.4    3.5M    -0.3M
+30   Luis Robert               29     0.3    2.9M    -0.5M
+
+================================================================================
+  BEST VALUE BY CATEGORY
+================================================================================
+
+  BEST YOUNG PLAYERS (age <= 27):
+    Elly De La Cruz          age 24  surplus: $25M
+    Geraldo Perdomo          age 27  surplus: $19M
+    CJ Abrams                age 26  surplus: $18M
+    Gunnar Henderson         age 25  surplus: $10M
+    Riley Greene             age 26  surplus: $7M
+
+  BEST VETERAN VALUE (age >= 33):
+    Kyle Schwarber           age 33  surplus: $18M
+    Aaron Judge              age 34  surplus: $3M
+    Byron Buxton             age 33  surplus: $3M
+    Tyler Rogers             age 36  surplus: $2M
+    Brandon Nimmo            age 33  surplus: $0M
+
+  WORST CONTRACTS (most negative surplus):
+    Freddie Freeman          age 37  surplus: $-18M
+    Juan Soto                age 28  surplus: $-16M
+    Francisco Lindor         age 33  surplus: $-16M
+    Jose Ramirez             age 34  surplus: $-15M
+    Logan Webb               age 30  surplus: $-14M
+
+  Computed trade values for 174 active players
