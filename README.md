@@ -2,7 +2,7 @@
 
 A probabilistic baseball player valuation framework. Computes posterior distributions over player value for every MLB player from 1920 to present.
 
-**299,120 MLB + 223,855 MiLB player-seasons. GPU-accelerated. 11 trained models. 9-tab web app.**
+**299,120 MLB + 223,855 MiLB player-seasons. 7 PyTorch models (3.5M params). 38 API endpoints. 9-tab web app. GPU-accelerated.**
 
 ## What It Does
 
