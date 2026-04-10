@@ -2409,6 +2409,109 @@ def api_video_single_pitch(play_id):
         return jsonify({"error": str(e)}), 500
 
 
+# ═══════════════════════════════════════════════════════════════════
+#  ANALYTICS ENDPOINTS — projections, aging curves, HOF, embeddings
+# ═══════════════════════════════════════════════════════════════════
+
+_PROJECTIONS = None
+_HOF_PROBS = None
+_AGING = None
+
+
+@app.route("/api/projections/<int:player_id>")
+def api_projection(player_id):
+    """Get 2026 projection for a player."""
+    global _PROJECTIONS
+    try:
+        if _PROJECTIONS is None:
+            _PROJECTIONS = pd.read_csv("data/projections_2026.csv")
+        # Find by MLB playerID (lookup via search)
+        r = requests.get(f"{MLB_API}/people/{player_id}", timeout=5)
+        name = r.json().get("people", [{}])[0].get("fullName", "")
+        if not name:
+            return jsonify({"error": "Player not found"})
+
+        last = name.split()[-1]
+        match = _PROJECTIONS[_PROJECTIONS.name.str.contains(last, na=False)]
+        if len(match) == 0:
+            return jsonify({"error": "No projection available"})
+
+        row = match.sort_values("projected_war", ascending=False).iloc[0]
+        return jsonify({
+            "name": row["name"],
+            "team": row.get("team", "?"),
+            "position": row.get("position", "?"),
+            "age_2026": int(row.get("age_2026", 0)),
+            "projected_war": round(float(row.projected_war), 1),
+            "confidence": row.get("confidence", "Medium"),
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/hof/<player_id>")
+def api_hof_probability(player_id):
+    """Get Hall of Fame probability for a player."""
+    global _HOF_PROBS
+    try:
+        if _HOF_PROBS is None:
+            _HOF_PROBS = pd.read_csv("data/hof_probabilities.csv")
+        match = _HOF_PROBS[_HOF_PROBS.playerID == player_id]
+        if len(match) == 0:
+            return jsonify({"error": "Player not found"})
+        row = match.iloc[0]
+        return jsonify({
+            "playerID": player_id,
+            "name": row["name"],
+            "hof_probability": round(float(row.hof_prob), 4),
+            "career_war_eq": round(float(row.career_war_eq), 1),
+            "is_inducted": bool(row.get("is_hof", False)),
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/aging-curve/<position>")
+def api_aging_curve(position):
+    """Get empirical aging curve for a position."""
+    global _AGING
+    try:
+        if _AGING is None:
+            _AGING = pd.read_csv("data/aging_curves_by_position.csv")
+        pos_data = _AGING[_AGING.position == position.upper()]
+        if len(pos_data) == 0:
+            # Fall back to overall hitter curve
+            hitter_aging = pd.read_csv("data/aging_curves_hitters.csv")
+            return jsonify({
+                "position": position,
+                "curve": [{"age": int(r.age), "avg_war": round(float(r.avg_war), 2),
+                           "n": int(r.n)} for _, r in hitter_aging.iterrows()],
+            })
+        return jsonify({
+            "position": position,
+            "curve": [{"age": int(r.age), "avg_war": round(float(r.avg_war), 2),
+                       "n": int(r.n)} for _, r in pos_data.iterrows()],
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/team-rankings/<int:year>")
+def api_team_rankings(year):
+    """Get team power rankings for a given year."""
+    try:
+        rankings = pd.read_csv("data/team_power_rankings.csv")
+        yr = rankings[rankings.year == year].sort_values("total_war", ascending=False)
+        return jsonify({
+            "year": year,
+            "teams": [{"team": r.team, "total_war": r.total_war, "bat_war": r.bat_war,
+                       "pit_war": r.pit_war, "actual_w": int(r.actual_w)}
+                      for _, r in yr.iterrows()],
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == "__main__":
     print("\n  BRAVS Web App")
     print(f"  Engine: {'Rust (bravs_engine)' if USE_RUST else 'Python (fallback)'}")
