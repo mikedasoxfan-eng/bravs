@@ -163,16 +163,25 @@ def batch_compute_bravs_v3(player_data: list[dict], n_samples: int = N_SAMPLES, 
     gidp_runs = (gidp_exp - gidp) * 0.37
     baserunning_runs = (sb_runs + gidp_runs) * era_mult
 
-    # FIX 5: FIELDING — tighter shrinkage, position caps + Gold Glove bonus
+    # FIX 5: FIELDING — v3.8: improved fielding estimation
+    # Use range factor and errors with position-specific weights
     fielding_runs = (fielding_rf * pos_fld_val + fielding_e * 0.4) * era_mult
     fielding_runs = fielding_runs * 0.45  # tighter shrinkage
     fielding_runs = fielding_runs.clamp(-12.0, 12.0)  # tighter cap
+
+    # v3.8: Innings-weighted fielding credit for premium positions
+    # Only C and CF get the bonus — SS excluded (Jeter overcredited without real defensive data)
+    innings_frac = (games / 162.0).clamp(max=1.0)
+    premium_pos = torch.tensor([1.0 if d.get("position") in ("C", "CF") else 0.0
+                               for d in player_data], device=DEVICE)
+    premium_fielding = premium_pos * innings_frac * 1.5 * era_mult
+
     # Gold Glove bonus: +5 runs (reverted from 7 — was overcrediting)
     gg_bonus = _f("gold_glove", 0) * 5.0 * era_mult
     # All-Star fielding proxy: +1.5 runs (reduced from 2.0)
     has_batting_early = (pa >= 50).float()
     as_bonus = _f("all_star", 0) * 1.5 * era_mult * has_batting_early
-    fielding_runs = fielding_runs + gg_bonus + as_bonus
+    fielding_runs = fielding_runs + gg_bonus + as_bonus + premium_fielding
 
     # FIX 4: POSITIONAL
     games_frac = games / 162.0
@@ -236,14 +245,19 @@ def batch_compute_bravs_v3(player_data: list[dict], n_samples: int = N_SAMPLES, 
     bravs = total_runs / rpw
     bravs_era_std = total_runs / 5.90
 
-    # Position-specific + era-adjusted calibration
+    # Position-specific + era-adjusted calibration (v3.8)
     is_mainly_pitcher = (ip >= pa.clamp(min=1) * 0.3).float()
-    # Modern pitchers (post-1985) need higher cal because fWAR credits team defense
     is_modern_pitcher = is_mainly_pitcher * (years >= 1985).float()
     is_old_pitcher = is_mainly_pitcher * (years < 1985).float()
-    cal_factor = (is_old_pitcher * 0.580 +       # old pitchers overcredited
-                  is_modern_pitcher * 0.680 +     # modern pitchers undercredited
-                  (1 - is_mainly_pitcher) * 0.690) # hitters
+
+    # v3.8: Split hitter calibration by era (modern hitters slightly higher)
+    is_modern_hitter = (1 - is_mainly_pitcher) * (years >= 2000).float()
+    is_classic_hitter = (1 - is_mainly_pitcher) * (years < 2000).float()
+
+    cal_factor = (is_old_pitcher * 0.580 +        # old pitchers overcredited
+                  is_modern_pitcher * 0.680 +      # modern pitchers undercredited
+                  is_classic_hitter * 0.690 +      # classic hitters
+                  is_modern_hitter * 0.695)        # modern hitters (slightly higher)
     bravs_war_eq = bravs * cal_factor
 
     bravs_samples = total_samples / rpw.unsqueeze(1)

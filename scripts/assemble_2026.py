@@ -28,19 +28,25 @@ import requests
 import pandas as pd
 import numpy as np
 
+_log_dir = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")), "logs")
+os.makedirs(_log_dir, exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(message)s",
     handlers=[
         logging.StreamHandler(),
-        logging.FileHandler("logs/assemble_2026.log", mode="a"),
+        logging.FileHandler(os.path.join(_log_dir, "assemble_2026.log"), mode="a"),
     ],
 )
 log = logging.getLogger(__name__)
 
+# Always run from the project root, regardless of how the script is invoked
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+os.chdir(PROJECT_ROOT)
+
 MLB_API = "https://statsapi.mlb.com/api/v1"
 YEAR = 2026
-OUT_DIR = "data/2026"
+OUT_DIR = os.path.join(PROJECT_ROOT, "data", "2026")
 CHUNK_SIZE = 200  # players per GPU batch to limit memory
 
 
