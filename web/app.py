@@ -2536,6 +2536,348 @@ def api_roster_optimizer():
         return jsonify({"error": str(e)}), 500
 
 
+# ── Live 2026 Dashboard ───────────────────────────────────────────────
+# Self-contained endpoint using MLB Stats API, no database lookups.
+# Results cached in-memory for 5 minutes to avoid hammering the API.
+
+import time as _time
+
+_dashboard_cache: dict[str, tuple[float, object]] = {}
+_DASHBOARD_TTL = 300  # 5 minutes
+
+
+def _dashboard_cached_get(key: str, fetcher):
+    """Return cached value if fresh, otherwise call fetcher and cache it."""
+    now = _time.time()
+    if key in _dashboard_cache:
+        ts, val = _dashboard_cache[key]
+        if now - ts < _DASHBOARD_TTL:
+            return val
+    try:
+        val = fetcher()
+    except Exception as exc:
+        logger.warning("Dashboard fetch failed for %s: %s", key, exc)
+        # Return stale cache if available
+        if key in _dashboard_cache:
+            return _dashboard_cache[key][1]
+        return None
+    _dashboard_cache[key] = (now, val)
+    return val
+
+
+def _fetch_standings_2026():
+    """Fetch current 2026 standings from MLB Stats API."""
+    url = f"{MLB_API}/standings?leagueId=103,104&season=2026&standingsTypes=regularSeason"
+    resp = requests.get(url, timeout=15)
+    resp.raise_for_status()
+    data = resp.json()
+    standings = []
+    for record in data.get("records", []):
+        league = record.get("league", {}).get("abbreviation", "")
+        division = record.get("division", {}).get("abbreviation", "")
+        for team_rec in record.get("teamRecords", []):
+            team_info = team_rec.get("team", {})
+            standings.append({
+                "team_id": team_info.get("id"),
+                "team_name": team_info.get("name", ""),
+                "league": league,
+                "division": division,
+                "wins": team_rec.get("wins", 0),
+                "losses": team_rec.get("losses", 0),
+                "pct": team_rec.get("winningPercentage", ".000"),
+                "games_back": team_rec.get("gamesBack", "-"),
+                "streak": team_rec.get("streak", {}).get("streakCode", ""),
+                "last_10": f"{team_rec.get('records', {}).get('splitRecords', [{}])[0].get('wins', 0)}-{team_rec.get('records', {}).get('splitRecords', [{}])[0].get('losses', 0)}",
+                "run_diff": team_rec.get("runDifferential", 0),
+            })
+    return standings
+
+
+def _fetch_stat_leaders_2026(stat_group: str, top_n: int = 15):
+    """Fetch 2026 stat leaders from MLB Stats API.
+
+    stat_group: 'hitting' or 'pitching'
+    Returns top players by WAR-proxy metrics.
+    """
+    # Use the stats leaders endpoint for the current season
+    if stat_group == "hitting":
+        # Fetch OPS leaders as a proxy for offensive value
+        url = (f"{MLB_API}/stats/leaders?leaderCategories=onBasePlusSlugging"
+               f"&season=2026&sportId=1&limit={top_n}&statGroup=hitting")
+    else:
+        url = (f"{MLB_API}/stats/leaders?leaderCategories=earnedRunAverage"
+               f"&season=2026&sportId=1&limit={top_n}&statGroup=pitching")
+    resp = requests.get(url, timeout=15)
+    resp.raise_for_status()
+    data = resp.json()
+
+    leaders = []
+    for cat in data.get("leagueLeaders", []):
+        for entry in cat.get("leaders", []):
+            person = entry.get("person", {})
+            team = entry.get("team", {})
+            stat_val = entry.get("value", "0")
+
+            # Also fetch their full stats for WAR estimation
+            leaders.append({
+                "rank": entry.get("rank", 0),
+                "player_id": person.get("id"),
+                "name": person.get("fullName", ""),
+                "team": team.get("name", ""),
+                "team_id": team.get("id"),
+                "stat_value": stat_val,
+            })
+    return leaders
+
+
+def _fetch_player_stats_2026(player_id: int):
+    """Fetch a single player's 2026 season stats."""
+    url = (f"{MLB_API}/people/{player_id}/stats"
+           f"?stats=season&season=2026&group=hitting,pitching")
+    resp = requests.get(url, timeout=10)
+    resp.raise_for_status()
+    data = resp.json()
+    result = {}
+    for split_group in data.get("stats", []):
+        group_name = split_group.get("group", {}).get("displayName", "")
+        splits = split_group.get("splits", [])
+        if splits:
+            result[group_name] = splits[0].get("stat", {})
+    return result
+
+
+def _estimate_war_from_stats(stats: dict, is_pitcher: bool, games_played: int) -> float:
+    """Estimate WAR from raw stats using wOBA-based approach.
+
+    For hitters: WAR ~ (wOBA - .310) / 1.15 * PA / 600 * 6
+    For pitchers: WAR ~ (4.50 - ERA) / 4.50 * IP / 200 * 6
+    These are rough approximations for dashboard display.
+    """
+    if is_pitcher:
+        era = float(stats.get("era", "4.50") or "4.50")
+        ip = float(stats.get("inningsPitched", "0") or "0")
+        if ip == 0:
+            return 0.0
+        # Pitcher WAR estimate: league-average ERA is ~4.30
+        war = (4.30 - era) / 4.30 * (ip / 200) * 5.5
+        return round(max(war, -2.0), 1)
+    else:
+        obp = float(stats.get("obp", ".000") or ".000")
+        slg = float(stats.get("slg", ".000") or ".000")
+        pa = int(stats.get("plateAppearances", 0) or 0)
+        if pa == 0:
+            return 0.0
+        # wOBA estimate from OBP/SLG
+        woba_est = obp * 0.69 + slg * 0.31  # rough wOBA proxy
+        war = (woba_est - 0.310) / 1.15 * (pa / 600) * 6.0
+        return round(max(war, -2.0), 1)
+
+
+def _extrapolate_to_162(war: float, games: int) -> float:
+    """Extrapolate current WAR pace to a full 162-game season."""
+    if games <= 0:
+        return 0.0
+    return round(war * (162 / games), 1)
+
+
+def _fetch_schedule_today():
+    """Fetch today's MLB schedule."""
+    from datetime import date
+    today = date.today().isoformat()
+    url = f"{MLB_API}/schedule?sportId=1&date={today}"
+    resp = requests.get(url, timeout=10)
+    resp.raise_for_status()
+    data = resp.json()
+    games = []
+    for date_entry in data.get("dates", []):
+        for game in date_entry.get("games", []):
+            away = game.get("teams", {}).get("away", {})
+            home = game.get("teams", {}).get("home", {})
+            games.append({
+                "game_pk": game.get("gamePk"),
+                "status": game.get("status", {}).get("detailedState", ""),
+                "away_team": away.get("team", {}).get("name", ""),
+                "away_id": away.get("team", {}).get("id"),
+                "away_score": away.get("score"),
+                "away_wins": away.get("leagueRecord", {}).get("wins", 0),
+                "away_losses": away.get("leagueRecord", {}).get("losses", 0),
+                "home_team": home.get("team", {}).get("name", ""),
+                "home_id": home.get("team", {}).get("id"),
+                "home_score": home.get("score"),
+                "home_wins": home.get("leagueRecord", {}).get("wins", 0),
+                "home_losses": home.get("leagueRecord", {}).get("losses", 0),
+                "venue": game.get("venue", {}).get("name", ""),
+                "game_time": game.get("gameDate", ""),
+            })
+    return games
+
+
+def _build_war_leaders():
+    """Build WAR pace leader boards for hitters and pitchers."""
+    hitter_leaders_raw = _dashboard_cached_get(
+        "leaders_hitting", lambda: _fetch_stat_leaders_2026("hitting", 20)
+    )
+    pitcher_leaders_raw = _dashboard_cached_get(
+        "leaders_pitching", lambda: _fetch_stat_leaders_2026("pitching", 20)
+    )
+
+    def _enrich(raw_leaders, is_pitcher):
+        enriched = []
+        if not raw_leaders:
+            return enriched
+        for ldr in raw_leaders[:15]:
+            pid = ldr.get("player_id")
+            if not pid:
+                continue
+            cache_key = f"pstats_{pid}"
+            stats = _dashboard_cached_get(
+                cache_key, lambda _pid=pid: _fetch_player_stats_2026(_pid)
+            )
+            if not stats:
+                continue
+            group_key = "pitching" if is_pitcher else "hitting"
+            s = stats.get(group_key, stats.get("Pitching", stats.get("Hitting", {})))
+            if not s:
+                continue
+            gp = int(s.get("gamesPlayed", 0) or 0)
+            war_est = _estimate_war_from_stats(s, is_pitcher, gp)
+            war_pace = _extrapolate_to_162(war_est, gp) if gp > 0 else 0.0
+            entry = {
+                "rank": ldr["rank"],
+                "player_id": pid,
+                "name": ldr["name"],
+                "team": ldr["team"],
+                "games": gp,
+                "war_current": war_est,
+                "war_pace_162": war_pace,
+            }
+            if is_pitcher:
+                entry["era"] = s.get("era", "-")
+                entry["ip"] = s.get("inningsPitched", "0")
+                entry["strikeouts"] = s.get("strikeOuts", 0)
+                entry["whip"] = s.get("whip", "-")
+            else:
+                entry["avg"] = s.get("avg", "-")
+                entry["ops"] = s.get("ops", "-")
+                entry["hr"] = s.get("homeRuns", 0)
+                entry["rbi"] = s.get("rbi", 0)
+                entry["pa"] = s.get("plateAppearances", 0)
+            enriched.append(entry)
+        # Sort by WAR pace descending
+        enriched.sort(key=lambda x: x.get("war_pace_162", 0), reverse=True)
+        return enriched
+
+    return {
+        "hitters": _enrich(hitter_leaders_raw, False),
+        "pitchers": _enrich(pitcher_leaders_raw, True),
+    }
+
+
+def _build_award_races(war_leaders: dict, standings: list):
+    """Build AL/NL MVP and Cy Young snapshots from WAR pace leaders."""
+    # Map team names to league using standings data
+    team_league = {}
+    for s in (standings or []):
+        team_league[s["team_name"]] = s.get("league", "")
+
+    def _split_by_league(players):
+        al, nl = [], []
+        for p in players:
+            league = team_league.get(p["team"], "")
+            if league == "AL":
+                al.append(p)
+            elif league == "NL":
+                nl.append(p)
+            else:
+                # Guess from team name if standings unavailable
+                al.append(p)  # default fallback
+        return al[:5], nl[:5]
+
+    hitters = war_leaders.get("hitters", [])
+    pitchers = war_leaders.get("pitchers", [])
+
+    al_mvp, nl_mvp = _split_by_league(hitters)
+    al_cy, nl_cy = _split_by_league(pitchers)
+
+    return {
+        "al_mvp": al_mvp,
+        "nl_mvp": nl_mvp,
+        "al_cy_young": al_cy,
+        "nl_cy_young": nl_cy,
+    }
+
+
+@app.route("/api/dashboard/2026")
+def api_dashboard_2026():
+    """Live 2026 season dashboard.
+
+    Returns WAR pace leaders, standings, award race snapshots, and today's
+    schedule — all fetched from the MLB Stats API with 5-minute caching.
+    """
+    try:
+        # Fetch all data (each piece is individually cached for 5 min)
+        standings = _dashboard_cached_get("standings_2026", _fetch_standings_2026)
+        war_leaders = _build_war_leaders()
+        award_races = _build_award_races(war_leaders, standings or [])
+        todays_games = _dashboard_cached_get("schedule_today", _fetch_schedule_today)
+
+        return jsonify({
+            "season": 2026,
+            "war_pace_leaders": war_leaders,
+            "standings": standings or [],
+            "award_races": award_races,
+            "todays_games": todays_games or [],
+            "cached_at": _time.strftime("%Y-%m-%d %H:%M:%S UTC", _time.gmtime()),
+        })
+    except Exception as e:
+        logger.exception("Dashboard 2026 error")
+        return jsonify({"error": str(e)}), 500
+
+
+# ── Trade Value API ────────────────────────────────────────────────────
+
+@app.route("/api/trade-value/<player_name>")
+def api_trade_value(player_name):
+    """Compute trade value (surplus value) for a player.
+
+    Optional query params:
+        package: if 'true', also compute a fair-value trade package
+        budget: max salary budget in millions for trade package (default: unlimited)
+    """
+    try:
+        from baseball_metric.analysis.trade_calculator import (
+            compute_value_by_name, compute_trade_package,
+            load_projections, load_salaries, load_prospects,
+        )
+        projections = load_projections()
+        salaries = load_salaries()
+        prospects = load_prospects()
+
+        # URL-decode spaces (Flask handles %20 but underscores are common too)
+        name = player_name.replace("_", " ")
+
+        val = compute_value_by_name(name, projections, salaries, prospects)
+        if val is None:
+            return jsonify({"error": f"Player '{name}' not found"}), 404
+
+        result = {"player": val.to_dict()}
+
+        # Optionally build a trade package
+        if flask_request.args.get("package", "").lower() in ("true", "1", "yes"):
+            budget_m = flask_request.args.get("budget", None)
+            budget = float(budget_m) * 1e6 if budget_m else float("inf")
+            pkg = compute_trade_package(
+                name, budget, projections, salaries, prospects
+            )
+            if pkg:
+                result["trade_package"] = pkg.to_dict()
+
+        return jsonify(result)
+    except Exception as e:
+        logger.exception("Trade value error")
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == "__main__":
     print("\n  BRAVS Web App")
     print(f"  Engine: {'Rust (bravs_engine)' if USE_RUST else 'Python (fallback)'}")
