@@ -236,9 +236,14 @@ def batch_compute_bravs_v3(player_data: list[dict], n_samples: int = N_SAMPLES, 
     bravs = total_runs / rpw
     bravs_era_std = total_runs / 5.90
 
-    # Position-specific calibration (reoptimized with talent dilution)
+    # Position-specific + era-adjusted calibration
     is_mainly_pitcher = (ip >= pa.clamp(min=1) * 0.3).float()
-    cal_factor = is_mainly_pitcher * 0.625 + (1 - is_mainly_pitcher) * 0.690
+    # Modern pitchers (post-1985) need higher cal because fWAR credits team defense
+    is_modern_pitcher = is_mainly_pitcher * (years >= 1985).float()
+    is_old_pitcher = is_mainly_pitcher * (years < 1985).float()
+    cal_factor = (is_old_pitcher * 0.580 +       # old pitchers overcredited
+                  is_modern_pitcher * 0.680 +     # modern pitchers undercredited
+                  (1 - is_mainly_pitcher) * 0.690) # hitters
     bravs_war_eq = bravs * cal_factor
 
     bravs_samples = total_samples / rpw.unsqueeze(1)
