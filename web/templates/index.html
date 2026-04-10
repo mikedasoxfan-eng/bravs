@@ -643,6 +643,7 @@ nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
   <button class="nav-tab" data-tab="mvp" onclick="switchTab('mvp')">Live MVP</button>
   <button class="nav-tab" data-tab="dynasty" onclick="switchTab('dynasty')">Dynasties</button>
   <button class="nav-tab" data-tab="dream" onclick="switchTab('dream')">Dream Team</button>
+  <button class="nav-tab" data-tab="lineup" onclick="switchTab('lineup')">Lineup Optimizer</button>
 </div>
 
 <!-- === PLAYER TAB === -->
@@ -766,6 +767,29 @@ nav .tagline { font-size: 11px; color: var(--text-4); font-weight: 400; }
   </div>
 </div>
 
+<!-- === LINEUP OPTIMIZER TAB === -->
+<div id="tab-lineup" style="display:none">
+  <div style="max-width:860px;margin:32px auto 0;padding:0 24px;">
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+      <input id="lineup-team" placeholder="Team (NYA, LAN...)" style="font-family:inherit;font-size:13px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);width:140px">
+      <input id="lineup-year" type="number" value="2024" min="2000" max="2025" style="font-family:inherit;font-size:13px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);width:80px">
+      <select id="lineup-pitcher-hand" style="font-family:inherit;font-size:13px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);">
+        <option value="R">vs RHP</option>
+        <option value="L">vs LHP</option>
+      </select>
+      <button onclick="runLineupOptimizer()" style="padding:8px 18px;font-family:inherit;font-size:12px;font-weight:600;background:var(--text);color:var(--surface);border:none;border-radius:6px;cursor:pointer">Optimize Lineup</button>
+      <button onclick="runSeasonOptimizer()" style="padding:8px 18px;font-family:inherit;font-size:12px;font-weight:600;background:transparent;color:var(--text);border:1px solid var(--border);border-radius:6px;cursor:pointer">Season Plan</button>
+    </div>
+    <div class="loading" id="lineup-loading"><span>Optimizing lineup on GPU<span class="dots"></span></span></div>
+    <div id="lineup-results"></div>
+    <div class="empty" id="lineup-empty">
+      <h2>GPU-Accelerated Lineup Optimizer</h2>
+      <p>Select a team and season to find the optimal batting order. Evaluates 30,000+ candidate lineups on GPU, considering hitting value, baserunning, batting order interactions, positional defense, and platoon matchups.</p>
+      <p style="font-size:11px;color:var(--text-3);margin-top:12px">Features: Optimal batting order / Position assignment / Positional surplus analysis / Season-long allocation / Trade impact simulation</p>
+    </div>
+  </div>
+</div>
+
 <script>
 const $ = id => document.getElementById(id);
 let debounceTimer = null;
@@ -783,6 +807,7 @@ function switchTab(tab) {
   $('tab-mvp').style.display = tab === 'mvp' ? 'block' : 'none';
   $('tab-dynasty').style.display = tab === 'dynasty' ? 'block' : 'none';
   $('tab-dream').style.display = tab === 'dream' ? 'block' : 'none';
+  $('tab-lineup').style.display = tab === 'lineup' ? 'block' : 'none';
 }
 
 // --- Search ---
@@ -1491,6 +1516,175 @@ function statCell(val, label) {
 }
 function formatCompName(name) {
   return name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+// === LINEUP OPTIMIZER ===
+async function runLineupOptimizer() {
+  const team = $('lineup-team').value.trim().toUpperCase();
+  const year = parseInt($('lineup-year').value);
+  const hand = $('lineup-pitcher-hand').value;
+  if (!team) { alert('Enter a team abbreviation'); return; }
+  $('lineup-loading').style.display = 'block';
+  $('lineup-empty').style.display = 'none';
+  $('lineup-results').innerHTML = '';
+  try {
+    const res = await fetch('/api/lineup/optimize', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({team, year, pitcher_hand: hand})
+    });
+    const data = await res.json();
+    if (data.error) { $('lineup-results').innerHTML = '<div class="error-card">' + esc(data.error) + '</div>'; return; }
+    renderLineupResults(data);
+  } catch(e) {
+    $('lineup-results').innerHTML = '<div class="error-card">Error: ' + esc(e.message) + '</div>';
+  } finally {
+    $('lineup-loading').style.display = 'none';
+  }
+}
+
+async function runSeasonOptimizer() {
+  const team = $('lineup-team').value.trim().toUpperCase();
+  const year = parseInt($('lineup-year').value);
+  if (!team) { alert('Enter a team abbreviation'); return; }
+  $('lineup-loading').style.display = 'block';
+  $('lineup-empty').style.display = 'none';
+  $('lineup-results').innerHTML = '';
+  try {
+    const res = await fetch('/api/lineup/season', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({team, year})
+    });
+    const data = await res.json();
+    if (data.error) { $('lineup-results').innerHTML = '<div class="error-card">' + esc(data.error) + '</div>'; return; }
+    renderSeasonResults(data);
+  } catch(e) {
+    $('lineup-results').innerHTML = '<div class="error-card">Error: ' + esc(e.message) + '</div>';
+  } finally {
+    $('lineup-loading').style.display = 'none';
+  }
+}
+
+function renderLineupResults(data) {
+  const wrap = $('lineup-results');
+  let html = '';
+
+  // Header
+  html += '<div style="margin-bottom:24px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:8px">';
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">';
+  html += '<div style="font-size:18px;font-weight:700">' + esc(data.team) + ' ' + data.year + ' Optimal Lineup</div>';
+  html += '<div style="font-size:12px;color:var(--text-3)">vs ' + data.pitcher_hand + 'HP | ' + data.roster_size + ' players evaluated</div>';
+  html += '</div>';
+
+  // Positional surplus chart
+  html += '<div style="margin-top:12px"><div style="font-size:11px;font-weight:600;color:var(--text-3);margin-bottom:6px">POSITIONAL SURPLUS (WAR-eq above league avg)</div>';
+  html += '<div style="display:flex;gap:4px;flex-wrap:wrap">';
+  const positions = ['C','1B','2B','3B','SS','LF','CF','RF','DH'];
+  positions.forEach(pos => {
+    const val = (data.positional_surplus || {})[pos] || 0;
+    const color = val > 1 ? 'var(--green)' : val > 0 ? '#888' : val > -1 ? 'var(--orange)' : 'var(--red)';
+    html += '<div style="text-align:center;padding:4px 8px;border-radius:4px;border:1px solid var(--border);min-width:50px">';
+    html += '<div style="font-size:10px;color:var(--text-3)">' + pos + '</div>';
+    html += '<div style="font-size:13px;font-weight:700;color:' + color + '">' + (val > 0 ? '+' : '') + val.toFixed(1) + '</div>';
+    html += '</div>';
+  });
+  html += '</div></div></div>';
+
+  // Top lineups
+  (data.lineups || []).forEach((lineup, idx) => {
+    html += '<div style="margin-bottom:16px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:8px">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">';
+    html += '<div style="font-size:14px;font-weight:700">Lineup #' + lineup.rank + '</div>';
+    html += '<div style="font-size:13px;font-weight:700;color:var(--green)">Expected Value: ' + lineup.expected_value.toFixed(1) + ' <span style="font-weight:400;color:var(--text-3)">\u00b1' + lineup.uncertainty.toFixed(1) + '</span></div>';
+    html += '</div>';
+
+    // Lineup table
+    html += '<table style="width:100%;border-collapse:collapse;font-size:12px">';
+    html += '<tr style="border-bottom:1px solid var(--border);color:var(--text-3);font-size:10px;text-transform:uppercase">';
+    html += '<th style="text-align:left;padding:4px 0">#</th><th style="text-align:left">Name</th><th>Pos</th><th style="text-align:right">Hit</th><th style="text-align:right">BR</th><th style="text-align:right">Fld</th><th style="text-align:right;font-weight:700">WAR-eq</th></tr>';
+    (lineup.players || []).forEach(p => {
+      const warColor = p.bravs_war_eq > 3 ? 'var(--green)' : p.bravs_war_eq > 1 ? 'var(--text)' : 'var(--text-3)';
+      html += '<tr style="border-bottom:1px solid var(--bg)">';
+      html += '<td style="padding:4px 0;font-weight:700;color:var(--text-3)">' + p.slot + '</td>';
+      html += '<td style="font-weight:600">' + esc(p.name) + '</td>';
+      html += '<td style="text-align:center;font-size:10px;background:var(--bg);border-radius:3px;padding:2px 6px">' + p.position + '</td>';
+      html += '<td style="text-align:right;color:' + (p.hitting_runs > 0 ? 'var(--green)' : 'var(--red)') + '">' + (p.hitting_runs > 0 ? '+' : '') + p.hitting_runs.toFixed(1) + '</td>';
+      html += '<td style="text-align:right">' + (p.baserunning_runs > 0 ? '+' : '') + p.baserunning_runs.toFixed(1) + '</td>';
+      html += '<td style="text-align:right">' + (p.fielding_runs > 0 ? '+' : '') + p.fielding_runs.toFixed(1) + '</td>';
+      html += '<td style="text-align:right;font-weight:700;color:' + warColor + '">' + p.bravs_war_eq.toFixed(1) + '</td>';
+      html += '</tr>';
+    });
+    html += '</table></div>';
+  });
+
+  // Full roster
+  if (data.full_roster && data.full_roster.length > 0) {
+    html += '<div style="padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:8px">';
+    html += '<div style="font-size:12px;font-weight:600;color:var(--text-3);margin-bottom:8px">FULL ROSTER (sorted by BRAVS WAR-eq)</div>';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
+    data.full_roster.forEach(p => {
+      const bg = p.bravs_war_eq > 3 ? 'rgba(76,175,80,0.1)' : p.bravs_war_eq < 0 ? 'rgba(244,67,54,0.05)' : 'var(--bg)';
+      html += '<div style="padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:' + bg + ';font-size:11px">';
+      html += '<span style="font-weight:600">' + esc(p.name) + '</span>';
+      html += ' <span style="color:var(--text-3)">' + p.position + '</span>';
+      html += ' <span style="font-weight:700;color:' + (p.bravs_war_eq > 0 ? 'var(--green)' : 'var(--red)') + '">' + p.bravs_war_eq.toFixed(1) + '</span>';
+      html += '</div>';
+    });
+    html += '</div></div>';
+  }
+
+  wrap.innerHTML = html;
+}
+
+function renderSeasonResults(data) {
+  const wrap = $('lineup-results');
+  let html = '';
+
+  // Header with projections
+  html += '<div style="margin-bottom:20px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:8px">';
+  html += '<div style="font-size:18px;font-weight:700;margin-bottom:12px">' + esc(data.team) + ' ' + data.year + ' Season Plan</div>';
+  html += '<div style="display:flex;gap:24px;margin-bottom:12px">';
+  html += metric(data.expected_wins, 'Projected Wins');
+  html += metric(data.total_war_eq, 'Total WAR-eq');
+  html += metric(data.flex_value, 'Flex Value');
+  html += metric(data.roster_size, 'Roster Size');
+  html += '</div></div>';
+
+  // Player allocations by tier
+  const tiers = {star: [], regular: [], bench: []};
+  (data.allocations || []).forEach(a => {
+    (tiers[a.tier] || tiers.bench).push(a);
+  });
+
+  ['star', 'regular', 'bench'].forEach(tier => {
+    if (!tiers[tier].length) return;
+    html += '<div style="margin-bottom:16px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:8px">';
+    html += '<div style="font-size:12px;font-weight:600;color:var(--text-3);margin-bottom:8px;text-transform:uppercase">' + tier + 's (' + tiers[tier].length + ')</div>';
+    html += '<table style="width:100%;border-collapse:collapse;font-size:12px">';
+    html += '<tr style="border-bottom:1px solid var(--border);color:var(--text-3);font-size:10px;text-transform:uppercase">';
+    html += '<th style="text-align:left;padding:4px 0">Name</th><th>Pos</th><th style="text-align:right">Games</th><th style="text-align:right">Rest</th><th style="text-align:right">Proj WAR-eq</th></tr>';
+    tiers[tier].forEach(a => {
+      const pct = (a.games_start / 162 * 100).toFixed(0);
+      html += '<tr style="border-bottom:1px solid var(--bg)">';
+      html += '<td style="padding:4px 0;font-weight:600">' + esc(a.name) + '</td>';
+      html += '<td style="text-align:center;font-size:10px;background:var(--bg);border-radius:3px;padding:2px 6px">' + a.position + '</td>';
+      html += '<td style="text-align:right">' + a.games_start + ' <span style="color:var(--text-3);font-size:10px">(' + pct + '%)</span></td>';
+      html += '<td style="text-align:right;color:var(--text-3)">' + a.games_rest + '</td>';
+      html += '<td style="text-align:right;font-weight:700;color:var(--green)">' + a.war_eq_projected.toFixed(1) + '</td>';
+      html += '</tr>';
+    });
+    html += '</table></div>';
+  });
+
+  // Recommendations
+  if (data.recommendations && data.recommendations.length > 0) {
+    html += '<div style="padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:8px">';
+    html += '<div style="font-size:12px;font-weight:600;color:var(--text-3);margin-bottom:8px">RECOMMENDATIONS</div>';
+    html += '<div style="font-size:12px;white-space:pre-wrap;color:var(--text-2);line-height:1.6">';
+    data.recommendations.forEach(r => { html += esc(r) + '\n'; });
+    html += '</div></div>';
+  }
+
+  wrap.innerHTML = html;
 }
 
 // Auto-load from URL if permalink

@@ -86,15 +86,26 @@ baseball_metric/            # Core Python package (37 modules)
 ├── analysis/                # Sensitivity, stability, projections
 └── visualization/           # Player cards, leaderboards, plots
 
+├── lineup_optimizer/        # GPU-accelerated lineup optimization
+│   ├── optimizer.py         # 30K-candidate GPU search (0.05s/team)
+│   ├── model.py             # LineupValueNetwork + SlotInteractionModel
+│   ├── platoon.py           # Bayesian hierarchical platoon splits
+│   ├── fatigue.py           # Continuous fatigue model (age/position/workload)
+│   ├── series_optimizer.py  # 3-game series joint optimization
+│   ├── season_optimizer.py  # 162-game playing time allocation
+│   ├── trade_impact.py      # Trade simulation with marginal value
+│   ├── backtest.py          # Historical backtesting engine
+│   └── data_builder.py      # Training data from Lahman + BRAVS
+
 bravs_engine/               # Rust engine with PyO3 bindings
-web/                        # Flask web app (6 tabs)
-scripts/                    # 21 analysis scripts
+web/                        # Flask web app (7 tabs)
+scripts/                    # 22 analysis scripts
 data/                       # Lahman CSVs (128K batting, 57K pitching, 174K fielding)
 ```
 
 ## Web App
 
-6 tabs: Player search, Award Races, Team Roster, Live MVP, Dynasties, Dream Team.
+7 tabs: Player search, Award Races, Team Roster, Live MVP, Dynasties, Dream Team, Lineup Optimizer.
 
 - Search any player in MLB history, instant results from pre-computed CSV data
 - Player headshots and team logos from MLB CDN
@@ -102,6 +113,30 @@ data/                       # Lahman CSVs (128K batting, 57K pitching, 174K fiel
 - "What If" position swap mode
 - Side-by-side comparison (up to 6 players)
 - Award race viewer for every MVP and Cy Young since 1956
+
+## Lineup Optimizer
+
+GPU-accelerated lineup optimization system validated across 120 team-seasons (2022-2025):
+
+| Metric | Value |
+|--------|-------|
+| Lineup value vs actual runs | r = 0.905 |
+| Expected wins vs actual wins | r = 0.765 |
+| Candidates evaluated per team | 30,000 |
+| Time per team (RTX 5060 Ti) | 0.05s |
+| Full backtest (120 teams) | 6.2s |
+
+Features:
+- **Single-game**: Optimal 9-man lineup + batting order from 30K GPU-evaluated candidates
+- **Series-level**: Joint 3-game optimization with fatigue, platoon, and rest management
+- **Season-long**: 162-game playing time allocation with projected wins
+- **Trade simulator**: Marginal lineup value of acquisitions/trades
+- **Bayesian platoon splits**: Hierarchical shrinkage for L/R matchup effects
+- **Fatigue model**: Age/position/workload-dependent performance degradation
+
+Correctly identifies 2023 Braves as the best lineup (411.7), 2024 White Sox as the worst (38.0), and all recent WS champions rank in the top tier.
+
+See `docs/lineup-optimizer-methodology.md` for full technical details and `docs/lineup-optimizer-findings.md` for analysis.
 
 ## GPU Engine
 
@@ -133,7 +168,7 @@ The MLB Stats API is used only for 2026 (current in-progress season).
 
 ## Analyses
 
-21 analysis scripts covering:
+22 analysis scripts covering:
 
 - Every MVP and Cy Young race 1956-2025 (265 races, 42.6% voter agreement)
 - Active player HOF check (12 locks: Kershaw, Trout, Verlander, Scherzer, Freeman, Goldschmidt, McCutchen, Betts, Arenado, Altuve, Sale, Harper)
@@ -147,6 +182,7 @@ The MLB Stats API is used only for 2026 (current in-progress season).
 - Player similarity finder
 - Trade analyzer
 - "What if they stayed healthy" projections
+- Lineup optimizer backtesting (120 team-seasons, 2022-2025)
 
 ## Metric Evolution
 

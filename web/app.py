@@ -1648,6 +1648,233 @@ def dream_team():
     })
 
 
+# ═══════════════════════════════════════════════════════════════════
+#  LINEUP OPTIMIZER ENDPOINTS
+# ═══════════════════════════════════════════════════════════════════
+
+@app.route("/api/lineup/optimize", methods=["POST"])
+def api_lineup_optimize():
+    """Optimize a lineup for a given team-season.
+
+    POST body: {"team": "NYA", "year": 2024, "pitcher_hand": "R"}
+    Returns: optimal lineup with batting order, positions, expected value.
+    """
+    try:
+        from baseball_metric.lineup_optimizer.optimizer import optimize_lineup, select_starters
+        from baseball_metric.lineup_optimizer.season_optimizer import compute_positional_surplus
+
+        data = flask_request.get_json(force=True)
+        team = data.get("team", "NYA")
+        year = int(data.get("year", 2024))
+        pitcher_hand = data.get("pitcher_hand", "R")
+
+        seasons, _ = _load_precomputed()
+        team_data = seasons[(seasons.yearID == year) & (seasons.team == team) & (seasons.PA >= 50)]
+
+        if len(team_data) < 9:
+            return jsonify({"error": f"Not enough players for {team} {year} (found {len(team_data)})"}), 400
+
+        roster = []
+        for _, r in team_data.iterrows():
+            roster.append({
+                "name": r.get("name", "?"),
+                "playerID": r.playerID,
+                "position": r.position,
+                "hitting_runs": float(r.hitting_runs),
+                "baserunning_runs": float(r.baserunning_runs),
+                "fielding_runs": float(r.fielding_runs),
+                "positional_runs": float(r.get("positional_runs", 0)),
+                "aqi_runs": float(r.get("aqi_runs", 0)),
+                "HR": int(r.HR),
+                "SB": int(r.SB),
+                "PA": int(r.PA),
+                "G": int(r.G),
+                "bravs_war_eq": float(r.bravs_war_eq),
+            })
+
+        # Run optimizer
+        results = optimize_lineup(
+            roster,
+            opposing_pitcher={"hand": pitcher_hand},
+            n_candidates=30000,
+            top_n=5,
+        )
+
+        if not results:
+            return jsonify({"error": "Optimization failed"}), 500
+
+        # Positional surplus
+        surplus = compute_positional_surplus(roster)
+
+        # Format results
+        lineups = []
+        for i, cfg in enumerate(results):
+            players = []
+            for slot, (player, pos) in enumerate(zip(cfg.players, cfg.positions)):
+                players.append({
+                    "slot": slot + 1,
+                    "name": player.get("name", "?"),
+                    "position": pos,
+                    "hitting_runs": round(player.get("hitting_runs", 0), 1),
+                    "baserunning_runs": round(player.get("baserunning_runs", 0), 1),
+                    "fielding_runs": round(player.get("fielding_runs", 0), 1),
+                    "bravs_war_eq": round(player.get("bravs_war_eq", 0), 1),
+                })
+            lineups.append({
+                "rank": i + 1,
+                "expected_value": round(cfg.expected_runs, 1),
+                "uncertainty": round(cfg.expected_runs_std, 1),
+                "players": players,
+            })
+
+        # Roster summary
+        roster_sorted = sorted(roster, key=lambda x: x.get("bravs_war_eq", 0), reverse=True)
+
+        return jsonify({
+            "team": team,
+            "year": year,
+            "pitcher_hand": pitcher_hand,
+            "roster_size": len(roster),
+            "lineups": lineups,
+            "positional_surplus": {k: round(v, 1) for k, v in surplus.items()},
+            "full_roster": [{
+                "name": p["name"],
+                "position": p["position"],
+                "bravs_war_eq": round(p["bravs_war_eq"], 1),
+                "hitting_runs": round(p["hitting_runs"], 1),
+                "PA": p["PA"],
+            } for p in roster_sorted[:20]],
+        })
+
+    except Exception as e:
+        logger.exception("Lineup optimize error")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/lineup/trade", methods=["POST"])
+def api_lineup_trade():
+    """Simulate a trade's impact on lineup optimization.
+
+    POST body: {
+        "team": "NYA", "year": 2024,
+        "players_out": ["playerID1"],
+        "players_in": [{"name": "...", "playerID": "...", "position": "SS",
+                        "hitting_runs": 25, "bravs_war_eq": 5.0, ...}]
+    }
+    """
+    try:
+        from baseball_metric.lineup_optimizer.trade_impact import simulate_trade
+
+        data = flask_request.get_json(force=True)
+        team = data.get("team", "NYA")
+        year = int(data.get("year", 2024))
+        out_ids = set(data.get("players_out", []))
+        players_in = data.get("players_in", [])
+
+        seasons, _ = _load_precomputed()
+        team_data = seasons[(seasons.yearID == year) & (seasons.team == team) & (seasons.PA >= 50)]
+
+        roster = []
+        for _, r in team_data.iterrows():
+            roster.append({
+                "name": r.get("name", "?"),
+                "playerID": r.playerID,
+                "position": r.position,
+                "hitting_runs": float(r.hitting_runs),
+                "baserunning_runs": float(r.baserunning_runs),
+                "fielding_runs": float(r.fielding_runs),
+                "positional_runs": float(r.get("positional_runs", 0)),
+                "aqi_runs": float(r.get("aqi_runs", 0)),
+                "HR": int(r.HR),
+                "SB": int(r.SB),
+                "PA": int(r.PA),
+                "bravs_war_eq": float(r.bravs_war_eq),
+            })
+
+        players_out = [p for p in roster if p["playerID"] in out_ids]
+
+        result = simulate_trade(roster, players_out, players_in)
+
+        return jsonify({
+            "team": team,
+            "year": year,
+            "before_value": result["before_value"],
+            "after_value": result["after_value"],
+            "marginal_impact": result["marginal_impact"],
+            "positional_changes": result["positional_changes"],
+            "explanation": result["explanation"],
+        })
+
+    except Exception as e:
+        logger.exception("Trade simulation error")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/lineup/season", methods=["POST"])
+def api_lineup_season():
+    """Season-long roster optimization.
+
+    POST body: {"team": "NYA", "year": 2024}
+    Returns: per-player game allocation, projected wins, recommendations.
+    """
+    try:
+        from baseball_metric.lineup_optimizer.season_optimizer import optimize_season
+
+        data = flask_request.get_json(force=True)
+        team = data.get("team", "NYA")
+        year = int(data.get("year", 2024))
+
+        seasons, _ = _load_precomputed()
+        team_data = seasons[(seasons.yearID == year) & (seasons.team == team) & (seasons.PA >= 50)]
+
+        roster = []
+        for _, r in team_data.iterrows():
+            roster.append({
+                "name": r.get("name", "?"),
+                "playerID": r.playerID,
+                "position": r.position,
+                "hitting_runs": float(r.hitting_runs),
+                "baserunning_runs": float(r.baserunning_runs),
+                "fielding_runs": float(r.fielding_runs),
+                "positional_runs": float(r.get("positional_runs", 0)),
+                "aqi_runs": float(r.get("aqi_runs", 0)),
+                "HR": int(r.HR),
+                "SB": int(r.SB),
+                "PA": int(r.PA),
+                "G": int(r.G),
+                "bravs_war_eq": float(r.bravs_war_eq),
+            })
+
+        result = optimize_season(roster)
+
+        return jsonify({
+            "team": team,
+            "year": year,
+            "roster_size": len(roster),
+            "total_war_eq": result["total_war_eq"],
+            "expected_wins": result["expected_wins"],
+            "flex_value": result["flex_value"],
+            "allocations": result["allocations"],
+            "recommendations": result["recommendations"],
+        })
+
+    except Exception as e:
+        logger.exception("Season optimizer error")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/lineup/teams/<int:year>")
+def api_lineup_teams(year):
+    """Get available teams for a given year."""
+    try:
+        seasons, _ = _load_precomputed()
+        teams_data = seasons[seasons.yearID == year]
+        teams = sorted(teams_data.team.dropna().unique().tolist())
+        return jsonify({"year": year, "teams": teams})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == "__main__":
     print("\n  BRAVS Web App")
     print(f"  Engine: {'Rust (bravs_engine)' if USE_RUST else 'Python (fallback)'}")

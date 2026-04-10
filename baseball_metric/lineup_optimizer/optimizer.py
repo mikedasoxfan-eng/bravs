@@ -233,24 +233,54 @@ def optimize_lineup(
     opposing_pitcher: dict | None = None,
     n_candidates: int = 10000,
     top_n: int = 5,
+    fatigue_model: object | None = None,
+    platoon_model: object | None = None,
+    year: int = 2025,
 ) -> list[LineupConfig]:
     """Full lineup optimization for a single game.
 
     1. Select best 9 starters from roster
     2. Assign optimal positions
-    3. Search batting order space on GPU
-    4. Return top lineups with explanations
+    3. Apply platoon and fatigue adjustments (if models provided)
+    4. Search batting order space on GPU
+    5. Return top lineups with explanations
 
     Args:
         roster: list of player dicts with BRAVS components
         opposing_pitcher: pitcher info (handedness, pitch mix) — optional
         n_candidates: number of batting orders to evaluate
         top_n: number of top lineups to return
+        fatigue_model: optional FatigueModel instance for workload adjustment
+        platoon_model: optional PlatoonModel instance for L/R splits
+        year: season year (for platoon lookups)
 
     Returns:
         List of LineupConfig objects, sorted by expected runs
     """
     t0 = time.perf_counter()
+
+    # Step 0: Apply platoon adjustments if model and pitcher info available
+    if platoon_model is not None and opposing_pitcher is not None:
+        pitcher_hand = opposing_pitcher.get("hand", "R")
+        for p in roster:
+            pid = p.get("playerID", "")
+            if pid:
+                adj = platoon_model.get_platoon_adjusted_value(pid, year, pitcher_hand)
+                if adj != 0:
+                    p["hitting_runs"] = adj
+
+    # Step 0b: Apply fatigue adjustments if model provided
+    if fatigue_model is not None:
+        for p in roster:
+            g = int(p.get("G", 0) or 0)
+            g7 = float(p.get("games_last_7", min(g / 162.0 * 7.0, 7.0)))
+            g14 = float(p.get("games_last_14", min(g / 162.0 * 14.0, 14.0)))
+            g30 = float(p.get("games_last_30", min(g / 162.0 * 30.0, 30.0)))
+            age = float(p.get("age", 28))
+            pos = p.get("position", "DH")
+            factor = float(fatigue_model.compute_fatigue_factor(g7, g14, g30, age, pos))
+            p["hitting_runs"] = p.get("hitting_runs", 0) * factor
+            p["_fatigue_factor"] = factor
 
     # Step 1: Select starters
     starters = select_starters(roster, 9)
