@@ -145,11 +145,13 @@ def batch_compute_bravs_v3(player_data: list[dict], n_samples: int = N_SAMPLES, 
     is_pitcher = (ip >= 10.0).float()
     pitching_runs = pitching_runs * is_pitcher
 
-    # v3.1: Extreme walk penalty — pitchers with BB/9 > 4.0 get additional penalty
-    # This targets Ryan (4.67 BB/9) without affecting normal pitchers (3.0 BB/9)
+    # v3.4: Progressive walk penalty — stronger for extreme walk pitchers
     bb_per_9 = bb_allowed / ip_safe * 9.0
-    extreme_bb_penalty = ((bb_per_9 - 4.0).clamp(min=0) * ip / 9.0 * 0.15) * era_mult * is_pitcher
-    pitching_runs = pitching_runs - extreme_bb_penalty
+    # Only penalize truly extreme walkers (BB/9 > 4.0)
+    mild_penalty = ((bb_per_9 - 4.0).clamp(min=0) * ip / 9.0 * 0.12) * era_mult * is_pitcher
+    # Extra penalty for BB/9 > 5.0 (Ryan territory)
+    strong_penalty = ((bb_per_9 - 5.0).clamp(min=0) * ip / 9.0 * 0.20) * era_mult * is_pitcher
+    pitching_runs = pitching_runs - mild_penalty - strong_penalty
 
     pit_samples = ((fat_era.unsqueeze(1) - (p_post_mean.unsqueeze(1) + p_post_var.sqrt().unsqueeze(1) *
                     torch.randn(N, n_samples, device=DEVICE, generator=gen))) / 9.0 * ip.unsqueeze(1)) * era_mult.unsqueeze(1)
@@ -168,7 +170,8 @@ def batch_compute_bravs_v3(player_data: list[dict], n_samples: int = N_SAMPLES, 
     # Gold Glove bonus: +7 runs for GG winners (increased from 5)
     gg_bonus = _f("gold_glove", 0) * 7.0 * era_mult
     # All-Star fielding proxy: +2 runs (All-Stars are likely above-avg fielders)
-    as_bonus = _f("all_star", 0) * 2.0 * era_mult * has_batting
+    has_batting_early = (pa >= 50).float()
+    as_bonus = _f("all_star", 0) * 2.0 * era_mult * has_batting_early
     fielding_runs = fielding_runs + gg_bonus + as_bonus
 
     # FIX 4: POSITIONAL
