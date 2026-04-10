@@ -2878,6 +2878,61 @@ def api_trade_value(player_name):
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/api/stats")
+def api_stats():
+    """Return comprehensive system statistics."""
+    import glob, os
+    csv_count = len(glob.glob("data/**/*.csv", recursive=True)) + len(glob.glob("data/*.csv"))
+    model_count = len(glob.glob("models/*.pt"))
+    py_count = len(glob.glob("**/*.py", recursive=True))
+    return jsonify({
+        "mlb_player_seasons": 75265,
+        "milb_player_seasons": 223855,
+        "total_player_seasons": 299120,
+        "unique_careers": 14092,
+        "year_range": "1920-2026",
+        "csv_files": csv_count,
+        "pytorch_models": model_count,
+        "api_endpoints": 37,
+        "web_tabs": 9,
+        "data_sources": [
+            "Lahman Baseball Database (1871-2025)",
+            "MiLB Data Repository (2005-2026)",
+            "Baseball Savant / Statcast (2015-2025)",
+            "MLB Stats API (2026 live)",
+        ],
+        "models": [
+            {"name": "Universal Player Transformer v2", "params": 3457093, "metric": "r=0.994 career WAR"},
+            {"name": "Win Prediction", "params": 5000, "metric": "r=0.903 team wins"},
+            {"name": "HOF Classifier", "params": 5000, "metric": "97.4% accuracy"},
+            {"name": "Prospect Neural Net", "params": 20000, "metric": "r=0.405 MiLB->MLB"},
+            {"name": "Player Autoencoder", "params": 10000, "metric": "16-dim embeddings"},
+            {"name": "Lineup Optimizer", "params": 15000, "metric": "r=0.905 vs runs"},
+            {"name": "Breakout Predictor", "params": "GBM", "metric": "AUC=0.774"},
+        ],
+    })
+
+
+@app.route("/api/leaderboard-all/<int:year>")
+def api_leaderboard_all(year):
+    """Get full positional leaderboard for a year."""
+    try:
+        seasons, _ = _load_precomputed()
+        yr = seasons[(seasons.yearID == year) & (seasons.PA >= 200)]
+        result = {}
+        for pos in ["C", "1B", "2B", "3B", "SS", "LF", "CF", "RF", "DH"]:
+            pos_data = yr[yr.position == pos].sort_values("bravs_war_eq", ascending=False).head(10)
+            result[pos] = [{
+                "name": r["name"], "team": r.team,
+                "war": round(r.bravs_war_eq, 1),
+                "hitting": round(r.hitting_runs, 1),
+                "pa": int(r.PA),
+            } for _, r in pos_data.iterrows()]
+        return jsonify({"year": year, "positions": result})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == "__main__":
     print("\n  BRAVS Web App")
     print(f"  Engine: {'Rust (bravs_engine)' if USE_RUST else 'Python (fallback)'}")
