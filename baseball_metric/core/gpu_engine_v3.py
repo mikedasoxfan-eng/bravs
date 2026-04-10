@@ -134,7 +134,7 @@ def batch_compute_bravs_v3(player_data: list[dict], n_samples: int = N_SAMPLES, 
     league_era = rpg * 0.92
     fip_c = league_era - 4.20 + 3.10
     ip_safe = ip.clamp(min=0.1)
-    # v3: BB coefficient 3.5 instead of 3.0 (Ryan's walk rate matters more)
+    # v3: BB coefficient 3.5 instead of 3.0, K coefficient stays at 2.0
     obs_fip = (13.0 * hr_allowed + 3.5 * (bb_allowed + hbp_allowed) - 2.0 * k_pitch) / ip_safe + fip_c
     obs_fip_adj = obs_fip / park_factor
 
