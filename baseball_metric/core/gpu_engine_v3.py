@@ -132,22 +132,29 @@ def batch_compute_bravs_v3(player_data: list[dict], n_samples: int = N_SAMPLES, 
     is_pitcher = (ip >= 10.0).float()
     pitching_runs = pitching_runs * is_pitcher
 
+    # v3.1: Extreme walk penalty — pitchers with BB/9 > 4.0 get additional penalty
+    # This targets Ryan (4.67 BB/9) without affecting normal pitchers (3.0 BB/9)
+    bb_per_9 = bb_allowed / ip_safe * 9.0
+    extreme_bb_penalty = ((bb_per_9 - 4.0).clamp(min=0) * ip / 9.0 * 0.15) * era_mult * is_pitcher
+    pitching_runs = pitching_runs - extreme_bb_penalty
+
     pit_samples = ((fat_era.unsqueeze(1) - (p_post_mean.unsqueeze(1) + p_post_var.sqrt().unsqueeze(1) *
                     torch.randn(N, n_samples, device=DEVICE, generator=gen))) / 9.0 * ip.unsqueeze(1)) * era_mult.unsqueeze(1)
     pit_samples = pit_samples * is_pitcher.unsqueeze(1)
 
-    # FIX 3: BASERUNNING — removed triple proxy (inflated Ruth, Musial)
+    # v3.1: BASERUNNING — proper SB/CS run values + GIDP
     sb_runs = sb * 0.175 + cs * (-0.44)
     gidp_exp = pa * 0.15 * 0.11
     gidp_runs = (gidp_exp - gidp) * 0.37
-    # NO triple-rate proxy — just SB/CS and GIDP
     baserunning_runs = (sb_runs + gidp_runs) * era_mult
 
-    # FIX 5: FIELDING — tighter shrinkage, position caps
+    # FIX 5: FIELDING — tighter shrinkage, position caps + Gold Glove bonus
     fielding_runs = (fielding_rf * pos_fld_val + fielding_e * 0.4) * era_mult
     fielding_runs = fielding_runs * 0.45  # tighter shrinkage
-    # Cap fielding at ±15 runs per season to prevent outliers
     fielding_runs = fielding_runs.clamp(-15.0, 15.0)
+    # Gold Glove bonus: +5 runs for GG winners in that season
+    gg_bonus = _f("gold_glove", 0) * 5.0 * era_mult
+    fielding_runs = fielding_runs + gg_bonus
 
     # FIX 4: POSITIONAL
     games_frac = games / 162.0

@@ -1,30 +1,24 @@
-Loading BRAVS data...
-  69,956 player-seasons loaded
-Loading actual award winners...
-  211 MVP winners, 129 Cy Young winners
-Running all award races 1956-2025...
-  265 total races evaluated
 ==========================================================================================
   BRAVS AWARD RACE ANALYSIS: EVERY MVP & CY YOUNG, 1956-2025
 ==========================================================================================
 
-  OVERALL AGREEMENT: 107/265 (40.4%)
-    MVP:      48/138 (34.8%)
-    Cy Young: 59/127 (46.5%)
+  OVERALL AGREEMENT: 110/265 (41.5%)
+    MVP:      52/138 (37.7%)
+    Cy Young: 58/127 (45.7%)
 
 ------------------------------------------------------------------------------------------
   AGREEMENT BY DECADE
 ------------------------------------------------------------------------------------------
     1950s      2/12   ( 16.7%)  ######
-    1960s     14/33   ( 42.4%)  ################
-    1970s     17/40   ( 42.5%)  #################
+    1960s     13/33   ( 39.4%)  ###############
+    1970s     18/40   ( 45.0%)  ##################
     1980s     15/40   ( 37.5%)  ###############
-    1990s     17/40   ( 42.5%)  #################
-    2000s     17/40   ( 42.5%)  #################
-    2010s     13/40   ( 32.5%)  #############
-    2020s     12/20   ( 60.0%)  ########################
+    1990s     18/40   ( 45.0%)  ##################
+    2000s     16/40   ( 40.0%)  ################
+    2010s     14/40   ( 35.0%)  ##############
+    2020s     14/20   ( 70.0%)  ############################
 
-  Best decade:  2020s (60.0% agreement)
+  Best decade:  2020s (70.0% agreement)
   Worst decade: 1950s (16.7% agreement)
 
 ------------------------------------------------------------------------------------------
@@ -32,1138 +26,1134 @@ Running all award races 1956-2025...
 ------------------------------------------------------------------------------------------
   Year  Lg  Award BRAVS Pick               WAReq  Actual Winner        WAReq    Gap  Rank
   --------------------------------------------------------------------------------------
-  1979  NL  MVP   Garry Templeton            9.4  stargwi01              1.9   +7.5   #58
-  1967  NL  CY    Jim Bunning               10.9  mccormi03              4.2   +6.8   #32
-  1990  AL  CY    Roger Clemens              8.8  welchbo01              2.8   +6.0   #36
-  1974  NL  MVP   Mike Schmidt               9.8  garvest01              3.9   +5.8   #25
-  1976  AL  MVP   George Brett               9.2  munsoth01              3.5   +5.7   #21
-  2021  AL  CY    Shohei Ohtani             10.1  rayro02                4.5   +5.6    #7
-  1957  NL  MVP   Willie Mays               13.1  Hank Aaron             7.7   +5.4    #4
-  1973  AL  CY    Bert Blyleven             11.5  palmeji01              6.1   +5.4    #8
-  1979  AL  MVP   George Brett              11.9  baylodo01              6.6   +5.3   #10
-  1996  AL  MVP   Chuck Knoblauch           10.6  gonzaju03              5.4   +5.2   #20
-  1979  NL  CY    J. R. Richard             10.3  Bruce Sutter           5.3   +5.0    #3
-  1964  NL  MVP   Ron Santo                 12.6  Ken Boyer              7.6   +5.0    #5
-  2006  AL  MVP   Grady Sizemore             9.9  morneju01              4.9   +5.0   #21
-  1977  AL  CY    Dennis Leonard             9.1  lylesp01               4.1   +5.0   #14
-  1969  NL  CY    Bob Gibson                10.9  seaveto01              6.0   +5.0   #14
-  2022  AL  CY    Shohei Ohtani             11.5  verlaju01              6.6   +4.9    #4
-  1960  NL  MVP   Willie Mays                9.7  groatdi01              4.9   +4.9   #11
-  1988  NL  MVP   Andy Van Slyke             9.1  gibsoki01              4.3   +4.8   #13
-  1987  NL  MVP   Tony Gwynn                 9.7  dawsoan01              4.9   +4.8   #22
-  2017  NL  MVP   Charlie Blackmon          11.5  Giancarlo Stanton      6.7   +4.8    #5
-  1967  NL  MVP   Ron Santo                  9.7  cepedor01              4.9   +4.8   #20
-  1961  AL  MVP   Mickey Mantle             13.5  Roger Maris            8.8   +4.8    #3
-  1987  NL  CY    Nolan Ryan                 6.8  bedrost01              2.0   +4.8   N/A
-  1999  AL  MVP   Derek Jeter                9.6  rodriiv01              4.9   +4.7   #24
-  1985  AL  MVP   Rickey Henderson          10.4  mattido01              5.8   +4.6   #10
-  1998  NL  CY    Kevin Brown                9.1  glavito02              4.9   +4.2    #6
-  2023  AL  CY    Shohei Ohtani             10.0  Gerrit Cole            6.0   +4.1    #3
-  1958  AL  CY    Billy O'Dell               5.6  turlebo01              1.7   +4.0   #29
-  1984  AL  MVP   Cal Ripken                 9.7  hernawi01              5.7   +4.0   N/A
-  1989  NL  CY    Orel Hershiser             7.7  davisma01              3.8   +3.9   N/A
-  1987  AL  MVP   Wade Boggs                10.2  bellge02               6.4   +3.8   #14
-  1973  NL  MVP   Darrell Evans             11.1  Pete Rose              7.3   +3.8    #5
-  2002  AL  MVP   Alex Rodriguez             9.2  tejadmi01              5.5   +3.8   #11
-  1956  NL  MVP   Hank Aaron                 7.8  newcodo01              4.2   +3.7   N/A
-  1958  AL  MVP   Mickey Mantle              9.3  Jackie Jensen          5.8   +3.5    #5
-  1973  AL  MVP   Rod Carew                  9.0  jacksre01              5.5   +3.4    #8
-  1982  AL  CY    Don Sutton                 6.1  vuckope01              2.7   +3.4   #32
-  2013  AL  MVP   Mike Trout                12.3  Miguel Cabrera         8.9   +3.4    #2
-  2001  AL  MVP   Roberto Alomar             9.7  suzukic01              6.4   +3.4    #6
-  1959  AL  CY    Camilo Pascual             7.5  wynnea01               4.2   +3.3    #4
-  1992  AL  CY    Roger Clemens              7.7  eckerde01              4.5   +3.2   N/A
-  2002  AL  CY    Pedro Martinez             6.9  zitoba01               3.6   +3.2    #9
-  1980  AL  CY    Mike Norris                6.7  stonest01              3.5   +3.2   #24
-  1970  AL  MVP   Carl Yastrzemski           8.2  powelbo01              5.0   +3.1   #13
-  1962  NL  MVP   Willie Mays               11.1  Maury Wills            8.0   +3.1    #5
-  2004  NL  CY    Randy Johnson              8.2  clemero02              5.1   +3.0    #5
-  1966  NL  MVP   Ron Santo                 11.4  Roberto Clemente       8.4   +3.0    #5
-  1988  AL  CY    Roger Clemens             10.1  violafr01              7.1   +3.0    #4
-  2007  AL  MVP   Curtis Granderson         12.2  Alex Rodriguez         9.3   +2.9    #2
-  2005  AL  CY    Johan Santana              7.0  colonba01              4.2   +2.9    #4
-  1995  AL  MVP   Tim Salmon                 7.8  vaughmo01              4.9   +2.8   #15
-  1977  NL  MVP   Mike Schmidt              11.0  George Foster          8.2   +2.8    #3
-  1976  AL  CY    Vida Blue                  9.7  palmeji01              6.9   +2.8    #6
-  1990  NL  CY    Dwight Gooden              8.2  drabedo01              5.5   +2.8    #7
-  1974  AL  MVP   Rod Carew                  7.7  Jeff Burroughs         5.0   +2.7    #5
-  1992  AL  MVP   Frank Thomas               7.2  eckerde01              4.5   +2.7   N/A
-  1981  AL  MVP   Dwight Evans               6.2  fingero01              3.5   +2.7   N/A
-  1998  NL  MVP   Mark McGwire               9.2  sosasa01               6.5   +2.7   #15
-  1988  AL  MVP   Wade Boggs                 9.4  cansejo01              6.7   +2.7    #6
-  1998  AL  MVP   Alex Rodriguez             8.3  gonzaju03              5.8   +2.6   #13
-  2012  AL  MVP   Mike Trout                10.0  Miguel Cabrera         7.5   +2.5    #2
-  1986  NL  MVP   Tim Raines                 8.6  Mike Schmidt           6.1   +2.5    #5
-  1996  NL  MVP   Lance Johnson              9.5  caminke01              7.1   +2.4    #9
-  1978  NL  CY    Phil Niekro                9.3  perryga01              6.9   +2.4    #4
-  1984  NL  CY    Dwight Gooden              9.1  Rick Sutcliffe         6.7   +2.4    #3
-  2008  NL  MVP   Jose Reyes                 9.3  pujolal01              7.0   +2.3    #6
-  1969  AL  CY    Sam McDowell               9.4  mclaide01              7.1   +2.3    #4
-  1959  AL  MVP   Mickey Mantle              7.9  foxne01                5.7   +2.2    #8
-  1974  AL  CY    Bert Blyleven              9.7  hunteca01              7.5   +2.2    #5
-  1960  AL  MVP   Mickey Mantle              9.1  Roger Maris            7.0   +2.2    #2
-  1972  NL  MVP   Cesar Cedeno               8.4  Johnny Bench           6.3   +2.2    #5
-  1969  NL  MVP   Pete Rose                  9.6  mccovwi01              7.5   +2.1    #6
-  1976  NL  CY    Tom Seaver                 8.4  jonesra01              6.3   +2.1    #6
-  2003  NL  MVP   Albert Pujols              8.9  bondsba01              6.8   +2.1    #6
-  1983  AL  MVP   Wade Boggs                 9.6  Cal Ripken             7.5   +2.0    #3
-  2011  AL  MVP   Jacoby Ellsbury            9.6  verlaju01              7.7   +2.0   N/A
-  1993  AL  MVP   Ken Griffey                8.1  thomafr04              6.2   +1.9    #8
-  1983  NL  CY    Steve Carlton              8.4  John Denny             6.6   +1.9    #2
-  1960  NL  CY    Bob Friend                 7.5  lawve01                5.6   +1.9    #6
-  1964  AL  MVP   Tony Oliva                 9.0  Brooks Robinson        7.2   +1.8    #5
-  1967  AL  CY    Jim Kaat                   9.7  lonboji01              7.9   +1.8    #5
-  1993  AL  CY    Randy Johnson              6.9  mcdowja01              5.1   +1.8    #4
-  1959  NL  MVP   Eddie Mathews             10.5  Ernie Banks            8.8   +1.7    #5
-  2023  NL  CY    Logan Webb                 6.2  snellbl01              4.5   +1.6    #6
-  1988  NL  CY    Dwight Gooden              7.7  hershor01              6.1   +1.6    #6
-  2021  NL  MVP   Bryan Reynolds             8.7  Bryce Harper           7.0   +1.6    #3
-  2015  AL  MVP   Mike Trout                10.1  Josh Donaldson         8.6   +1.6    #2
-  2018  AL  CY    Justin Verlander           7.2  snellbl01              5.6   +1.6    #8
-  2019  NL  MVP   Ketel Marte                8.6  Cody Bellinger         7.1   +1.5    #5
-  2008  AL  MVP   Curtis Granderson          7.8  Dustin Pedroia         6.3   +1.5    #5
-  1958  NL  MVP   Willie Mays               11.9  Ernie Banks           10.4   +1.5    #3
-  2006  NL  MVP   Jose Reyes                 8.7  howarry01              7.2   +1.5    #7
-  1956  NL  CY    Bob Friend                 5.6  newcodo01              4.2   +1.5    #4
-  1981  AL  CY    Len Barker                 4.9  fingero01              3.5   +1.4   N/A
-  1977  NL  CY    Steve Rogers               7.6  carltst01              6.2   +1.4    #5
-  2012  NL  CY    Clayton Kershaw            7.2  R. A. Dickey           5.8   +1.4    #4
-  2012  AL  CY    Felix Hernandez            7.7  David Price            6.4   +1.3    #3
-  2016  NL  CY    Noah Syndergaard           7.2  scherma01              5.9   +1.3    #6
-  1961  NL  MVP   Hank Aaron                 9.6  robinfr02              8.4   +1.3    #6
-  2004  AL  MVP   Carlos Guillen             7.6  guerrvl01              6.3   +1.3    #8
-  1994  AL  CY    Randy Johnson              4.5  coneda01               3.2   +1.3    #6
-  2019  AL  CY    Gerrit Cole                6.9  verlaju01              5.7   +1.2    #4
-  2012  NL  MVP   Andrew McCutchen           8.7  Buster Posey           7.5   +1.2    #3
-  2001  AL  CY    Mike Mussina               6.4  clemero02              5.2   +1.2    #4
-  1970  NL  MVP   Joe Torre                  9.2  Johnny Bench           8.0   +1.1    #5
-  1989  NL  MVP   Will Clark                 8.3  Kevin Mitchell         7.2   +1.1    #2
-  1986  AL  MVP   Kirby Puckett              8.5  clemero02              7.4   +1.1   N/A
-  2003  NL  CY    Mark Prior                 6.9  gagneer01              5.8   +1.1   N/A
-  2002  NL  CY    Curt Schilling             8.1  Randy Johnson          7.1   +1.0    #2
-  1996  AL  CY    Roger Clemens              5.7  Pat Hentgen            4.6   +1.0    #3
-  1957  NL  CY    Curt Simmons               4.7  spahnwa01              3.7   +1.0    #7
-  1992  NL  MVP   Andy Van Slyke             9.0  Barry Bonds            8.0   +1.0    #2
-  2010  AL  MVP   Jose Bautista              8.4  Josh Hamilton          7.4   +0.9    #3
-  2009  NL  MVP   Chase Utley                8.5  Albert Pujols          7.5   +0.9    #5
-  2013  NL  MVP   Matt Carpenter             8.8  Andrew McCutchen       7.9   +0.9    #3
-  2015  NL  CY    Clayton Kershaw           10.1  Jake Arrieta           9.3   +0.9    #2
-  2022  AL  MVP   Shohei Ohtani             11.5  Aaron Judge           10.6   +0.9    #2
-  1990  NL  MVP   Brett Butler               8.1  Barry Bonds            7.2   +0.9    #4
-  1993  NL  MVP   Lenny Dykstra              9.4  Barry Bonds            8.6   +0.8    #2
-  1963  AL  MVP   Bob Allison                7.1  howarel01              6.3   +0.8    #8
-  2004  NL  MVP   Carlos Beltran             8.7  Barry Bonds            7.9   +0.8    #5
-  1979  AL  CY    Tommy John                 7.0  Mike Flanagan          6.3   +0.8    #2
-  1994  AL  MVP   Kenny Lofton               7.9  Frank Thomas           7.2   +0.7    #2
-  1972  AL  MVP   Bobby Murcer               8.1  Dick Allen             7.4   +0.7    #3
-  2019  AL  MVP   Alex Bregman               8.8  Mike Trout             8.1   +0.7    #3
-  1991  NL  CY    David Cone                 7.2  Tom Glavine            6.6   +0.7    #3
-  1985  AL  CY    Bert Blyleven              7.0  Bret Saberhagen        6.3   +0.6    #2
-  2017  AL  MVP   Aaron Judge                8.1  Jose Altuve            7.5   +0.6    #3
-  2005  NL  MVP   Derrek Lee                 8.2  Albert Pujols          7.7   +0.6    #3
-  1983  AL  CY    Jack Morris                6.4  LaMarr Hoyt            5.8   +0.6    #3
-  1995  NL  MVP   Barry Bonds                7.3  Barry Larkin           6.8   +0.6    #2
-  2017  AL  CY    Chris Sale                 7.6  Corey Kluber           7.1   +0.5    #2
-  2010  NL  MVP   Carlos Gonzalez            8.0  Joey Votto             7.5   +0.5    #2
-  2005  NL  CY    Dontrelle Willis           6.7  Chris Carpenter        6.2   +0.4    #2
-  1984  AL  CY    Mike Witt                  6.1  Willie Hernandez       5.7   +0.4    #3
-  2016  NL  MVP   DJ LeMahieu                8.1  Kris Bryant            7.7   +0.4    #3
-  2000  NL  MVP   Todd Helton                8.9  Jeff Kent              8.5   +0.3    #3
-  2022  NL  CY    Aaron Nola                 7.6  Sandy Alcantara        7.2   +0.3    #3
-  2011  NL  CY    Roy Halladay               8.9  Clayton Kershaw        8.6   +0.3    #2
-  1999  NL  MVP   Bobby Abreu                8.3  Chipper Jones          8.0   +0.3    #2
-  1974  NL  CY    Jon Matlack                8.2  Mike Marshall          8.0   +0.2    #2
-  2003  AL  CY    Pedro Martinez             6.6  Roy Halladay           6.4   +0.2    #2
-  2010  NL  CY    Adam Wainwright            7.1  Roy Halladay           6.9   +0.2    #2
-  1993  NL  CY    Jose Rijo                  7.5  Greg Maddux            7.3   +0.2    #2
-  2025  NL  CY    Logan Webb                 7.4  Paul Skenes            7.2   +0.2    #3
-  2008  AL  CY    Roy Halladay               7.0  Cliff Lee              6.9   +0.1    #2
-  2016  AL  CY    Corey Kluber               5.8  Rick Porcello          5.7   +0.1    #2
-  1982  NL  MVP   Gary Carter                7.0  Dale Murphy            6.9   +0.1    #3
-  2011  NL  MVP   Jose Reyes                 9.0  Ryan Braun             8.9   +0.1    #2
-  1981  NL  CY    Steve Carlton              6.5  Fernando Valenzuela    6.4   +0.1    #2
-  2000  AL  MVP   Carlos Delgado             8.6  Jason Giambi           8.6   +0.0    #2
-  2010  AL  CY    Cliff Lee                  7.5  Felix Hernandez        7.4   +0.0    #2
-  2013  AL  CY    Felix Hernandez            7.5  Max Scherzer           7.5   +0.0    #2
-  2014  NL  MVP   Andrew McCutchen           9.3  kershcl01             10.0   -0.7   N/A
-  1971  AL  MVP   Bobby Murcer               8.6  bluevi01               9.7   -1.0   N/A
-  1963  NL  MVP   Willie Mays               10.3  koufasa01             11.5   -1.2   N/A
-  1968  AL  MVP   Bill Freehan               8.7  mclaide01             11.7   -3.1   N/A
-  1968  NL  MVP   Jim Wynn                   7.7  gibsobo01             14.8   -7.1   N/A
+  1967  NL  CY    Jim Bunning               10.2  mccormi03              3.5   +6.7   #33
+  1990  AL  CY    Roger Clemens              8.5  welchbo01              2.3   +6.2   #41
+  1973  AL  CY    Bert Blyleven             11.0  palmeji01              5.3   +5.7   #10
+  1979  NL  MVP   Mike Schmidt               7.7  stargwi01              2.7   +5.0   #41
+  1958  AL  CY    Billy O'Dell               5.5  turlebo01              0.5   +4.9   #37
+  1969  NL  CY    Bob Gibson                10.3  seaveto01              5.4   +4.9   #14
+  2001  AL  MVP   Alex Rodriguez            10.2  suzukic01              5.4   +4.8   #13
+  1974  NL  MVP   Joe Morgan                 8.6  garvest01              3.9   +4.8   #19
+  1977  AL  CY    Dennis Leonard             8.5  lylesp01               3.9   +4.7   #12
+  2021  AL  CY    Shohei Ohtani              8.7  rayro02                4.1   +4.6    #7
+  1987  NL  CY    Nolan Ryan                 6.3  bedrost01              1.8   +4.5   N/A
+  1979  NL  CY    J. R. Richard              9.6  Bruce Sutter           5.1   +4.5    #2
+  1998  NL  CY    Kevin Brown                9.1  glavito02              4.7   +4.5    #7
+  2022  AL  CY    Shohei Ohtani             10.7  Justin Verlander       6.5   +4.2    #3
+  1961  AL  MVP   Mickey Mantle             12.6  Roger Maris            8.5   +4.1    #4
+  1962  NL  MVP   Willie Mays               10.2  willsma01              6.2   +4.0    #6
+  1996  AL  MVP   Alex Rodriguez             9.8  gonzaju03              5.8   +4.0   #16
+  1964  NL  MVP   Ron Santo                  9.6  boyerke01              5.7   +3.9    #8
+  1959  AL  CY    Camilo Pascual             7.2  wynnea01               3.4   +3.8    #6
+  1973  NL  MVP   Darrell Evans              9.7  rosepe01               5.9   +3.8    #7
+  1982  AL  CY    Don Sutton                 5.8  vuckope01              2.0   +3.8   #34
+  1960  NL  MVP   Eddie Mathews              8.3  groatdi01              4.6   +3.7    #9
+  1979  AL  MVP   Fred Lynn                 10.2  baylodo01              6.5   +3.7    #7
+  1989  NL  CY    Orel Hershiser             7.1  davisma01              3.6   +3.6   N/A
+  2002  AL  CY    Pedro Martinez             6.8  zitoba01               3.2   +3.6   #14
+  1985  AL  MVP   Rickey Henderson           9.6  Don Mattingly          6.1   +3.5    #4
+  1999  AL  MVP   Derek Jeter                9.0  rodriiv01              5.5   +3.5   #17
+  1966  NL  MVP   Ron Santo                  9.4  clemero01              6.0   +3.4    #8
+  1980  AL  CY    Mike Norris                6.1  stonest01              2.8   +3.4   #30
+  2002  AL  MVP   Alex Rodriguez             9.5  tejadmi01              6.2   +3.3    #8
+  1958  AL  MVP   Mickey Mantle              9.7  Jackie Jensen          6.4   +3.3    #4
+  2004  NL  CY    Randy Johnson              8.2  clemero02              4.9   +3.3    #5
+  1987  AL  MVP   Wade Boggs                 9.5  bellge02               6.2   +3.3   #11
+  1970  AL  MVP   Carl Yastrzemski           9.0  powelbo01              5.8   +3.2    #6
+  1956  NL  MVP   Duke Snider                7.2  newcodo01              4.0   +3.2   N/A
+  1959  AL  MVP   Eddie Yost                 7.9  foxne01                4.8   +3.1    #8
+  1992  AL  MVP   Frank Thomas               7.5  eckerde01              4.5   +3.1   N/A
+  2023  AL  CY    Shohei Ohtani              8.8  Gerrit Cole            5.8   +3.0    #2
+  1976  AL  CY    Vida Blue                  9.3  palmeji01              6.3   +3.0    #5
+  1987  NL  MVP   Eric Davis                 8.1  dawsoan01              5.2   +3.0   #16
+  1967  NL  MVP   Ron Santo                  8.7  cepedor01              5.8   +3.0    #7
+  1992  AL  CY    Roger Clemens              7.4  eckerde01              4.5   +3.0   N/A
+  2005  AL  CY    Johan Santana              6.9  colonba01              4.0   +2.9    #4
+  1984  AL  MVP   Cal Ripken                 8.3  hernawi01              5.4   +2.9   N/A
+  1988  AL  CY    Roger Clemens              9.7  violafr01              6.8   +2.9    #4
+  1995  AL  MVP   Albert Belle               7.9  vaughmo01              5.0   +2.9   #14
+  1998  NL  MVP   Mark McGwire              10.0  Sammy Sosa             7.3   +2.7    #4
+  2006  AL  MVP   Grady Sizemore             8.1  morneju01              5.4   +2.7   #19
+  1984  NL  CY    Dwight Gooden              8.8  Rick Sutcliffe         6.3   +2.6    #3
+  1990  NL  CY    Dwight Gooden              7.7  drabedo01              5.2   +2.4    #7
+  2023  NL  CY    Logan Webb                 6.1  snellbl01              3.7   +2.4    #8
+  1960  NL  CY    Bob Friend                 7.3  lawve01                4.9   +2.4    #6
+  1976  AL  MVP   George Brett               6.4  munsoth01              4.0   +2.4   #11
+  1960  AL  MVP   Mickey Mantle              8.2  Roger Maris            5.9   +2.3    #2
+  2003  NL  MVP   Albert Pujols              9.5  Barry Bonds            7.2   +2.3    #4
+  1981  AL  MVP   Dwight Evans               5.6  fingero01              3.4   +2.2   N/A
+  1967  AL  CY    Jim Kaat                   8.9  lonboji01              6.7   +2.2    #5
+  1974  AL  CY    Fergie Jenkins             9.3  hunteca01              7.2   +2.1    #4
+  1978  NL  CY    Phil Niekro                8.7  perryga01              6.6   +2.1    #4
+  1957  NL  MVP   Willie Mays                9.0  Hank Aaron             7.0   +2.1    #4
+  1998  AL  MVP   Alex Rodriguez             8.2  gonzaju03              6.1   +2.0    #9
+  1969  AL  CY    Sam McDowell               8.7  Denny McLain           6.7   +2.0    #3
+  1988  NL  CY    Dwight Gooden              7.5  hershor01              5.5   +2.0    #7
+  1976  NL  CY    Tom Seaver                 8.0  jonesra01              6.0   +2.0    #6
+  2017  NL  MVP   Charlie Blackmon           9.3  Giancarlo Stanton      7.4   +1.9    #4
+  1974  AL  MVP   Rod Carew                  7.1  Jeff Burroughs         5.2   +1.9    #4
+  1983  NL  CY    Steve Carlton              8.1  John Denny             6.4   +1.7    #2
+  1993  AL  CY    Kevin Appier               6.5  mcdowja01              4.8   +1.7    #5
+  2011  AL  MVP   Jacoby Ellsbury            9.1  verlaju01              7.4   +1.7   N/A
+  2018  AL  CY    Justin Verlander           7.0  snellbl01              5.3   +1.7    #8
+  1959  NL  MVP   Eddie Mathews              9.4  Ernie Banks            7.8   +1.6    #4
+  1972  NL  MVP   Joe Morgan                 7.9  Johnny Bench           6.4   +1.5    #4
+  1957  NL  CY    Curt Simmons               4.5  spahnwa01              3.0   +1.5    #7
+  2016  NL  CY    Noah Syndergaard           7.2  scherma01              5.7   +1.5    #6
+  1977  NL  CY    Steve Rogers               7.1  carltst01              5.7   +1.4    #6
+  2001  AL  CY    Mike Mussina               6.3  clemero02              4.9   +1.4    #4
+  1988  NL  MVP   Andy Van Slyke             6.0  gibsoki01              4.7   +1.4    #7
+  2012  NL  CY    Clayton Kershaw            6.9  dickera01              5.5   +1.3    #4
+  1958  NL  MVP   Willie Mays                9.8  Ernie Banks            8.5   +1.3    #2
+  2002  NL  CY    Curt Schilling             8.2  Randy Johnson          6.9   +1.3    #2
+  1988  AL  MVP   Wade Boggs                 8.7  Jose Canseco           7.4   +1.3    #3
+  1996  NL  MVP   Ellis Burks                8.7  caminke01              7.4   +1.3    #6
+  2012  AL  CY    Felix Hernandez            7.3  David Price            6.0   +1.3    #3
+  2019  AL  CY    Gerrit Cole                6.9  verlaju01              5.6   +1.3    #4
+  2000  NL  MVP   Todd Helton                9.3  Jeff Kent              8.1   +1.3    #3
+  1981  AL  CY    Len Barker                 4.6  fingero01              3.4   +1.2   N/A
+  1963  AL  MVP   Carl Yastrzemski           6.6  howarel01              5.4   +1.2    #8
+  1994  AL  CY    Jack McDowell              4.2  coneda01               3.0   +1.2    #6
+  1969  NL  MVP   Jim Wynn                   8.7  Willie McCovey         7.5   +1.2    #3
+  1973  AL  MVP   Sal Bando                  6.8  Reggie Jackson         5.6   +1.2    #5
+  1956  NL  CY    Bob Friend                 5.2  newcodo01              4.0   +1.2    #4
+  2015  NL  CY    Clayton Kershaw           10.0  Jake Arrieta           8.8   +1.2    #2
+  2004  AL  MVP   Melvin Mora                7.7  Vladimir Guerrero      6.6   +1.1    #3
+  1961  NL  MVP   Eddie Mathews              8.4  Frank Robinson         7.2   +1.1    #5
+  2013  NL  MVP   Shin-Soo Choo              8.5  Andrew McCutchen       7.3   +1.1    #3
+  2003  NL  CY    Mark Prior                 6.8  gagneer01              5.8   +1.1   N/A
+  1986  AL  MVP   Wade Boggs                 8.1  clemero02              7.1   +1.1   N/A
+  1993  AL  MVP   Ken Griffey                8.1  Frank Thomas           7.0   +1.1    #3
+  2007  NL  MVP   David Wright               8.9  Jimmy Rollins          7.8   +1.1    #4
+  1996  AL  CY    Roger Clemens              5.2  hentgpa01              4.2   +1.0    #4
+  2013  AL  MVP   Mike Trout                10.6  Miguel Cabrera         9.7   +1.0    #2
+  2004  NL  MVP   Todd Helton                8.7  bondsba01              7.8   +0.9    #6
+  1989  NL  MVP   Howard Johnson             7.3  Kevin Mitchell         6.4   +0.9    #3
+  1983  AL  MVP   Wade Boggs                 8.5  Cal Ripken             7.6   +0.9    #2
+  1979  AL  CY    Tommy John                 6.6  Mike Flanagan          5.8   +0.8    #3
+  1991  NL  MVP   Ryne Sandberg              6.6  Terry Pendleton        5.8   +0.8    #3
+  2010  AL  MVP   Jose Bautista              8.3  Josh Hamilton          7.5   +0.8    #2
+  1964  AL  MVP   Mickey Mantle              7.8  Brooks Robinson        7.0   +0.8    #3
+  2019  AL  MVP   Alex Bregman               9.2  Mike Trout             8.4   +0.8    #2
+  1995  NL  MVP   Craig Biggio               7.0  Barry Larkin           6.3   +0.7    #3
+  2005  NL  MVP   Derrek Lee                 8.4  Albert Pujols          7.7   +0.7    #2
+  1991  NL  CY    David Cone                 6.9  glavito02              6.3   +0.7    #4
+  2012  AL  MVP   Mike Trout                 8.8  Miguel Cabrera         8.2   +0.6    #2
+  2019  NL  MVP   Anthony Rendon             7.7  Cody Bellinger         7.1   +0.6    #5
+  2008  NL  MVP   Hanley Ramirez             8.1  Albert Pujols          7.6   +0.5    #2
+  2017  AL  MVP   Aaron Judge                8.2  Jose Altuve            7.6   +0.5    #2
+  2008  AL  MVP   Grady Sizemore             7.2  Dustin Pedroia         6.7   +0.5    #3
+  2022  NL  CY    Aaron Nola                 7.4  Sandy Alcantara        6.9   +0.5    #3
+  2017  AL  CY    Chris Sale                 7.5  Corey Kluber           7.0   +0.5    #2
+  2010  AL  CY    Cliff Lee                  7.5  Felix Hernandez        7.0   +0.5    #2
+  2009  NL  MVP   Chase Utley                8.2  Albert Pujols          7.7   +0.5    #2
+  2011  NL  CY    Roy Halladay               8.9  Clayton Kershaw        8.4   +0.5    #2
+  1986  NL  MVP   Tim Raines                 7.0  Mike Schmidt           6.5   +0.5    #2
+  1977  NL  MVP   Mike Schmidt               8.8  George Foster          8.3   +0.4    #2
+  1970  NL  MVP   Tony Perez                 8.2  Johnny Bench           7.8   +0.4    #3
+  2005  NL  CY    Dontrelle Willis           6.5  Chris Carpenter        6.1   +0.4    #2
+  1990  NL  MVP   Lenny Dykstra              7.4  Barry Bonds            7.0   +0.4    #3
+  2015  AL  MVP   Mike Trout                 9.1  Josh Donaldson         8.7   +0.4    #2
+  1974  NL  CY    Jon Matlack                7.8  Mike Marshall          7.4   +0.4    #2
+  2008  NL  CY    CC Sabathia                7.4  Tim Lincecum           7.1   +0.3    #2
+  1985  AL  CY    Bert Blyleven              6.5  Bret Saberhagen        6.2   +0.3    #2
+  1993  NL  MVP   Lenny Dykstra              8.7  Barry Bonds            8.4   +0.2    #2
+  1983  AL  CY    Jack Morris                5.9  LaMarr Hoyt            5.7   +0.2    #3
+  2000  AL  MVP   Carlos Delgado             9.3  Jason Giambi           9.1   +0.2    #2
+  1984  AL  CY    Mike Witt                  5.6  Willie Hernandez       5.4   +0.2    #3
+  1965  AL  MVP   Tom Tresh                  5.9  Zoilo Versalles        5.8   +0.1    #2
+  2003  AL  CY    Pedro Martinez             6.5  Roy Halladay           6.4   +0.1    #2
+  2018  AL  MVP   Mike Trout                 9.2  Mookie Betts           9.1   +0.1    #2
+  2025  NL  CY    Logan Webb                 7.2  Paul Skenes            7.0   +0.1    #3
+  1982  NL  MVP   Gary Carter                7.1  Dale Murphy            7.0   +0.1    #2
+  1993  NL  CY    Jose Rijo                  7.3  Greg Maddux            7.2   +0.1    #2
+  2006  NL  MVP   Chase Utley                8.0  Ryan Howard            7.9   +0.1    #2
+  2013  AL  CY    Felix Hernandez            7.3  Max Scherzer           7.2   +0.1    #2
+  2008  AL  CY    Roy Halladay               6.9  Cliff Lee              6.8   +0.1    #2
+  1985  NL  MVP   Dale Murphy                7.5  Willie McGee           7.4   +0.0    #2
+  2016  AL  CY    Corey Kluber               5.5  Rick Porcello          5.5   +0.0    #2
+  2011  NL  MVP   Matt Kemp                  8.2  Ryan Braun             8.2   +0.0    #2
+  1997  NL  CY    Greg Maddux                7.8  Pedro Martinez         7.8   +0.0    #2
+  2012  NL  MVP   Andrew McCutchen           7.9  Buster Posey           7.9   +0.0    #2
+  2015  AL  CY    David Price                7.5  Dallas Keuchel         7.5   +0.0    #2
+  2014  NL  MVP   Andrew McCutchen           8.5  kershcl01              9.7   -1.2   N/A
+  1971  AL  MVP   Bobby Murcer               7.8  bluevi01               9.2   -1.5   N/A
+  1963  NL  MVP   Willie Mays                9.0  koufasa01             11.2   -2.2   N/A
+  1968  AL  MVP   Carl Yastrzemski           8.3  mclaide01             10.6   -2.3   N/A
+  1968  NL  MVP   Jim Wynn                   6.6  gibsobo01             14.0   -7.4   N/A
 
 ==========================================================================================
   BIGGEST SNUB IN HISTORY
 ==========================================================================================
-  1979 NL MVP
-    BRAVS says:  Garry Templeton (9.4 WAR-eq)
-    Actual winner: stargwi01 (1.9 WAR-eq)
-    Gap: +7.5 WAR-eq
-    Actual winner ranked #58 by BRAVS
+  1967 NL CY
+    BRAVS says:  Jim Bunning (10.2 WAR-eq)
+    Actual winner: mccormi03 (3.5 WAR-eq)
+    Gap: +6.7 WAR-eq
+    Actual winner ranked #33 by BRAVS
 
 ==========================================================================================
   FULL RACE LISTINGS
 ==========================================================================================
 
   1956 AL MVP  [AGREE]
-    1. Mickey Mantle                  13.5 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Minnie Miñoso                   9.1
-    3. Al Kaline                       8.4
-    4. Jackie Jensen                   7.5
-    5. Harvey Kuenn                    6.9
+    1. Mickey Mantle                  13.0 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Minnie MiÃ±oso                   7.2
+    3. Yogi Berra                      6.9
+    4. Al Kaline                       6.8
+    5. Ted Williams                    6.7
 
   1956 NL Cy Young  [DISAGREE]
-    1. Bob Friend                      5.6 <-- BRAVS #1
-    2. Warren Spahn                    5.2
-    3. Johnny Antonelli                4.6
-    Actual winner: newcodo01 (#4, 4.2 WAR-eq)
+    1. Bob Friend                      5.2 <-- BRAVS #1
+    2. Warren Spahn                    5.0
+    3. Johnny Antonelli                4.3
+    Actual winner: newcodo01 (#4, 4.0 WAR-eq)
 
   1956 NL MVP  [DISAGREE]
-    1. Hank Aaron                      7.8 <-- BRAVS #1
-    2. Willie Mays                     7.8
-    3. Richie Ashburn                  7.3
-    4. Jim Gilliam                     7.1
-    5. Duke Snider                     7.1
+    1. Duke Snider                     7.2 <-- BRAVS #1
+    2. Willie Mays                     6.5
+    3. Frank Robinson                  6.3
+    4. Eddie Mathews                   5.9
+    5. Stan Lopata                     5.9
 
   1957 AL MVP  [AGREE]
-    1. Mickey Mantle                  12.5 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Ted Williams                    8.7
-    3. Nellie Fox                      8.2
-    4. Roy Sievers                     7.4
-    5. Gil McDougald                   7.0
+    1. Mickey Mantle                  11.7 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Ted Williams                    9.2
+    3. Roy Sievers                     6.9
+    4. Nellie Fox                      6.7
+    5. Gil McDougald                   5.2
 
   1957 NL Cy Young  [DISAGREE]
-    1. Curt Simmons                    4.7 <-- BRAVS #1
-    2. Don Drysdale                    4.4
-    3. Bob Friend                      4.2
-    Actual winner: spahnwa01 (#7, 3.7 WAR-eq)
+    1. Curt Simmons                    4.5 <-- BRAVS #1
+    2. Don Drysdale                    4.1
+    3. Johnny Podres                   3.9
+    Actual winner: spahnwa01 (#7, 3.0 WAR-eq)
 
   1957 NL MVP  [DISAGREE]
-    1. Willie Mays                    13.1 <-- BRAVS #1
-    2. Eddie Mathews                   8.9
-    3. Ernie Banks                     8.0
-    4. Hank Aaron                      7.7 <-- ACTUAL WINNER
-    5. Richie Ashburn                  6.8
+    1. Willie Mays                     9.0 <-- BRAVS #1
+    2. Eddie Mathews                   7.6
+    3. Ernie Banks                     7.4
+    4. Hank Aaron                      7.0 <-- ACTUAL WINNER
+    5. Frank Robinson                  6.2
 
   1958 AL Cy Young  [DISAGREE]
-    1. Billy O'Dell                    5.6 <-- BRAVS #1
-    2. Jack Harshman                   5.2
-    3. Whitey Ford                     5.1
-    Actual winner: turlebo01 (#29, 1.7 WAR-eq)
+    1. Billy O'Dell                    5.5 <-- BRAVS #1
+    2. Whitey Ford                     4.9
+    3. Jack Harshman                   4.9
+    Actual winner: turlebo01 (#37, 0.5 WAR-eq)
 
   1958 AL MVP  [DISAGREE]
-    1. Mickey Mantle                   9.3 <-- BRAVS #1
-    2. Pete Runnels                    7.5
-    3. Rocky Colavito                  6.8
-    4. Bob Cerv                        6.2
-    5. Jackie Jensen                   5.8 <-- ACTUAL WINNER
+    1. Mickey Mantle                   9.7 <-- BRAVS #1
+    2. Pete Runnels                    6.7
+    3. Rocky Colavito                  6.7
+    4. Jackie Jensen                   6.4 <-- ACTUAL WINNER
+    5. Ted Williams                    5.8
 
   1958 NL MVP  [DISAGREE]
-    1. Willie Mays                    11.9 <-- BRAVS #1
-    2. Richie Ashburn                 11.2
-    3. Ernie Banks                    10.4 <-- ACTUAL WINNER
-    4. Ken Boyer                       6.8
-    5. Johnny Temple                   6.5
+    1. Willie Mays                     9.8 <-- BRAVS #1
+    2. Ernie Banks                     8.5 <-- ACTUAL WINNER
+    3. Richie Ashburn                  8.4
+    4. Johnny Temple                   5.7
+    5. Hank Aaron                      5.6
 
   1959 AL Cy Young  [DISAGREE]
-    1. Camilo Pascual                  7.5 <-- BRAVS #1
-    2. Milt Pappas                     4.4
-    3. Don Mossi                       4.4
-    Actual winner: wynnea01 (#4, 4.2 WAR-eq)
+    1. Camilo Pascual                  7.2 <-- BRAVS #1
+    2. Don Mossi                       4.2
+    3. Milt Pappas                     4.1
+    Actual winner: wynnea01 (#6, 3.4 WAR-eq)
 
   1959 AL MVP  [DISAGREE]
-    1. Mickey Mantle                   7.9 <-- BRAVS #1
-    2. Pete Runnels                    7.4
-    3. Eddie Yost                      7.3
-    4. Harvey Kuenn                    7.0
-    5. Al Kaline                       6.8
-    Actual winner: foxne01 (#8, 5.7 WAR-eq)
+    1. Eddie Yost                      7.9 <-- BRAVS #1
+    2. Mickey Mantle                   7.5
+    3. Al Kaline                       6.8
+    4. Pete Runnels                    6.4
+    5. Harvey Kuenn                    6.1
+    Actual winner: foxne01 (#8, 4.8 WAR-eq)
 
   1959 NL MVP  [DISAGREE]
-    1. Eddie Mathews                  10.5 <-- BRAVS #1
-    2. Hank Aaron                      9.4
-    3. Vada Pinson                     9.3
-    4. Willie Mays                     8.9
-    5. Ernie Banks                     8.8 <-- ACTUAL WINNER
+    1. Eddie Mathews                   9.4 <-- BRAVS #1
+    2. Hank Aaron                      8.5
+    3. Willie Mays                     8.3
+    4. Ernie Banks                     7.8 <-- ACTUAL WINNER
+    5. Vada Pinson                     7.7
 
   1960 AL MVP  [DISAGREE]
-    1. Mickey Mantle                   9.1 <-- BRAVS #1
-    2. Roger Maris                     7.0 <-- ACTUAL WINNER
-    3. Nellie Fox                      5.7
-    4. Jim Landis                      5.2
-    5. Eddie Yost                      5.1
+    1. Mickey Mantle                   8.2 <-- BRAVS #1
+    2. Roger Maris                     5.9 <-- ACTUAL WINNER
+    3. Eddie Yost                      5.4
+    4. Pete Runnels                    4.8
+    5. Minnie MiÃ±oso                   4.7
 
   1960 NL Cy Young  [DISAGREE]
-    1. Bob Friend                      7.5 <-- BRAVS #1
-    2. Don Drysdale                    7.2
-    3. Larry Jackson                   6.4
-    Actual winner: lawve01 (#6, 5.6 WAR-eq)
+    1. Bob Friend                      7.3 <-- BRAVS #1
+    2. Don Drysdale                    6.3
+    3. Mike McCormick                  6.0
+    Actual winner: lawve01 (#6, 4.9 WAR-eq)
 
   1960 NL MVP  [DISAGREE]
-    1. Willie Mays                     9.7 <-- BRAVS #1
-    2. Eddie Mathews                   9.1
-    3. Ken Boyer                       8.1
-    4. Vada Pinson                     7.8
-    5. Hank Aaron                      7.7
-    Actual winner: groatdi01 (#11, 4.9 WAR-eq)
+    1. Eddie Mathews                   8.3 <-- BRAVS #1
+    2. Willie Mays                     7.4
+    3. Ken Boyer                       6.3
+    4. Ernie Banks                     5.9
+    5. Frank Robinson                  5.8
+    Actual winner: groatdi01 (#9, 4.6 WAR-eq)
 
   1961 AL Cy Young  [AGREE]
-    1. Whitey Ford                     6.3 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Frank Lary                      5.2
-    3. Jim Bunning                     5.0
+    1. Whitey Ford                     5.8 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Frank Lary                      4.8
+    3. Jim Bunning                     4.6
 
   1961 AL MVP  [DISAGREE]
-    1. Mickey Mantle                  13.5 <-- BRAVS #1
-    2. Norm Cash                      12.0
-    3. Roger Maris                     8.8 <-- ACTUAL WINNER
-    4. Harmon Killebrew                8.8
-    5. Rocky Colavito                  8.7
+    1. Mickey Mantle                  12.6 <-- BRAVS #1
+    2. Norm Cash                      10.9
+    3. Rocky Colavito                  8.8
+    4. Roger Maris                     8.5 <-- ACTUAL WINNER
+    5. Jim Gentile                     8.2
 
   1961 NL MVP  [DISAGREE]
-    1. Hank Aaron                      9.6 <-- BRAVS #1
-    2. Ken Boyer                       9.6
-    3. Eddie Mathews                   9.1
-    4. Vada Pinson                     8.6
-    5. Willie Mays                     8.4
-    Actual winner: robinfr02 (#6, 8.4 WAR-eq)
+    1. Eddie Mathews                   8.4 <-- BRAVS #1
+    2. Willie Mays                     8.2
+    3. Hank Aaron                      7.7
+    4. Ken Boyer                       7.6
+    5. Frank Robinson                  7.2 <-- ACTUAL WINNER
 
   1962 AL MVP  [AGREE]
-    1. Mickey Mantle                   8.5 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Norm Siebern                    7.8
-    3. Brooks Robinson                 7.4
-    4. Floyd Robinson                  7.4
-    5. Bob Allison                     7.0
+    1. Mickey Mantle                   8.8 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Norm Siebern                    6.9
+    3. Rocky Colavito                  6.2
+    4. Harmon Killebrew                6.0
+    5. Tom Tresh                       6.0
 
   1962 NL Cy Young  [AGREE]
-    1. Don Drysdale                    8.8 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Billy O'Dell                    7.3
-    3. Turk Farrell                    6.8
+    1. Don Drysdale                    8.0 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Billy O'Dell                    6.9
+    3. Turk Farrell                    6.6
 
   1962 NL MVP  [DISAGREE]
-    1. Willie Mays                    11.1 <-- BRAVS #1
-    2. Hank Aaron                     10.1
-    3. Frank Robinson                  9.6
-    4. Tommy Davis                     8.1
-    5. Maury Wills                     8.0 <-- ACTUAL WINNER
+    1. Willie Mays                    10.2 <-- BRAVS #1
+    2. Frank Robinson                  9.7
+    3. Hank Aaron                      9.1
+    4. Eddie Mathews                   6.6
+    5. Tommy Davis                     6.6
+    Actual winner: willsma01 (#6, 6.2 WAR-eq)
 
   1963 AL MVP  [DISAGREE]
-    1. Bob Allison                     7.1 <-- BRAVS #1
-    2. Albie Pearson                   7.0
-    3. Carl Yastrzemski                6.8
-    4. Tom Tresh                       6.8
-    5. Pete Ward                       6.7
-    Actual winner: howarel01 (#8, 6.3 WAR-eq)
+    1. Carl Yastrzemski                6.6 <-- BRAVS #1
+    2. Bob Allison                     6.6
+    3. Albie Pearson                   6.2
+    4. Tom Tresh                       6.1
+    5. Pete Ward                       5.9
+    Actual winner: howarel01 (#8, 5.4 WAR-eq)
 
   1963 NL Cy Young  [AGREE]
-    1. Sandy Koufax                   11.5 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Don Drysdale                    9.8
-    3. Juan Marichal                   9.2
+    1. Sandy Koufax                   11.2 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Don Drysdale                    9.1
+    3. Juan Marichal                   8.9
 
   1963 NL MVP  [DISAGREE]
-    1. Willie Mays                    10.3 <-- BRAVS #1
-    2. Vada Pinson                     9.7
-    3. Hank Aaron                      8.8
-    4. Dick Groat                      8.7
-    5. Johnny Callison                 7.5
+    1. Willie Mays                     9.0 <-- BRAVS #1
+    2. Hank Aaron                      8.5
+    3. Vada Pinson                     6.8
+    4. Dick Groat                      6.6
+    5. Eddie Mathews                   6.4
 
   1964 AL Cy Young  [AGREE]
-    1. Dean Chance                     9.4 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Whitey Ford                     8.5
-    3. Dick Radatz                     6.4
+    1. Dean Chance                     8.8 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Whitey Ford                     8.1
+    3. Dick Radatz                     5.8
 
   1964 AL MVP  [DISAGREE]
-    1. Tony Oliva                      9.0 <-- BRAVS #1
-    2. Mickey Mantle                   7.7
-    3. Jim Fregosi                     7.4
-    4. Bill Freehan                    7.3
-    5. Brooks Robinson                 7.2 <-- ACTUAL WINNER
+    1. Mickey Mantle                   7.8 <-- BRAVS #1
+    2. Tony Oliva                      7.3
+    3. Brooks Robinson                 7.0 <-- ACTUAL WINNER
+    4. Harmon Killebrew                7.0
+    5. Bob Allison                     6.9
 
   1964 NL MVP  [DISAGREE]
-    1. Ron Santo                      12.6 <-- BRAVS #1
-    2. Willie Mays                    11.5
-    3. Dick Allen                     10.9
-    4. Frank Robinson                  7.8
-    5. Ken Boyer                       7.6 <-- ACTUAL WINNER
+    1. Ron Santo                       9.6 <-- BRAVS #1
+    2. Willie Mays                     9.6
+    3. Dick Allen                      8.4
+    4. Frank Robinson                  6.8
+    5. Joe Torre                       6.7
+    Actual winner: boyerke01 (#8, 5.7 WAR-eq)
 
-  1965 AL MVP  [AGREE]
-    1. Zoilo Versalles                 8.1 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Tom Tresh                       6.8
-    3. Jim Fregosi                     6.3
-    4. Tony Oliva                      5.9
-    5. Don Buford                      5.7
+  1965 AL MVP  [DISAGREE]
+    1. Tom Tresh                       5.9 <-- BRAVS #1
+    2. Zoilo Versalles                 5.8 <-- ACTUAL WINNER
+    3. Rocky Colavito                  5.5
+    4. Carl Yastrzemski                5.4
+    5. Tony Oliva                      5.2
 
   1965 NL Cy Young  [AGREE]
-    1. Sandy Koufax                   14.1 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Jim Bunning                     9.8
-    3. Bob Veale                       9.5
+    1. Sandy Koufax                   13.6 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Jim Bunning                     9.3
+    3. Juan Marichal                   8.7
 
   1965 NL MVP  [AGREE]
-    1. Willie Mays                    10.6 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Dick Allen                     10.0
-    3. Pete Rose                       9.4
-    4. Johnny Callison                 9.0
-    5. Joe Morgan                      9.0
+    1. Willie Mays                    10.2 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Ron Santo                       8.1
+    3. Billy Williams                  7.7
+    4. Jim Wynn                        7.5
+    5. Pete Rose                       7.3
 
   1966 AL MVP  [AGREE]
-    1. Frank Robinson                  9.6 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Harmon Killebrew                7.2
-    3. Al Kaline                       7.2
-    4. Dick McAuliffe                  7.1
-    5. Tony Oliva                      6.4
+    1. Frank Robinson                  9.7 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Harmon Killebrew                7.8
+    3. Al Kaline                       7.3
+    4. Dick McAuliffe                  5.6
+    5. Tony Oliva                      5.0
 
   1966 NL Cy Young  [AGREE]
-    1. Sandy Koufax                   12.5 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Gaylord Perry                   9.8
-    3. Jim Bunning                     9.7
+    1. Sandy Koufax                   11.9 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Gaylord Perry                   9.4
+    3. Jim Bunning                     9.1
 
   1966 NL MVP  [DISAGREE]
-    1. Ron Santo                      11.4 <-- BRAVS #1
-    2. Dick Allen                     10.9
-    3. Willie Mays                     8.6
-    4. Joe Torre                       8.5
-    5. Roberto Clemente                8.4 <-- ACTUAL WINNER
+    1. Ron Santo                       9.4 <-- BRAVS #1
+    2. Dick Allen                      8.9
+    3. Joe Torre                       8.4
+    4. Willie Mays                     7.8
+    5. Willie McCovey                  6.8
+    Actual winner: clemero01 (#8, 6.0 WAR-eq)
 
   1967 AL Cy Young  [DISAGREE]
-    1. Jim Kaat                        9.7 <-- BRAVS #1
-    2. Dean Chance                     9.2
-    3. Gary Peters                     8.8
-    Actual winner: lonboji01 (#5, 7.9 WAR-eq)
+    1. Jim Kaat                        8.9 <-- BRAVS #1
+    2. Dean Chance                     8.5
+    3. Catfish Hunter                  7.4
+    Actual winner: lonboji01 (#5, 6.7 WAR-eq)
 
   1967 AL MVP  [AGREE]
-    1. Carl Yastrzemski               11.9 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Paul Blair                      8.5
-    3. Frank Robinson                  7.8
-    4. Harmon Killebrew                7.6
-    5. Bill Freehan                    7.1
+    1. Carl Yastrzemski               11.2 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Harmon Killebrew                8.0
+    3. Bill Freehan                    7.1
+    4. Frank Robinson                  6.5
+    5. Al Kaline                       6.2
 
   1967 NL Cy Young  [DISAGREE]
-    1. Jim Bunning                    10.9 <-- BRAVS #1
-    2. Mike Cuellar                    9.2
-    3. Gaylord Perry                   9.0
-    Actual winner: mccormi03 (#32, 4.2 WAR-eq)
+    1. Jim Bunning                    10.2 <-- BRAVS #1
+    2. Gaylord Perry                   8.2
+    3. Don Drysdale                    8.1
+    Actual winner: mccormi03 (#33, 3.5 WAR-eq)
 
   1967 NL MVP  [DISAGREE]
-    1. Ron Santo                       9.7 <-- BRAVS #1
-    2. Roberto Clemente                9.5
-    3. Vada Pinson                     8.6
-    4. Dick Allen                      8.6
-    5. Joe Morgan                      8.2
-    Actual winner: cepedor01 (#20, 4.9 WAR-eq)
+    1. Ron Santo                       8.7 <-- BRAVS #1
+    2. Hank Aaron                      7.3
+    3. Roberto Clemente                7.3
+    4. Jim Ray Hart                    6.9
+    5. Dick Allen                      6.7
+    Actual winner: cepedor01 (#7, 5.8 WAR-eq)
 
   1968 AL Cy Young  [AGREE]
-    1. Denny McLain                   11.7 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Dean Chance                    11.1
-    3. Sam McDowell                   10.5
+    1. Denny McLain                   10.6 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Dean Chance                    10.3
+    3. Luis Tiant                      9.5
 
   1968 AL MVP  [DISAGREE]
-    1. Bill Freehan                    8.7 <-- BRAVS #1
-    2. Carl Yastrzemski                8.6
-    3. Rick Monday                     6.5
-    4. Bert Campaneris                 6.5
-    5. Dick McAuliffe                  6.5
+    1. Carl Yastrzemski                8.3 <-- BRAVS #1
+    2. Bill Freehan                    8.1
+    3. Frank Howard                    5.8
+    4. Willie Horton                   5.0
+    5. Ken Harrelson                   4.9
 
   1968 NL Cy Young  [AGREE]
-    1. Bob Gibson                     14.8 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Juan Marichal                  11.9
-    3. Fergie Jenkins                 11.3
+    1. Bob Gibson                     14.0 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Juan Marichal                  11.3
+    3. Tom Seaver                     10.6
 
   1968 NL MVP  [DISAGREE]
-    1. Jim Wynn                        7.7 <-- BRAVS #1
-    2. Lou Brock                       7.5
-    3. Willie Mays                     7.4
-    4. Pete Rose                       7.1
-    5. Felipe Alou                     7.1
+    1. Jim Wynn                        6.6 <-- BRAVS #1
+    2. Willie Mays                     6.2
+    3. Felipe Alou                     6.0
+    4. Pete Rose                       5.9
+    5. Willie McCovey                  5.5
 
   1969 AL Cy Young  [DISAGREE]
-    1. Sam McDowell                    9.4 <-- BRAVS #1
-    2. Fritz Peterson                  7.8
-    3. Mike Cuellar                    7.3
-    Actual winner: mclaide01 (#4, 7.1 WAR-eq)
+    1. Sam McDowell                    8.7 <-- BRAVS #1
+    2. Fritz Peterson                  7.6
+    3. Denny McLain                    6.7 <-- ACTUAL WINNER
 
   1969 AL MVP  [AGREE]
-    1. Harmon Killebrew                9.5 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Rico Petrocelli                 9.2
-    3. Reggie Jackson                  8.5
-    4. Sal Bando                       8.4
-    5. Frank Robinson                  7.9
+    1. Harmon Killebrew                9.7 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Rico Petrocelli                 9.1
+    3. Reggie Jackson                  8.4
+    4. Sal Bando                       8.2
+    5. Frank Robinson                  7.2
 
   1969 NL Cy Young  [DISAGREE]
-    1. Bob Gibson                     10.9 <-- BRAVS #1
-    2. Juan Marichal                   9.5
-    3. Fergie Jenkins                  9.0
-    Actual winner: seaveto01 (#14, 6.0 WAR-eq)
+    1. Bob Gibson                     10.3 <-- BRAVS #1
+    2. Juan Marichal                   9.0
+    3. Larry Dierker                   8.5
+    Actual winner: seaveto01 (#14, 5.4 WAR-eq)
 
   1969 NL MVP  [DISAGREE]
-    1. Pete Rose                       9.6 <-- BRAVS #1
-    2. Jim Wynn                        8.5
-    3. Rusty Staub                     8.2
-    4. Bobby Tolan                     7.8
-    5. Roberto Clemente                7.6
-    Actual winner: mccovwi01 (#6, 7.5 WAR-eq)
+    1. Jim Wynn                        8.7 <-- BRAVS #1
+    2. Rusty Staub                     7.5
+    3. Willie McCovey                  7.5 <-- ACTUAL WINNER
+    4. Pete Rose                       7.4
+    5. Hank Aaron                      6.9
 
   1970 AL Cy Young  [AGREE]
-    1. Jim Perry                       6.7 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Sam McDowell                    6.5
-    3. Jim Palmer                      6.0
+    1. Jim Perry                       6.4 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Sam McDowell                    5.8
+    3. Jim Palmer                      5.5
 
   1970 AL MVP  [DISAGREE]
-    1. Carl Yastrzemski                8.2 <-- BRAVS #1
-    2. Cesar Tovar                     7.7
-    3. Tommy Harper                    7.6
-    4. Amos Otis                       7.2
-    5. Reggie Smith                    6.8
-    Actual winner: powelbo01 (#13, 5.0 WAR-eq)
+    1. Carl Yastrzemski                9.0 <-- BRAVS #1
+    2. Tommy Harper                    7.3
+    3. Harmon Killebrew                6.1
+    4. Frank Howard                    6.0
+    5. Jim Fregosi                     5.8
+    Actual winner: powelbo01 (#6, 5.8 WAR-eq)
 
   1970 NL Cy Young  [AGREE]
-    1. Bob Gibson                     10.5 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Tom Seaver                      9.1
-    3. Fergie Jenkins                  7.9
+    1. Bob Gibson                     10.0 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Tom Seaver                      8.5
+    3. Fergie Jenkins                  7.6
 
   1970 NL MVP  [DISAGREE]
-    1. Joe Torre                       9.2 <-- BRAVS #1
-    2. Tony Perez                      8.7
-    3. Bobby Bonds                     8.5
-    4. Billy Williams                  8.4
-    5. Johnny Bench                    8.0 <-- ACTUAL WINNER
+    1. Tony Perez                      8.2 <-- BRAVS #1
+    2. Billy Williams                  8.1
+    3. Johnny Bench                    7.8 <-- ACTUAL WINNER
+    4. Joe Torre                       7.7
+    5. Dick Dietz                      7.7
 
   1971 AL Cy Young  [AGREE]
-    1. Vida Blue                       9.7 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Mickey Lolich                   8.8
-    3. Wilbur Wood                     8.4
+    1. Vida Blue                       9.2 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Mickey Lolich                   8.3
+    3. Wilbur Wood                     8.0
 
   1971 AL MVP  [DISAGREE]
-    1. Bobby Murcer                    8.6 <-- BRAVS #1
-    2. Paul Schaal                     5.9
-    3. Reggie Smith                    5.9
-    4. Roy White                       5.9
-    5. Freddie Patek                   5.6
+    1. Bobby Murcer                    7.8 <-- BRAVS #1
+    2. Reggie Smith                    5.9
+    3. Bill Melton                     5.5
+    4. Merv Rettenmund                 5.2
+    5. Paul Schaal                     5.1
 
   1971 NL Cy Young  [AGREE]
-    1. Fergie Jenkins                 10.8 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Tom Seaver                     10.5
-    3. Don Sutton                      9.0
+    1. Fergie Jenkins                 10.6 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Tom Seaver                     10.2
+    3. Don Sutton                      8.8
 
   1971 NL MVP  [AGREE]
-    1. Joe Torre                       9.2 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Joe Morgan                      7.2
-    3. Hank Aaron                      6.8
-    4. Willie Mays                     6.5
-    5. Lou Brock                       6.0
+    1. Joe Torre                       8.3 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Hank Aaron                      6.9
+    3. Willie Stargell                 6.7
+    4. Willie Mays                     5.9
+    5. Bobby Bonds                     5.5
 
   1972 AL Cy Young  [AGREE]
-    1. Gaylord Perry                   9.6 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Nolan Ryan                      8.1
-    3. Mickey Lolich                   7.7
+    1. Gaylord Perry                   9.1 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Mickey Lolich                   7.3
+    3. Wilbur Wood                     7.1
 
-  1972 AL MVP  [DISAGREE]
-    1. Bobby Murcer                    8.1 <-- BRAVS #1
-    2. Carlton Fisk                    7.6
-    3. Dick Allen                      7.4 <-- ACTUAL WINNER
-    4. Joe Rudi                        5.0
-    5. John Mayberry                   4.6
+  1972 AL MVP  [AGREE]
+    1. Dick Allen                      6.9 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Bobby Murcer                    6.9
+    3. Carlton Fisk                    6.0
+    4. John Mayberry                   4.4
+    5. Reggie Jackson                  4.1
 
   1972 NL Cy Young  [AGREE]
-    1. Steve Carlton                  12.6 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Don Sutton                      8.3
-    3. Bob Gibson                      8.0
+    1. Steve Carlton                  12.0 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Don Sutton                      8.0
+    3. Bob Gibson                      7.5
 
   1972 NL MVP  [DISAGREE]
-    1. Cesar Cedeno                    8.4 <-- BRAVS #1
-    2. Joe Morgan                      8.4
-    3. Billy Williams                  7.7
-    4. Pete Rose                       7.2
-    5. Johnny Bench                    6.3 <-- ACTUAL WINNER
+    1. Joe Morgan                      7.9 <-- BRAVS #1
+    2. Cesar Cedeno                    7.1
+    3. Billy Williams                  7.0
+    4. Johnny Bench                    6.4 <-- ACTUAL WINNER
+    5. Jim Wynn                        5.3
 
   1973 AL Cy Young  [DISAGREE]
-    1. Bert Blyleven                  11.5 <-- BRAVS #1
-    2. Nolan Ryan                     10.8
-    3. Wilbur Wood                     8.5
-    Actual winner: palmeji01 (#8, 6.1 WAR-eq)
+    1. Bert Blyleven                  11.0 <-- BRAVS #1
+    2. Nolan Ryan                      9.3
+    3. Wilbur Wood                     7.8
+    Actual winner: palmeji01 (#10, 5.3 WAR-eq)
 
   1973 AL MVP  [DISAGREE]
-    1. Rod Carew                       9.0 <-- BRAVS #1
-    2. Bobby Grich                     7.2
-    3. Sal Bando                       6.8
-    4. Amos Otis                       6.4
-    5. Dave May                        5.8
-    Actual winner: jacksre01 (#8, 5.5 WAR-eq)
+    1. Sal Bando                       6.8 <-- BRAVS #1
+    2. Rod Carew                       6.7
+    3. Amos Otis                       6.0
+    4. John Mayberry                   5.7
+    5. Reggie Jackson                  5.6 <-- ACTUAL WINNER
 
   1973 NL Cy Young  [AGREE]
-    1. Tom Seaver                      8.9 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Don Sutton                      7.0
-    3. Rick Wise                       6.6
+    1. Tom Seaver                      8.4 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Don Sutton                      6.8
+    3. Rick Wise                       6.0
 
   1973 NL MVP  [DISAGREE]
-    1. Darrell Evans                  11.1 <-- BRAVS #1
-    2. Joe Morgan                      9.3
+    1. Darrell Evans                   9.7 <-- BRAVS #1
+    2. Joe Morgan                      9.2
     3. Willie Stargell                 7.3
-    4. Bobby Bonds                     7.3
-    5. Pete Rose                       7.3 <-- ACTUAL WINNER
+    4. Davey Johnson                   7.2
+    5. Bobby Bonds                     7.0
+    Actual winner: rosepe01 (#7, 5.9 WAR-eq)
 
   1974 AL Cy Young  [DISAGREE]
-    1. Bert Blyleven                   9.7 <-- BRAVS #1
-    2. Fergie Jenkins                  9.7
-    3. Nolan Ryan                      8.8
-    Actual winner: hunteca01 (#5, 7.5 WAR-eq)
+    1. Fergie Jenkins                  9.3 <-- BRAVS #1
+    2. Bert Blyleven                   9.2
+    3. Steve Busby                     7.4
+    Actual winner: hunteca01 (#4, 7.2 WAR-eq)
 
   1974 AL MVP  [DISAGREE]
-    1. Rod Carew                       7.7 <-- BRAVS #1
-    2. Bobby Grich                     6.9
-    3. Ken Henderson                   6.3
-    4. Amos Otis                       6.2
-    5. Jeff Burroughs                  5.0 <-- ACTUAL WINNER
+    1. Rod Carew                       7.1 <-- BRAVS #1
+    2. Bobby Grich                     5.7
+    3. Ken Henderson                   5.4
+    4. Jeff Burroughs                  5.2 <-- ACTUAL WINNER
+    5. Reggie Jackson                  5.1
 
   1974 NL Cy Young  [DISAGREE]
-    1. Jon Matlack                     8.2 <-- BRAVS #1
-    2. Mike Marshall                   8.0 <-- ACTUAL WINNER
-    3. Jim Rooker                      7.4
+    1. Jon Matlack                     7.8 <-- BRAVS #1
+    2. Mike Marshall                   7.4 <-- ACTUAL WINNER
+    3. Phil Niekro                     6.7
 
   1974 NL MVP  [DISAGREE]
-    1. Mike Schmidt                    9.8 <-- BRAVS #1
-    2. Joe Morgan                      8.8
-    3. Ralph Garr                      8.5
-    4. Al Oliver                       7.9
-    5. Johnny Bench                    7.5
-    Actual winner: garvest01 (#25, 3.9 WAR-eq)
+    1. Joe Morgan                      8.6 <-- BRAVS #1
+    2. Mike Schmidt                    8.5
+    3. Johnny Bench                    7.5
+    4. Jim Wynn                        6.8
+    5. Darrell Evans                   6.0
+    Actual winner: garvest01 (#19, 3.9 WAR-eq)
 
   1975 AL Cy Young  [AGREE]
-    1. Jim Palmer                      8.7 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Frank Tanana                    8.4
-    3. Gaylord Perry                   8.0
+    1. Jim Palmer                      8.1 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Frank Tanana                    7.9
+    3. Gaylord Perry                   7.5
 
   1975 AL MVP  [AGREE]
-    1. Fred Lynn                       9.0 <-- ACTUAL WINNER <-- BRAVS #1
-    2. George Brett                    7.6
-    3. Toby Harrah                     7.3
-    4. Gene Tenace                     7.2
-    5. Rod Carew                       7.2
+    1. Fred Lynn                       7.7 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Gene Tenace                     7.7
+    3. Toby Harrah                     7.5
+    4. John Mayberry                   7.3
+    5. Rod Carew                       6.8
 
   1975 NL Cy Young  [AGREE]
-    1. Tom Seaver                      9.4 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Ron Reed                        8.2
-    3. Andy Messersmith                7.3
+    1. Tom Seaver                      8.9 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Ron Reed                        8.0
+    3. Andy Messersmith                6.8
 
   1975 NL MVP  [AGREE]
-    1. Joe Morgan                     12.2 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Mike Schmidt                    7.3
-    3. Pete Rose                       7.2
-    4. Ted Simmons                     7.0
-    5. Dave Parker                     6.6
+    1. Joe Morgan                     11.1 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Pete Rose                       7.1
+    3. Mike Schmidt                    7.1
+    4. Ted Simmons                     6.8
+    5. Johnny Bench                    6.3
 
   1976 AL Cy Young  [DISAGREE]
-    1. Vida Blue                       9.7 <-- BRAVS #1
-    2. Bert Blyleven                   9.0
-    3. Frank Tanana                    8.5
-    Actual winner: palmeji01 (#6, 6.9 WAR-eq)
+    1. Vida Blue                       9.3 <-- BRAVS #1
+    2. Bert Blyleven                   8.4
+    3. Frank Tanana                    8.0
+    Actual winner: palmeji01 (#5, 6.3 WAR-eq)
 
   1976 AL MVP  [DISAGREE]
-    1. George Brett                    9.2 <-- BRAVS #1
-    2. Rod Carew                       6.8
-    3. Fred Lynn                       6.1
-    4. Mickey Rivers                   5.9
-    5. Ron LeFlore                     5.9
-    Actual winner: munsoth01 (#21, 3.5 WAR-eq)
+    1. George Brett                    6.4 <-- BRAVS #1
+    2. Bobby Grich                     5.1
+    3. Graig Nettles                   4.9
+    4. Fred Lynn                       4.6
+    5. Rod Carew                       4.5
+    Actual winner: munsoth01 (#11, 4.0 WAR-eq)
 
   1976 NL Cy Young  [DISAGREE]
-    1. Tom Seaver                      8.4 <-- BRAVS #1
-    2. John Montefusco                 6.8
-    3. Jerry Koosman                   6.7
-    Actual winner: jonesra01 (#6, 6.3 WAR-eq)
+    1. Tom Seaver                      8.0 <-- BRAVS #1
+    2. Jerry Koosman                   6.4
+    3. John Montefusco                 6.4
+    Actual winner: jonesra01 (#6, 6.0 WAR-eq)
 
   1976 NL MVP  [AGREE]
-    1. Joe Morgan                     10.7 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Mike Schmidt                    8.3
-    3. Pete Rose                       8.0
-    4. Ken Griffey                     7.3
-    5. George Foster                   7.2
+    1. Joe Morgan                     10.0 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Mike Schmidt                    7.8
+    3. Pete Rose                       7.3
+    4. Ken Griffey                     5.7
+    5. George Foster                   5.6
 
   1977 AL Cy Young  [DISAGREE]
-    1. Dennis Leonard                  9.1 <-- BRAVS #1
-    2. Nolan Ryan                      7.8
-    3. Jim Palmer                      6.8
-    Actual winner: lylesp01 (#14, 4.1 WAR-eq)
+    1. Dennis Leonard                  8.5 <-- BRAVS #1
+    2. Frank Tanana                    6.2
+    3. Jim Palmer                      6.1
+    Actual winner: lylesp01 (#12, 3.9 WAR-eq)
 
   1977 AL MVP  [AGREE]
-    1. Rod Carew                      12.2 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Lyman Bostock                   9.3
-    3. Jim Rice                        9.1
-    4. George Brett                    8.5
-    5. Carlton Fisk                    8.3
+    1. Rod Carew                       9.0 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Carlton Fisk                    8.3
+    3. Lyman Bostock                   6.9
+    4. Toby Harrah                     6.8
+    5. Ken Singleton                   6.8
 
   1977 NL Cy Young  [DISAGREE]
-    1. Steve Rogers                    7.6 <-- BRAVS #1
-    2. J. R. Richard                   7.2
-    3. Tom Seaver                      7.2
-    Actual winner: carltst01 (#5, 6.2 WAR-eq)
+    1. Steve Rogers                    7.1 <-- BRAVS #1
+    2. Tom Seaver                      6.9
+    3. Rick Reuschel                   6.4
+    Actual winner: carltst01 (#6, 5.7 WAR-eq)
 
   1977 NL MVP  [DISAGREE]
-    1. Mike Schmidt                   11.0 <-- BRAVS #1
-    2. Joe Morgan                      9.2
-    3. George Foster                   8.2 <-- ACTUAL WINNER
-    4. Garry Templeton                 8.0
-    5. Dave Parker                     7.9
+    1. Mike Schmidt                    8.8 <-- BRAVS #1
+    2. George Foster                   8.3 <-- ACTUAL WINNER
+    3. Joe Morgan                      8.3
+    4. Reggie Smith                    7.3
+    5. Greg Luzinski                   6.8
 
   1978 AL Cy Young  [AGREE]
-    1. Ron Guidry                      9.9 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Jon Matlack                     7.9
-    3. Mike Caldwell                   7.7
+    1. Ron Guidry                      9.5 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Jon Matlack                     7.6
+    3. Mike Caldwell                   7.3
 
   1978 AL MVP  [AGREE]
-    1. Jim Rice                       11.1 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Amos Otis                       7.5
-    3. Carlton Fisk                    7.2
-    4. Fred Lynn                       6.0
-    5. Sal Bando                       6.0
+    1. Jim Rice                        8.3 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Carlton Fisk                    6.6
+    3. Amos Otis                       6.2
+    4. Fred Lynn                       5.7
+    5. Roy Smalley                     5.5
 
   1978 NL Cy Young  [DISAGREE]
-    1. Phil Niekro                     9.3 <-- BRAVS #1
-    2. J. R. Richard                   8.1
-    3. Vida Blue                       7.3
-    Actual winner: perryga01 (#4, 6.9 WAR-eq)
+    1. Phil Niekro                     8.7 <-- BRAVS #1
+    2. Vida Blue                       6.9
+    3. J. R. Richard                   6.9
+    Actual winner: perryga01 (#4, 6.6 WAR-eq)
 
   1978 NL MVP  [AGREE]
-    1. Dave Parker                     8.5 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Jeff Burroughs                  7.0
-    3. Ted Simmons                     6.8
-    4. Jack Clark                      6.2
-    5. Jose Cruz                       6.0
+    1. Dave Parker                     6.4 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Jeff Burroughs                  6.1
+    3. Ted Simmons                     6.0
+    4. Greg Luzinski                   5.4
+    5. Ron Cey                         5.4
 
   1979 AL Cy Young  [DISAGREE]
-    1. Tommy John                      7.0 <-- BRAVS #1
-    2. Mike Flanagan                   6.3 <-- ACTUAL WINNER
-    3. Ron Guidry                      6.2
+    1. Tommy John                      6.6 <-- BRAVS #1
+    2. Ron Guidry                      5.8
+    3. Mike Flanagan                   5.8 <-- ACTUAL WINNER
 
   1979 AL MVP  [DISAGREE]
-    1. George Brett                   11.9 <-- BRAVS #1
-    2. Darrell Porter                 10.0
-    3. Fred Lynn                       9.8
-    4. Paul Molitor                    8.8
-    5. Jim Rice                        8.4
-    Actual winner: baylodo01 (#10, 6.6 WAR-eq)
+    1. Fred Lynn                      10.2 <-- BRAVS #1
+    2. Darrell Porter                  8.3
+    3. George Brett                    7.8
+    4. Jim Rice                        7.7
+    5. Brian Downing                   6.9
+    Actual winner: baylodo01 (#7, 6.5 WAR-eq)
 
   1979 NL Cy Young  [DISAGREE]
-    1. J. R. Richard                  10.3 <-- BRAVS #1
-    2. Steve Rogers                    5.3
-    3. Bruce Sutter                    5.3 <-- ACTUAL WINNER
+    1. J. R. Richard                   9.6 <-- BRAVS #1
+    2. Bruce Sutter                    5.1 <-- ACTUAL WINNER
+    3. Craig Swan                      4.9
 
   1979 NL MVP  [DISAGREE]
-    1. Garry Templeton                 9.4 <-- BRAVS #1
-    2. Keith Hernandez                 9.2
-    3. Dave Winfield                   8.3
-    4. Mike Schmidt                    8.1
-    5. Lee Mazzilli                    7.4
-    Actual winner: stargwi01 (#58, 1.9 WAR-eq)
+    1. Mike Schmidt                    7.7 <-- BRAVS #1
+    2. Keith Hernandez                 7.2
+    3. Lee Mazzilli                    7.0
+    4. Davey Lopes                     6.7
+    5. Gene Tenace                     6.5
+    Actual winner: stargwi01 (#41, 2.7 WAR-eq)
 
   1980 AL Cy Young  [DISAGREE]
-    1. Mike Norris                     6.7 <-- BRAVS #1
-    2. Jon Matlack                     6.0
-    3. Len Barker                      5.7
-    Actual winner: stonest01 (#24, 3.5 WAR-eq)
+    1. Mike Norris                     6.1 <-- BRAVS #1
+    2. Jon Matlack                     5.8
+    3. Scott McGregor                  5.3
+    Actual winner: stonest01 (#30, 2.8 WAR-eq)
 
   1980 AL MVP  [AGREE]
-    1. George Brett                    9.3 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Al Bumbry                       8.8
-    3. Willie Wilson                   8.8
-    4. Willie Randolph                 7.7
-    5. Robin Yount                     7.7
+    1. George Brett                    7.9 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Al Bumbry                       7.1
+    3. Rickey Henderson                6.7
+    4. Willie Randolph                 6.6
+    5. Reggie Jackson                  6.4
 
   1980 NL Cy Young  [AGREE]
-    1. Steve Carlton                   9.8 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Nolan Ryan                      6.0
-    3. Rick Reuschel                   5.9
+    1. Steve Carlton                   9.4 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Jerry Reuss                     5.7
+    3. Nolan Ryan                      5.5
 
   1980 NL MVP  [AGREE]
-    1. Mike Schmidt                    9.8 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Keith Hernandez                 7.7
-    3. Andre Dawson                    7.0
-    4. Cesar Cedeno                    6.1
-    5. Gary Carter                     6.1
+    1. Mike Schmidt                    8.5 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Keith Hernandez                 6.3
+    3. Andre Dawson                    5.8
+    4. Ted Simmons                     5.5
+    5. Dale Murphy                     5.5
 
   1981 AL Cy Young  [DISAGREE]
-    1. Len Barker                      4.9 <-- BRAVS #1
-    2. Dennis Leonard                  4.6
-    3. Bert Blyleven                   4.2
+    1. Len Barker                      4.6 <-- BRAVS #1
+    2. Dennis Leonard                  4.3
+    3. Bert Blyleven                   4.0
 
   1981 AL MVP  [DISAGREE]
-    1. Dwight Evans                    6.2 <-- BRAVS #1
-    2. Rickey Henderson                5.5
-    3. Bobby Grich                     4.6
-    4. Dwayne Murphy                   3.9
-    5. Carney Lansford                 3.7
+    1. Dwight Evans                    5.6 <-- BRAVS #1
+    2. Bobby Grich                     4.4
+    3. Rickey Henderson                4.1
+    4. Carney Lansford                 3.5
+    5. Tom Paciorek                    3.5
 
-  1981 NL Cy Young  [DISAGREE]
-    1. Steve Carlton                   6.5 <-- BRAVS #1
-    2. Fernando Valenzuela             6.4 <-- ACTUAL WINNER
-    3. Bill Gullickson                 5.5
+  1981 NL Cy Young  [AGREE]
+    1. Fernando Valenzuela             5.9 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Steve Carlton                   5.8
+    3. Bill Gullickson                 5.4
 
   1981 NL MVP  [AGREE]
-    1. Mike Schmidt                    6.4 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Andre Dawson                    5.1
-    3. Gene Richards                   4.8
-    4. Keith Hernandez                 4.0
-    5. Ken Griffey                     3.9
+    1. Mike Schmidt                    6.2 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Andre Dawson                    4.7
+    3. George Foster                   3.9
+    4. Gary Matthews                   3.3
+    5. Keith Hernandez                 3.2
 
   1982 AL Cy Young  [DISAGREE]
-    1. Don Sutton                      6.1 <-- BRAVS #1
-    2. Len Barker                      5.7
-    3. LaMarr Hoyt                     5.5
-    Actual winner: vuckope01 (#32, 2.7 WAR-eq)
+    1. Don Sutton                      5.8 <-- BRAVS #1
+    2. LaMarr Hoyt                     5.2
+    3. Len Barker                      5.2
+    Actual winner: vuckope01 (#34, 2.0 WAR-eq)
 
   1982 AL MVP  [AGREE]
-    1. Robin Yount                    11.1 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Dwight Evans                    8.8
-    3. Paul Molitor                    7.8
-    4. Toby Harrah                     7.7
-    5. Doug DeCinces                   7.3
+    1. Robin Yount                     9.1 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Dwight Evans                    7.8
+    3. Toby Harrah                     7.5
+    4. Doug DeCinces                   6.6
+    5. Paul Molitor                    6.6
 
   1982 NL Cy Young  [AGREE]
-    1. Steve Carlton                   9.9 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Mario Soto                      8.4
-    3. Fernando Valenzuela             7.7
+    1. Steve Carlton                   9.5 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Mario Soto                      8.1
+    3. Steve Rogers                    7.4
 
   1982 NL MVP  [DISAGREE]
-    1. Gary Carter                     7.0 <-- BRAVS #1
-    2. Andre Dawson                    7.0
-    3. Dale Murphy                     6.9 <-- ACTUAL WINNER
-    4. Mike Schmidt                    6.7
-    5. Pedro Guerrero                  6.2
+    1. Gary Carter                     7.1 <-- BRAVS #1
+    2. Dale Murphy                     7.0 <-- ACTUAL WINNER
+    3. Mike Schmidt                    6.7
+    4. Andre Dawson                    5.9
+    5. Pedro Guerrero                  5.7
 
   1983 AL Cy Young  [DISAGREE]
-    1. Jack Morris                     6.4 <-- BRAVS #1
-    2. Dave Righetti                   6.1
-    3. LaMarr Hoyt                     5.8 <-- ACTUAL WINNER
+    1. Jack Morris                     5.9 <-- BRAVS #1
+    2. Dave Righetti                   5.7
+    3. LaMarr Hoyt                     5.7 <-- ACTUAL WINNER
 
   1983 AL MVP  [DISAGREE]
-    1. Wade Boggs                      9.6 <-- BRAVS #1
-    2. Robin Yount                     8.8
-    3. Cal Ripken                      7.5 <-- ACTUAL WINNER
-    4. Lloyd Moseby                    7.3
-    5. Rickey Henderson                7.1
+    1. Wade Boggs                      8.5 <-- BRAVS #1
+    2. Cal Ripken                      7.6 <-- ACTUAL WINNER
+    3. Robin Yount                     7.1
+    4. Lloyd Moseby                    6.1
+    5. Eddie Murray                    6.0
 
   1983 NL Cy Young  [DISAGREE]
-    1. Steve Carlton                   8.4 <-- BRAVS #1
-    2. John Denny                      6.6 <-- ACTUAL WINNER
-    3. Jerry Reuss                     6.3
+    1. Steve Carlton                   8.1 <-- BRAVS #1
+    2. John Denny                      6.4 <-- ACTUAL WINNER
+    3. Jerry Reuss                     6.1
 
   1983 NL MVP  [AGREE]
-    1. Dale Murphy                     8.3 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Andre Dawson                    7.6
-    3. Tim Raines                      7.2
-    4. Pedro Guerrero                  7.1
-    5. Mike Schmidt                    7.0
+    1. Dale Murphy                     8.0 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Mike Schmidt                    6.7
+    3. Pedro Guerrero                  6.5
+    4. Tim Raines                      6.0
+    5. Andre Dawson                    5.8
 
   1984 AL Cy Young  [DISAGREE]
-    1. Mike Witt                       6.1 <-- BRAVS #1
-    2. Dave Stieb                      6.0
-    3. Willie Hernandez                5.7 <-- ACTUAL WINNER
+    1. Mike Witt                       5.6 <-- BRAVS #1
+    2. Dave Stieb                      5.4
+    3. Willie Hernandez                5.4 <-- ACTUAL WINNER
 
   1984 AL MVP  [DISAGREE]
-    1. Cal Ripken                      9.7 <-- BRAVS #1
-    2. Lloyd Moseby                    9.5
-    3. Dwight Evans                    8.4
-    4. Wade Boggs                      6.9
-    5. Harold Baines                   6.6
+    1. Cal Ripken                      8.3 <-- BRAVS #1
+    2. Dwight Evans                    7.2
+    3. Wade Boggs                      6.4
+    4. Lloyd Moseby                    6.4
+    5. Eddie Murray                    5.9
 
   1984 NL Cy Young  [DISAGREE]
-    1. Dwight Gooden                   9.1 <-- BRAVS #1
-    2. Fernando Valenzuela             7.3
-    3. Rick Sutcliffe                  6.7 <-- ACTUAL WINNER
+    1. Dwight Gooden                   8.8 <-- BRAVS #1
+    2. Fernando Valenzuela             6.7
+    3. Rick Sutcliffe                  6.3 <-- ACTUAL WINNER
 
   1984 NL MVP  [AGREE]
-    1. Ryne Sandberg                  11.8 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Tim Raines                      9.2
-    3. Dale Murphy                     7.9
-    4. Juan Samuel                     7.9
-    5. Jose Cruz                       7.1
+    1. Ryne Sandberg                   7.9 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Tim Raines                      7.6
+    3. Gary Carter                     7.0
+    4. Dale Murphy                     6.7
+    5. Mike Schmidt                    5.9
 
   1985 AL Cy Young  [DISAGREE]
-    1. Bert Blyleven                   7.0 <-- BRAVS #1
-    2. Bret Saberhagen                 6.3 <-- ACTUAL WINNER
-    3. Mike Moore                      5.4
+    1. Bert Blyleven                   6.5 <-- BRAVS #1
+    2. Bret Saberhagen                 6.2 <-- ACTUAL WINNER
+    3. Mike Moore                      5.0
 
   1985 AL MVP  [DISAGREE]
-    1. Rickey Henderson               10.4 <-- BRAVS #1
-    2. Wade Boggs                      9.5
-    3. George Brett                    9.1
-    4. Brett Butler                    8.7
-    5. Willie Wilson                   7.5
-    Actual winner: mattido01 (#10, 5.8 WAR-eq)
+    1. Rickey Henderson                9.6 <-- BRAVS #1
+    2. Wade Boggs                      9.4
+    3. George Brett                    8.5
+    4. Don Mattingly                   6.1 <-- ACTUAL WINNER
+    5. Brett Butler                    5.7
 
   1985 NL Cy Young  [AGREE]
-    1. Dwight Gooden                  10.2 <-- ACTUAL WINNER <-- BRAVS #1
-    2. John Tudor                      8.0
-    3. Fernando Valenzuela             6.8
+    1. Dwight Gooden                   9.9 <-- ACTUAL WINNER <-- BRAVS #1
+    2. John Tudor                      7.4
+    3. Orel Hershiser                  6.4
 
-  1985 NL MVP  [AGREE]
-    1. Willie McGee                   11.0 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Tim Raines                      8.7
-    3. Ryne Sandberg                   7.9
-    4. Dale Murphy                     7.2
-    5. Pedro Guerrero                  6.0
+  1985 NL MVP  [DISAGREE]
+    1. Dale Murphy                     7.5 <-- BRAVS #1
+    2. Willie McGee                    7.4 <-- ACTUAL WINNER
+    3. Ryne Sandberg                   7.0
+    4. Tim Raines                      6.3
+    5. Pedro Guerrero                  6.2
 
   1986 AL Cy Young  [AGREE]
-    1. Roger Clemens                   7.4 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Mike Witt                       6.7
-    3. Mark Eichhorn                   6.1
+    1. Roger Clemens                   7.1 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Mike Witt                       6.3
+    3. Mark Eichhorn                   5.8
 
   1986 AL MVP  [DISAGREE]
-    1. Kirby Puckett                   8.5 <-- BRAVS #1
-    2. Wade Boggs                      7.9
-    3. Rickey Henderson                7.8
-    4. Don Mattingly                   7.2
-    5. Brett Butler                    7.1
+    1. Wade Boggs                      8.1 <-- BRAVS #1
+    2. Kirby Puckett                   7.7
+    3. Don Mattingly                   7.6
+    4. Rickey Henderson                7.0
+    5. Jesse Barfield                  6.5
 
   1986 NL Cy Young  [AGREE]
-    1. Mike Scott                      9.7 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Fernando Valenzuela             7.6
-    3. Bob Welch                       6.5
+    1. Mike Scott                      9.4 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Fernando Valenzuela             7.2
+    3. Bob Welch                       6.3
 
   1986 NL MVP  [DISAGREE]
-    1. Tim Raines                      8.6 <-- BRAVS #1
-    2. Mitch Webster                   6.7
-    3. Kevin McReynolds                6.4
-    4. Steve Sax                       6.4
-    5. Mike Schmidt                    6.1 <-- ACTUAL WINNER
+    1. Tim Raines                      7.0 <-- BRAVS #1
+    2. Mike Schmidt                    6.5 <-- ACTUAL WINNER
+    3. Steve Sax                       6.0
+    4. Kevin McReynolds                5.6
+    5. Dale Murphy                     5.1
 
   1987 AL Cy Young  [AGREE]
-    1. Roger Clemens                   8.3 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Teddy Higuera                   6.5
-    3. Jimmy Key                       5.3
+    1. Roger Clemens                   7.8 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Teddy Higuera                   6.0
+    3. Jimmy Key                       4.9
 
   1987 AL MVP  [DISAGREE]
-    1. Wade Boggs                     10.2 <-- BRAVS #1
-    2. Alan Trammell                   8.7
-    3. Kevin Seitzer                   8.6
-    4. Robin Yount                     8.3
-    5. Brett Butler                    7.4
-    Actual winner: bellge02 (#14, 6.4 WAR-eq)
+    1. Wade Boggs                      9.5 <-- BRAVS #1
+    2. Alan Trammell                   8.8
+    3. Kevin Seitzer                   7.3
+    4. Dwight Evans                    7.2
+    5. Brook Jacoby                    6.8
+    Actual winner: bellge02 (#11, 6.2 WAR-eq)
 
   1987 NL Cy Young  [DISAGREE]
-    1. Nolan Ryan                      6.8 <-- BRAVS #1
-    2. Orel Hershiser                  6.5
-    3. Mike Scott                      6.0
+    1. Nolan Ryan                      6.3 <-- BRAVS #1
+    2. Orel Hershiser                  6.1
+    3. Mike Scott                      5.6
 
   1987 NL MVP  [DISAGREE]
-    1. Tony Gwynn                      9.7 <-- BRAVS #1
-    2. Eric Davis                      8.6
-    3. Andy Van Slyke                  8.4
-    4. Juan Samuel                     8.4
-    5. Tim Raines                      7.8
-    Actual winner: dawsoan01 (#22, 4.9 WAR-eq)
+    1. Eric Davis                      8.1 <-- BRAVS #1
+    2. Dale Murphy                     7.2
+    3. Tony Gwynn                      7.2
+    4. Darryl Strawberry               7.2
+    5. Jack Clark                      7.0
+    Actual winner: dawsoan01 (#16, 5.2 WAR-eq)
 
   1988 AL Cy Young  [DISAGREE]
-    1. Roger Clemens                  10.1 <-- BRAVS #1
-    2. Mark Gubicza                    7.5
-    3. Greg Swindell                   7.1
-    Actual winner: violafr01 (#4, 7.1 WAR-eq)
+    1. Roger Clemens                   9.7 <-- BRAVS #1
+    2. Mark Gubicza                    7.0
+    3. Greg Swindell                   6.9
+    Actual winner: violafr01 (#4, 6.8 WAR-eq)
 
   1988 AL MVP  [DISAGREE]
-    1. Wade Boggs                      9.4 <-- BRAVS #1
-    2. Kirby Puckett                   8.2
-    3. Mike Greenwell                  8.1
-    4. Robin Yount                     7.9
-    5. Paul Molitor                    6.7
-    Actual winner: cansejo01 (#6, 6.7 WAR-eq)
+    1. Wade Boggs                      8.7 <-- BRAVS #1
+    2. Kirby Puckett                   7.6
+    3. Jose Canseco                    7.4 <-- ACTUAL WINNER
+    4. Mike Greenwell                  6.8
+    5. Paul Molitor                    6.1
 
   1988 NL Cy Young  [DISAGREE]
-    1. Dwight Gooden                   7.7 <-- BRAVS #1
-    2. Tim Leary                       7.0
-    3. David Cone                      7.0
-    Actual winner: hershor01 (#6, 6.1 WAR-eq)
+    1. Dwight Gooden                   7.5 <-- BRAVS #1
+    2. Tim Leary                       6.7
+    3. David Cone                      6.6
+    Actual winner: hershor01 (#7, 5.5 WAR-eq)
 
   1988 NL MVP  [DISAGREE]
-    1. Andy Van Slyke                  9.1 <-- BRAVS #1
-    2. Brett Butler                    7.4
-    3. Andres Galarraga                6.1
-    4. Bobby Bonilla                   6.0
-    5. Barry Larkin                    6.0
-    Actual winner: gibsoki01 (#13, 4.3 WAR-eq)
+    1. Andy Van Slyke                  6.0 <-- BRAVS #1
+    2. Brett Butler                    5.7
+    3. Barry Larkin                    5.3
+    4. Bobby Bonilla                   5.0
+    5. Andres Galarraga                4.9
+    Actual winner: gibsoki01 (#7, 4.7 WAR-eq)
 
   1989 AL Cy Young  [AGREE]
-    1. Bret Saberhagen                 9.0 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Nolan Ryan                      8.0
-    3. Mark Gubicza                    7.9
+    1. Bret Saberhagen                 8.8 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Mark Gubicza                    7.5
+    3. Nolan Ryan                      7.4
 
   1989 AL MVP  [AGREE]
-    1. Robin Yount                     9.1 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Ruben Sierra                    8.6
-    3. Wade Boggs                      7.5
-    4. Kirby Puckett                   6.2
-    5. Rickey Henderson                6.2
+    1. Robin Yount                     7.6 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Wade Boggs                      6.6
+    3. Ruben Sierra                    6.0
+    4. Rickey Henderson                6.0
+    5. Fred McGriff                    5.9
 
   1989 NL Cy Young  [DISAGREE]
-    1. Orel Hershiser                  7.7 <-- BRAVS #1
-    2. Frank Viola                     6.6
-    3. Bruce Hurst                     6.2
+    1. Orel Hershiser                  7.1 <-- BRAVS #1
+    2. Frank Viola                     6.1
+    3. Bruce Hurst                     5.9
 
   1989 NL MVP  [DISAGREE]
-    1. Will Clark                      8.3 <-- BRAVS #1
-    2. Kevin Mitchell                  7.2 <-- ACTUAL WINNER
-    3. Howard Johnson                  6.8
-    4. Bobby Bonilla                   6.7
-    5. Ryne Sandberg                   6.5
+    1. Howard Johnson                  7.3 <-- BRAVS #1
+    2. Will Clark                      6.8
+    3. Kevin Mitchell                  6.4 <-- ACTUAL WINNER
+    4. Lonnie Smith                    6.1
+    5. Ryne Sandberg                   6.0
 
   1990 AL Cy Young  [DISAGREE]
-    1. Roger Clemens                   8.8 <-- BRAVS #1
-    2. Erik Hanson                     7.4
-    3. Dave Stewart                    6.2
-    Actual winner: welchbo01 (#36, 2.8 WAR-eq)
+    1. Roger Clemens                   8.5 <-- BRAVS #1
+    2. Erik Hanson                     7.0
+    3. Dave Stewart                    5.7
+    Actual winner: welchbo01 (#41, 2.3 WAR-eq)
 
   1990 AL MVP  [AGREE]
-    1. Rickey Henderson                8.9 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Tony Fernandez                  8.3
-    3. Kelly Gruber                    6.1
-    4. Ken Griffey                     6.0
-    5. Cecil Fielder                   5.9
+    1. Rickey Henderson                8.7 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Cecil Fielder                   6.5
+    3. Fred McGriff                    6.2
+    4. Kelly Gruber                    5.3
+    5. Alan Trammell                   5.3
 
   1990 NL Cy Young  [DISAGREE]
-    1. Dwight Gooden                   8.2 <-- BRAVS #1
-    2. Frank Viola                     6.7
-    3. David Cone                      6.0
-    Actual winner: drabedo01 (#7, 5.5 WAR-eq)
+    1. Dwight Gooden                   7.7 <-- BRAVS #1
+    2. Frank Viola                     6.5
+    3. David Cone                      5.7
+    Actual winner: drabedo01 (#7, 5.2 WAR-eq)
 
   1990 NL MVP  [DISAGREE]
-    1. Brett Butler                    8.1 <-- BRAVS #1
-    2. Lenny Dykstra                   7.7
-    3. Ryne Sandberg                   7.4
-    4. Barry Bonds                     7.2 <-- ACTUAL WINNER
-    5. Ron Gant                        6.8
+    1. Lenny Dykstra                   7.4 <-- BRAVS #1
+    2. Ryne Sandberg                   7.3
+    3. Barry Bonds                     7.0 <-- ACTUAL WINNER
+    4. Ron Gant                        6.7
+    5. Brett Butler                    6.4
 
   1991 AL Cy Young  [AGREE]
-    1. Roger Clemens                   9.0 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Greg Swindell                   6.5
-    3. Tom Candiotti                   6.2
+    1. Roger Clemens                   8.7 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Greg Swindell                   6.4
+    3. Tom Candiotti                   5.8
 
   1991 AL MVP  [AGREE]
-    1. Cal Ripken                      9.2 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Devon White                     7.4
-    3. Paul Molitor                    7.4
-    4. Roberto Alomar                  7.3
-    5. Frank Thomas                    7.2
+    1. Cal Ripken                      8.4 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Frank Thomas                    7.5
+    3. Julio Franco                    6.4
+    4. Ken Griffey                     6.4
+    5. Mickey Tettleton                6.3
 
   1991 NL Cy Young  [DISAGREE]
-    1. David Cone                      7.2 <-- BRAVS #1
-    2. Greg Maddux                     6.9
-    3. Tom Glavine                     6.6 <-- ACTUAL WINNER
+    1. David Cone                      6.9 <-- BRAVS #1
+    2. Greg Maddux                     6.5
+    3. Jose Rijo                       6.3
+    Actual winner: glavito02 (#4, 6.3 WAR-eq)
 
-  1991 NL MVP  [AGREE]
-    1. Terry Pendleton                 7.1 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Ryne Sandberg                   6.5
-    3. Barry Larkin                    6.4
-    4. Bobby Bonilla                   6.1
-    5. Barry Bonds                     6.0
+  1991 NL MVP  [DISAGREE]
+    1. Ryne Sandberg                   6.6 <-- BRAVS #1
+    2. Barry Larkin                    5.9
+    3. Terry Pendleton                 5.8 <-- ACTUAL WINNER
+    4. Chris Sabo                      5.5
+    5. Barry Bonds                     5.3
 
   1992 AL Cy Young  [DISAGREE]
-    1. Roger Clemens                   7.7 <-- BRAVS #1
-    2. Charles Nagy                    7.4
-    3. Kevin Brown                     6.9
+    1. Roger Clemens                   7.4 <-- BRAVS #1
+    2. Charles Nagy                    7.2
+    3. Kevin Brown                     6.5
 
   1992 AL MVP  [DISAGREE]
-    1. Frank Thomas                    7.2 <-- BRAVS #1
-    2. Roberto Alomar                  7.1
-    3. Brady Anderson                  6.8
-    4. Edgar Martinez                  6.5
-    5. Shane Mack                      6.3
+    1. Frank Thomas                    7.5 <-- BRAVS #1
+    2. Edgar Martinez                  6.7
+    3. Roberto Alomar                  6.2
+    4. Kirby Puckett                   5.7
+    5. Shane Mack                      5.6
 
   1992 NL Cy Young  [AGREE]
-    1. Greg Maddux                     7.9 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Doug Drabek                     6.2
-    3. John Smoltz                     6.2
+    1. Greg Maddux                     7.6 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Doug Drabek                     6.0
+    3. John Smoltz                     5.8
 
-  1992 NL MVP  [DISAGREE]
-    1. Andy Van Slyke                  9.0 <-- BRAVS #1
-    2. Barry Bonds                     8.0 <-- ACTUAL WINNER
-    3. Ryne Sandberg                   7.8
-    4. Brett Butler                    7.7
-    5. Darren Daulton                  7.2
+  1992 NL MVP  [AGREE]
+    1. Barry Bonds                     7.5 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Andy Van Slyke                  6.9
+    3. Gary Sheffield                  6.8
+    4. Darren Daulton                  6.7
+    5. Ryne Sandberg                   6.6
 
   1993 AL Cy Young  [DISAGREE]
-    1. Randy Johnson                   6.9 <-- BRAVS #1
-    2. Kevin Appier                    6.8
-    3. Mark Langston                   5.2
-    Actual winner: mcdowja01 (#4, 5.1 WAR-eq)
+    1. Kevin Appier                    6.5 <-- BRAVS #1
+    2. Randy Johnson                   6.4
+    3. Jimmy Key                       4.9
+    Actual winner: mcdowja01 (#5, 4.8 WAR-eq)
 
   1993 AL MVP  [DISAGREE]
     1. Ken Griffey                     8.1 <-- BRAVS #1
-    2. Roberto Alomar                  7.4
-    3. John Olerud                     7.4
-    4. Kenny Lofton                    7.2
-    5. Travis Fryman                   7.0
-    Actual winner: thomafr04 (#8, 6.2 WAR-eq)
+    2. John Olerud                     7.7
+    3. Roberto Alomar                  7.0
+    4. Frank Thomas                    7.0 <-- ACTUAL WINNER
+    5. Chris Hoiles                    6.8
 
   1993 NL Cy Young  [DISAGREE]
-    1. Jose Rijo                       7.5 <-- BRAVS #1
-    2. Greg Maddux                     7.3 <-- ACTUAL WINNER
-    3. Tommy Greene                    5.3
+    1. Jose Rijo                       7.3 <-- BRAVS #1
+    2. Greg Maddux                     7.2 <-- ACTUAL WINNER
+    3. Tommy Greene                    5.1
 
   1993 NL MVP  [DISAGREE]
-    1. Lenny Dykstra                   9.4 <-- BRAVS #1
-    2. Barry Bonds                     8.6 <-- ACTUAL WINNER
-    3. Jay Bell                        7.7
-    4. Darren Daulton                  7.3
-    5. Mike Piazza                     6.9
+    1. Lenny Dykstra                   8.7 <-- BRAVS #1
+    2. Barry Bonds                     8.4 <-- ACTUAL WINNER
+    3. Mike Piazza                     7.0
+    4. Darren Daulton                  6.8
+    5. Jeff Blauser                    6.5
 
   1994 AL Cy Young  [DISAGREE]
-    1. Randy Johnson                   4.5 <-- BRAVS #1
-    2. Jack McDowell                   4.3
-    3. Roger Clemens                   3.6
-    Actual winner: coneda01 (#6, 3.2 WAR-eq)
+    1. Jack McDowell                   4.2 <-- BRAVS #1
+    2. Randy Johnson                   4.1
+    3. Roger Clemens                   3.2
+    Actual winner: coneda01 (#6, 3.0 WAR-eq)
 
-  1994 AL MVP  [DISAGREE]
-    1. Kenny Lofton                    7.9 <-- BRAVS #1
-    2. Frank Thomas                    7.2 <-- ACTUAL WINNER
-    3. Albert Belle                    6.8
-    4. Ken Griffey                     6.6
-    5. Tony Phillips                   4.8
+  1994 AL MVP  [AGREE]
+    1. Frank Thomas                    7.8 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Albert Belle                    7.0
+    3. Kenny Lofton                    6.5
+    4. Ken Griffey                     6.3
+    5. Paul O'Neill                    4.8
 
   1994 NL Cy Young  [AGREE]
     1. Greg Maddux                     7.0 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Bret Saberhagen                 5.4
-    3. Jose Rijo                       4.2
+    2. Bret Saberhagen                 5.5
+    3. Jose Rijo                       4.0
 
   1994 NL MVP  [AGREE]
-    1. Jeff Bagwell                    6.8 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Brett Butler                    6.5
-    3. Craig Biggio                    6.4
-    4. Barry Bonds                     5.4
-    5. Moises Alou                     4.9
+    1. Jeff Bagwell                    7.0 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Craig Biggio                    5.9
+    3. Barry Bonds                     5.7
+    4. Brett Butler                    5.0
+    5. Fred McGriff                    4.8
 
   1995 AL Cy Young  [AGREE]
-    1. Randy Johnson                   8.1 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Kevin Appier                    4.4
-    3. Mike Mussina                    4.1
+    1. Randy Johnson                   7.9 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Kevin Appier                    4.0
+    3. Mike Mussina                    3.9
 
   1995 AL MVP  [DISAGREE]
-    1. Tim Salmon                      7.8 <-- BRAVS #1
-    2. Bernie Williams                 7.5
-    3. Albert Belle                    7.4
-    4. Chuck Knoblauch                 7.2
-    5. John Valentin                   7.1
-    Actual winner: vaughmo01 (#15, 4.9 WAR-eq)
+    1. Albert Belle                    7.9 <-- BRAVS #1
+    2. Edgar Martinez                  7.8
+    3. Tim Salmon                      7.8
+    4. John Valentin                   7.2
+    5. Jim Thome                       6.8
+    Actual winner: vaughmo01 (#14, 5.0 WAR-eq)
 
   1995 NL Cy Young  [AGREE]
-    1. Greg Maddux                     7.2 <-- ACTUAL WINNER <-- BRAVS #1
+    1. Greg Maddux                     7.3 <-- ACTUAL WINNER <-- BRAVS #1
     2. Shane Reynolds                  4.9
-    3. Hideo Nomo                      4.8
+    3. Hideo Nomo                      4.6
 
   1995 NL MVP  [DISAGREE]
-    1. Barry Bonds                     7.3 <-- BRAVS #1
-    2. Barry Larkin                    6.8 <-- ACTUAL WINNER
-    3. Craig Biggio                    6.7
-    4. Reggie Sanders                  6.3
-    5. Larry Walker                    5.5
+    1. Craig Biggio                    7.0 <-- BRAVS #1
+    2. Barry Bonds                     6.4
+    3. Barry Larkin                    6.3 <-- ACTUAL WINNER
+    4. Mike Piazza                     5.9
+    5. Reggie Sanders                  5.7
 
   1996 AL Cy Young  [DISAGREE]
-    1. Roger Clemens                   5.7 <-- BRAVS #1
-    2. Kevin Appier                    5.0
-    3. Pat Hentgen                     4.6 <-- ACTUAL WINNER
+    1. Roger Clemens                   5.2 <-- BRAVS #1
+    2. Kevin Appier                    4.7
+    3. Mariano Rivera                  4.5
+    Actual winner: hentgpa01 (#4, 4.2 WAR-eq)
 
   1996 AL MVP  [DISAGREE]
-    1. Chuck Knoblauch                10.6 <-- BRAVS #1
-    2. Brady Anderson                  9.6
-    3. Alex Rodriguez                  9.0
-    4. Jim Thome                       8.9
-    5. Ken Griffey                     7.8
-    Actual winner: gonzaju03 (#20, 5.4 WAR-eq)
+    1. Alex Rodriguez                  9.8 <-- BRAVS #1
+    2. Brady Anderson                  9.3
+    3. Jim Thome                       8.7
+    4. Chuck Knoblauch                 8.6
+    5. Ken Griffey                     8.0
+    Actual winner: gonzaju03 (#16, 5.8 WAR-eq)
 
   1996 NL Cy Young  [AGREE]
     1. John Smoltz                     8.2 <-- ACTUAL WINNER <-- BRAVS #1
@@ -1171,704 +1161,698 @@ Running all award races 1956-2025...
     3. Kevin Brown                     6.5
 
   1996 NL MVP  [DISAGREE]
-    1. Lance Johnson                   9.5 <-- BRAVS #1
-    2. Ellis Burks                     9.5
+    1. Ellis Burks                     8.7 <-- BRAVS #1
+    2. Gary Sheffield                  8.3
     3. Barry Bonds                     8.2
-    4. Barry Larkin                    8.0
-    5. Gary Sheffield                  7.8
-    Actual winner: caminke01 (#9, 7.1 WAR-eq)
+    4. Barry Larkin                    7.8
+    5. Jeff Bagwell                    7.6
+    Actual winner: caminke01 (#6, 7.4 WAR-eq)
 
   1997 AL Cy Young  [AGREE]
-    1. Roger Clemens                   9.7 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Andy Pettitte                   6.8
-    3. Randy Johnson                   6.3
+    1. Roger Clemens                   9.5 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Andy Pettitte                   6.6
+    3. Randy Johnson                   6.0
 
   1997 AL MVP  [AGREE]
-    1. Ken Griffey                     8.2 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Nomar Garciaparra               8.2
-    3. Chuck Knoblauch                 7.0
-    4. Brady Anderson                  7.0
-    5. Frank Thomas                    6.9
+    1. Ken Griffey                     8.3 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Frank Thomas                    7.9
+    3. Nomar Garciaparra               6.7
+    4. Rusty Greer                     6.6
+    5. Edgar Martinez                  6.6
 
-  1997 NL Cy Young  [AGREE]
-    1. Pedro Martinez                  8.1 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Curt Schilling                  7.7
-    3. Greg Maddux                     7.7
+  1997 NL Cy Young  [DISAGREE]
+    1. Greg Maddux                     7.8 <-- BRAVS #1
+    2. Pedro Martinez                  7.8 <-- ACTUAL WINNER
+    3. Curt Schilling                  7.6
 
   1997 NL MVP  [AGREE]
-    1. Larry Walker                   10.3 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Craig Biggio                   10.1
-    3. Mike Piazza                     9.2
-    4. Barry Bonds                     7.7
-    5. Jeff Bagwell                    7.0
+    1. Larry Walker                   10.4 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Mike Piazza                     9.7
+    3. Craig Biggio                    9.0
+    4. Barry Bonds                     7.3
+    5. Jeff Bagwell                    7.2
 
   1998 AL Cy Young  [AGREE]
-    1. Roger Clemens                   7.3 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Pedro Martinez                  5.3
-    3. David Cone                      4.5
+    1. Roger Clemens                   7.0 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Pedro Martinez                  5.0
+    3. Mike Mussina                    4.3
 
   1998 AL MVP  [DISAGREE]
-    1. Alex Rodriguez                  8.3 <-- BRAVS #1
-    2. Jose Offerman                   8.1
+    1. Alex Rodriguez                  8.2 <-- BRAVS #1
+    2. Albert Belle                    8.0
     3. Ken Griffey                     8.0
-    4. Albert Belle                    7.7
-    5. Nomar Garciaparra               7.2
-    Actual winner: gonzaju03 (#13, 5.8 WAR-eq)
+    4. Nomar Garciaparra               6.5
+    5. Edgar Martinez                  6.5
+    Actual winner: gonzaju03 (#9, 6.1 WAR-eq)
 
   1998 NL Cy Young  [DISAGREE]
     1. Kevin Brown                     9.1 <-- BRAVS #1
-    2. Curt Schilling                  7.6
+    2. Curt Schilling                  7.5
     3. Greg Maddux                     7.3
-    Actual winner: glavito02 (#6, 4.9 WAR-eq)
+    Actual winner: glavito02 (#7, 4.7 WAR-eq)
 
   1998 NL MVP  [DISAGREE]
-    1. Mark McGwire                    9.2 <-- BRAVS #1
-    2. Chipper Jones                   7.9
-    3. Barry Bonds                     7.9
-    4. Craig Biggio                    7.4
-    5. Barry Larkin                    7.3
-    Actual winner: sosasa01 (#15, 6.5 WAR-eq)
+    1. Mark McGwire                   10.0 <-- BRAVS #1
+    2. Craig Biggio                    7.8
+    3. Chipper Jones                   7.7
+    4. Sammy Sosa                      7.3 <-- ACTUAL WINNER
+    5. Scott Rolen                     7.2
 
   1999 AL Cy Young  [AGREE]
-    1. Pedro Martinez                  9.2 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Mike Mussina                    4.7
-    3. Jamie Moyer                     3.5
+    1. Pedro Martinez                  9.3 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Mike Mussina                    4.6
+    3. Jamie Moyer                     3.3
 
   1999 AL MVP  [DISAGREE]
-    1. Derek Jeter                     9.6 <-- BRAVS #1
-    2. Roberto Alomar                  7.8
-    3. Bernie Williams                 7.7
-    4. Manny Ramirez                   7.6
-    5. Nomar Garciaparra               7.4
-    Actual winner: rodriiv01 (#24, 4.9 WAR-eq)
+    1. Derek Jeter                     9.0 <-- BRAVS #1
+    2. Roberto Alomar                  7.9
+    3. Manny Ramirez                   7.9
+    4. Nomar Garciaparra               7.5
+    5. Ken Griffey                     7.2
+    Actual winner: rodriiv01 (#17, 5.5 WAR-eq)
 
   1999 NL Cy Young  [AGREE]
     1. Randy Johnson                   7.0 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Mike Hampton                    5.5
-    3. Kevin Brown                     5.4
+    2. Shane Reynolds                  5.3
+    3. Kevin Brown                     5.3
 
-  1999 NL MVP  [DISAGREE]
-    1. Bobby Abreu                     8.3 <-- BRAVS #1
-    2. Chipper Jones                   8.0 <-- ACTUAL WINNER
-    3. Brian Giles                     7.2
-    4. Jeff Bagwell                    7.1
-    5. Larry Walker                    6.9
+  1999 NL MVP  [AGREE]
+    1. Chipper Jones                   8.8 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Jeff Bagwell                    7.9
+    3. Mark McGwire                    7.5
+    4. Brian Giles                     7.4
+    5. Larry Walker                    7.0
 
   2000 AL Cy Young  [AGREE]
-    1. Pedro Martinez                  7.4 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Mike Mussina                    4.8
+    1. Pedro Martinez                  7.5 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Mike Mussina                    4.7
     3. David Wells                     4.7
 
   2000 AL MVP  [DISAGREE]
-    1. Carlos Delgado                  8.6 <-- BRAVS #1
-    2. Jason Giambi                    8.6 <-- ACTUAL WINNER
-    3. Alex Rodriguez                  8.4
-    4. Johnny Damon                    8.0
-    5. Darin Erstad                    7.7
+    1. Carlos Delgado                  9.3 <-- BRAVS #1
+    2. Jason Giambi                    9.1 <-- ACTUAL WINNER
+    3. Alex Rodriguez                  8.8
+    4. Troy Glaus                      7.7
+    5. Darin Erstad                    7.3
 
   2000 NL Cy Young  [AGREE]
     1. Randy Johnson                   7.2 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Greg Maddux                     5.8
+    2. Greg Maddux                     5.6
     3. Kevin Brown                     4.9
 
   2000 NL MVP  [DISAGREE]
-    1. Todd Helton                     8.9 <-- BRAVS #1
-    2. Brian Giles                     8.7
-    3. Jeff Kent                       8.5 <-- ACTUAL WINNER
-    4. Richard Hidalgo                 7.8
-    5. Bobby Abreu                     7.8
+    1. Todd Helton                     9.3 <-- BRAVS #1
+    2. Brian Giles                     8.1
+    3. Jeff Kent                       8.1 <-- ACTUAL WINNER
+    4. Richard Hidalgo                 7.9
+    5. Jim Edmonds                     7.7
 
   2001 AL Cy Young  [DISAGREE]
-    1. Mike Mussina                    6.4 <-- BRAVS #1
-    2. Andy Pettitte                   5.3
-    3. Mark Mulder                     5.2
-    Actual winner: clemero02 (#4, 5.2 WAR-eq)
+    1. Mike Mussina                    6.3 <-- BRAVS #1
+    2. Andy Pettitte                   5.2
+    3. Mark Mulder                     5.1
+    Actual winner: clemero02 (#4, 4.9 WAR-eq)
 
   2001 AL MVP  [DISAGREE]
-    1. Roberto Alomar                  9.7 <-- BRAVS #1
-    2. Alex Rodriguez                  9.6
-    3. Carlos Beltran                  8.7
-    4. Jason Giambi                    8.5
-    5. Bret Boone                      6.7
-    Actual winner: suzukic01 (#6, 6.4 WAR-eq)
+    1. Alex Rodriguez                 10.2 <-- BRAVS #1
+    2. Jason Giambi                    8.8
+    3. Roberto Alomar                  8.0
+    4. Bret Boone                      7.0
+    5. Jim Thome                       6.9
+    Actual winner: suzukic01 (#13, 5.4 WAR-eq)
 
   2001 NL Cy Young  [AGREE]
-    1. Randy Johnson                   8.5 <-- ACTUAL WINNER <-- BRAVS #1
+    1. Randy Johnson                   8.4 <-- ACTUAL WINNER <-- BRAVS #1
     2. Curt Schilling                  6.0
     3. Greg Maddux                     5.8
 
   2001 NL MVP  [AGREE]
-    1. Barry Bonds                    12.4 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Luis Gonzalez                  10.2
-    3. Sammy Sosa                      9.9
-    4. Lance Berkman                   8.9
-    5. Todd Helton                     8.8
+    1. Barry Bonds                    12.8 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Sammy Sosa                      9.7
+    3. Luis Gonzalez                   9.5
+    4. Todd Helton                     9.2
+    5. Lance Berkman                   8.6
 
   2002 AL Cy Young  [DISAGREE]
-    1. Pedro Martinez                  6.9 <-- BRAVS #1
-    2. Roy Halladay                    6.3
-    3. Derek Lowe                      4.8
-    Actual winner: zitoba01 (#9, 3.6 WAR-eq)
+    1. Pedro Martinez                  6.8 <-- BRAVS #1
+    2. Roy Halladay                    6.1
+    3. Derek Lowe                      4.6
+    Actual winner: zitoba01 (#14, 3.2 WAR-eq)
 
   2002 AL MVP  [DISAGREE]
-    1. Alex Rodriguez                  9.2 <-- BRAVS #1
-    2. Jim Thome                       7.4
-    3. Jason Giambi                    7.3
-    4. Carlos Beltran                  7.1
-    5. Johnny Damon                    6.8
-    Actual winner: tejadmi01 (#11, 5.5 WAR-eq)
+    1. Alex Rodriguez                  9.5 <-- BRAVS #1
+    2. Jason Giambi                    8.0
+    3. Jim Thome                       7.8
+    4. Bernie Williams                 6.8
+    5. Magglio Ordonez                 6.3
+    Actual winner: tejadmi01 (#8, 6.2 WAR-eq)
 
   2002 NL Cy Young  [DISAGREE]
-    1. Curt Schilling                  8.1 <-- BRAVS #1
-    2. Randy Johnson                   7.1 <-- ACTUAL WINNER
-    3. Roy Oswalt                      5.7
+    1. Curt Schilling                  8.2 <-- BRAVS #1
+    2. Randy Johnson                   6.9 <-- ACTUAL WINNER
+    3. Roy Oswalt                      5.5
 
   2002 NL MVP  [AGREE]
-    1. Barry Bonds                     9.8 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Brian Giles                     7.8
-    3. Lance Berkman                   7.0
-    4. Bobby Abreu                     6.8
-    5. Todd Helton                     6.7
+    1. Barry Bonds                    10.1 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Brian Giles                     7.4
+    3. Lance Berkman                   7.4
+    4. Jeff Kent                       6.7
+    5. Todd Helton                     6.6
 
   2003 AL Cy Young  [DISAGREE]
-    1. Pedro Martinez                  6.6 <-- BRAVS #1
+    1. Pedro Martinez                  6.5 <-- BRAVS #1
     2. Roy Halladay                    6.4 <-- ACTUAL WINNER
-    3. Esteban Loaiza                  5.9
+    3. Esteban Loaiza                  5.7
 
   2003 AL MVP  [AGREE]
-    1. Alex Rodriguez                  9.5 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Nomar Garciaparra               8.3
-    3. Carlos Beltran                  8.1
-    4. Vernon Wells                    7.2
-    5. Carlos Delgado                  6.8
+    1. Alex Rodriguez                  9.0 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Carlos Delgado                  7.2
+    3. Vernon Wells                    6.9
+    4. Carlos Beltran                  6.6
+    5. Jorge Posada                    6.5
 
   2003 NL Cy Young  [DISAGREE]
-    1. Mark Prior                      6.9 <-- BRAVS #1
-    2. Kevin Brown                     5.7
-    3. Jason Schmidt                   5.7
+    1. Mark Prior                      6.8 <-- BRAVS #1
+    2. Jason Schmidt                   5.7
+    3. Kevin Brown                     5.6
 
   2003 NL MVP  [DISAGREE]
-    1. Albert Pujols                   8.9 <-- BRAVS #1
-    2. Todd Helton                     8.7
-    3. Gary Sheffield                  7.6
-    4. Rafael Furcal                   7.3
-    5. Javy Lopez                      6.9
-    Actual winner: bondsba01 (#6, 6.8 WAR-eq)
+    1. Albert Pujols                   9.5 <-- BRAVS #1
+    2. Todd Helton                     8.3
+    3. Gary Sheffield                  7.9
+    4. Barry Bonds                     7.2 <-- ACTUAL WINNER
+    5. Javy Lopez                      7.1
 
   2004 AL Cy Young  [AGREE]
-    1. Johan Santana                   6.3 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Curt Schilling                  5.8
+    1. Johan Santana                   6.2 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Curt Schilling                  5.7
     3. Brad Radke                      4.5
 
   2004 AL MVP  [DISAGREE]
-    1. Carlos Guillen                  7.6 <-- BRAVS #1
-    2. Carl Crawford                   7.0
-    3. Michael Young                   7.0
-    4. Melvin Mora                     6.9
-    5. Johnny Damon                    6.8
-    Actual winner: guerrvl01 (#8, 6.3 WAR-eq)
+    1. Melvin Mora                     7.7 <-- BRAVS #1
+    2. Miguel Tejada                   6.8
+    3. Vladimir Guerrero               6.6 <-- ACTUAL WINNER
+    4. Manny Ramirez                   6.2
+    5. Johnny Damon                    6.2
 
   2004 NL Cy Young  [DISAGREE]
     1. Randy Johnson                   8.2 <-- BRAVS #1
-    2. Ben Sheets                      6.9
-    3. Jason Schmidt                   6.0
-    Actual winner: clemero02 (#5, 5.1 WAR-eq)
+    2. Ben Sheets                      7.0
+    3. Jason Schmidt                   5.8
+    Actual winner: clemero02 (#5, 4.9 WAR-eq)
 
   2004 NL MVP  [DISAGREE]
-    1. Carlos Beltran                  8.7 <-- BRAVS #1
-    2. J. D. Drew                      8.7
-    3. Todd Helton                     8.5
-    4. Jim Edmonds                     8.3
-    5. Barry Bonds                     7.9 <-- ACTUAL WINNER
+    1. Todd Helton                     8.7 <-- BRAVS #1
+    2. Jim Edmonds                     8.3
+    3. Adrian Beltre                   8.3
+    4. Bobby Abreu                     8.1
+    5. Albert Pujols                   7.9
+    Actual winner: bondsba01 (#6, 7.8 WAR-eq)
 
   2005 AL Cy Young  [DISAGREE]
-    1. Johan Santana                   7.0 <-- BRAVS #1
-    2. John Lackey                     5.6
-    3. Mark Buehrle                    5.4
-    Actual winner: colonba01 (#4, 4.2 WAR-eq)
+    1. Johan Santana                   6.9 <-- BRAVS #1
+    2. Mark Buehrle                    5.2
+    3. John Lackey                     5.2
+    Actual winner: colonba01 (#4, 4.0 WAR-eq)
 
   2005 AL MVP  [AGREE]
-    1. Alex Rodriguez                  9.7 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Michael Young                   7.9
-    3. Derek Jeter                     7.5
-    4. Brian Roberts                   7.1
-    5. Grady Sizemore                  7.1
+    1. Alex Rodriguez                 10.3 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Michael Young                   7.7
+    3. David Ortiz                     7.1
+    4. Mark Teixeira                   7.1
+    5. Derek Jeter                     7.0
 
   2005 NL Cy Young  [DISAGREE]
-    1. Dontrelle Willis                6.7 <-- BRAVS #1
-    2. Chris Carpenter                 6.2 <-- ACTUAL WINNER
-    3. Roger Clemens                   6.2
+    1. Dontrelle Willis                6.5 <-- BRAVS #1
+    2. Chris Carpenter                 6.1 <-- ACTUAL WINNER
+    3. Roger Clemens                   6.0
 
   2005 NL MVP  [DISAGREE]
-    1. Derrek Lee                      8.2 <-- BRAVS #1
-    2. Jason Bay                       8.2
-    3. Albert Pujols                   7.7 <-- ACTUAL WINNER
-    4. Rafael Furcal                   7.5
-    5. Brian Giles                     7.2
+    1. Derrek Lee                      8.4 <-- BRAVS #1
+    2. Albert Pujols                   7.7 <-- ACTUAL WINNER
+    3. Jason Bay                       7.6
+    4. David Wright                    6.8
+    5. Chase Utley                     6.4
 
   2006 AL Cy Young  [AGREE]
-    1. Johan Santana                   6.8 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Jeremy Bonderman                5.5
-    3. John Lackey                     5.5
+    1. Johan Santana                   6.6 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Jeremy Bonderman                5.2
+    3. John Lackey                     5.1
 
   2006 AL MVP  [DISAGREE]
-    1. Grady Sizemore                  9.9 <-- BRAVS #1
-    2. Derek Jeter                     7.8
-    3. Carl Crawford                   7.5
-    4. Vernon Wells                    7.1
-    5. Carlos Guillen                  6.6
-    Actual winner: morneju01 (#21, 4.9 WAR-eq)
+    1. Grady Sizemore                  8.1 <-- BRAVS #1
+    2. Derek Jeter                     8.1
+    3. David Ortiz                     7.0
+    4. Vernon Wells                    6.7
+    5. Jermaine Dye                    6.6
+    Actual winner: morneju01 (#19, 5.4 WAR-eq)
 
   2006 NL Cy Young  [AGREE]
-    1. Brandon Webb                    5.9 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Roy Oswalt                      5.3
-    3. John Smoltz                     5.1
+    1. Brandon Webb                    5.8 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Roy Oswalt                      5.2
+    3. John Smoltz                     4.9
 
   2006 NL MVP  [DISAGREE]
-    1. Jose Reyes                      8.7 <-- BRAVS #1
-    2. Hanley Ramirez                  8.0
-    3. Chase Utley                     8.0
-    4. Rafael Furcal                   8.0
-    5. Carlos Beltran                  7.4
-    Actual winner: howarry01 (#7, 7.2 WAR-eq)
+    1. Chase Utley                     8.0 <-- BRAVS #1
+    2. Ryan Howard                     7.9 <-- ACTUAL WINNER
+    3. Garrett Atkins                  7.8
+    4. Carlos Beltran                  7.7
+    5. Albert Pujols                   7.3
 
   2007 AL Cy Young  [AGREE]
-    1. CC Sabathia                     6.9 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Josh Beckett                    5.8
-    3. Joe Blanton                     5.6
+    1. CC Sabathia                     6.8 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Josh Beckett                    5.7
+    3. Joe Blanton                     5.5
 
-  2007 AL MVP  [DISAGREE]
-    1. Curtis Granderson              12.2 <-- BRAVS #1
-    2. Alex Rodriguez                  9.3 <-- ACTUAL WINNER
-    3. Grady Sizemore                  7.5
-    4. Magglio Ordonez                 7.4
-    5. Ichiro Suzuki                   7.2
+  2007 AL MVP  [AGREE]
+    1. Alex Rodriguez                 10.2 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Magglio Ordonez                 8.1
+    3. David Ortiz                     7.8
+    4. Curtis Granderson               7.8
+    5. Jorge Posada                    7.5
 
   2007 NL Cy Young  [AGREE]
-    1. Jake Peavy                      7.4 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Brandon Webb                    5.7
-    3. Tim Hudson                      5.6
+    1. Jake Peavy                      7.0 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Brandon Webb                    5.5
+    3. Tim Hudson                      5.5
 
-  2007 NL MVP  [AGREE]
-    1. Jimmy Rollins                  11.3 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Hanley Ramirez                  8.9
-    3. Matt Holliday                   8.4
-    4. David Wright                    8.3
-    5. Chase Utley                     8.1
+  2007 NL MVP  [DISAGREE]
+    1. David Wright                    8.9 <-- BRAVS #1
+    2. Hanley Ramirez                  8.7
+    3. Matt Holliday                   8.0
+    4. Jimmy Rollins                   7.8 <-- ACTUAL WINNER
+    5. Chase Utley                     7.7
 
   2008 AL Cy Young  [DISAGREE]
-    1. Roy Halladay                    7.0 <-- BRAVS #1
-    2. Cliff Lee                       6.9 <-- ACTUAL WINNER
-    3. Ervin Santana                   5.5
+    1. Roy Halladay                    6.9 <-- BRAVS #1
+    2. Cliff Lee                       6.8 <-- ACTUAL WINNER
+    3. Ervin Santana                   5.3
 
   2008 AL MVP  [DISAGREE]
-    1. Curtis Granderson               7.8 <-- BRAVS #1
-    2. Grady Sizemore                  7.7
-    3. Josh Hamilton                   7.3
-    4. Brian Roberts                   7.1
-    5. Dustin Pedroia                  6.3 <-- ACTUAL WINNER
+    1. Grady Sizemore                  7.2 <-- BRAVS #1
+    2. Josh Hamilton                   6.9
+    3. Dustin Pedroia                  6.7 <-- ACTUAL WINNER
+    4. Mark Teixeira                   6.3
+    5. Alex Rodriguez                  6.3
 
-  2008 NL Cy Young  [AGREE]
-    1. Tim Lincecum                    7.6 <-- ACTUAL WINNER <-- BRAVS #1
-    2. CC Sabathia                     7.5
+  2008 NL Cy Young  [DISAGREE]
+    1. CC Sabathia                     7.4 <-- BRAVS #1
+    2. Tim Lincecum                    7.1 <-- ACTUAL WINNER
     3. Dan Haren                       6.1
 
   2008 NL MVP  [DISAGREE]
-    1. Jose Reyes                      9.3 <-- BRAVS #1
-    2. Hanley Ramirez                  8.1
-    3. Chase Utley                     7.4
-    4. Carlos Beltran                  7.2
-    5. David Wright                    7.1
-    Actual winner: pujolal01 (#6, 7.0 WAR-eq)
+    1. Hanley Ramirez                  8.1 <-- BRAVS #1
+    2. Albert Pujols                   7.6 <-- ACTUAL WINNER
+    3. David Wright                    7.5
+    4. Chase Utley                     7.1
+    5. Manny Ramirez                   6.9
 
   2009 AL Cy Young  [AGREE]
-    1. Zack Greinke                    8.7 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Justin Verlander                7.7
+    1. Zack Greinke                    8.5 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Justin Verlander                7.4
     3. Roy Halladay                    6.8
 
   2009 AL MVP  [AGREE]
-    1. Joe Mauer                       8.2 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Ben Zobrist                     8.0
-    3. Denard Span                     6.9
-    4. Shin-Soo Choo                   6.8
-    5. Chone Figgins                   6.8
+    1. Joe Mauer                       8.8 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Derek Jeter                     7.3
+    3. Ben Zobrist                     7.1
+    4. Victor Martinez                 6.6
+    5. Mark Teixeira                   6.6
 
   2009 NL Cy Young  [AGREE]
-    1. Tim Lincecum                    8.1 <-- ACTUAL WINNER <-- BRAVS #1
+    1. Tim Lincecum                    7.9 <-- ACTUAL WINNER <-- BRAVS #1
     2. Javier Vazquez                  6.8
-    3. Adam Wainwright                 6.6
+    3. Cliff Lee                       6.3
 
   2009 NL MVP  [DISAGREE]
-    1. Chase Utley                     8.5 <-- BRAVS #1
-    2. Troy Tulowitzki                 8.2
-    3. Ryan Braun                      8.1
-    4. Shane Victorino                 7.7
-    5. Albert Pujols                   7.5 <-- ACTUAL WINNER
+    1. Chase Utley                     8.2 <-- BRAVS #1
+    2. Albert Pujols                   7.7 <-- ACTUAL WINNER
+    3. Hanley Ramirez                  7.7
+    4. Ryan Braun                      7.6
+    5. Prince Fielder                  7.4
 
   2010 AL Cy Young  [DISAGREE]
     1. Cliff Lee                       7.5 <-- BRAVS #1
-    2. Felix Hernandez                 7.4 <-- ACTUAL WINNER
-    3. Justin Verlander                6.9
+    2. Felix Hernandez                 7.0 <-- ACTUAL WINNER
+    3. Justin Verlander                6.5
 
   2010 AL MVP  [DISAGREE]
-    1. Jose Bautista                   8.4 <-- BRAVS #1
-    2. Carl Crawford                   7.9
-    3. Josh Hamilton                   7.4 <-- ACTUAL WINNER
-    4. Robinson Cano                   7.0
-    5. Evan Longoria                   6.2
+    1. Jose Bautista                   8.3 <-- BRAVS #1
+    2. Josh Hamilton                   7.5 <-- ACTUAL WINNER
+    3. Robinson Cano                   6.9
+    4. Paul Konerko                    6.6
+    5. Miguel Cabrera                  6.2
 
-  2010 NL Cy Young  [DISAGREE]
-    1. Adam Wainwright                 7.1 <-- BRAVS #1
-    2. Roy Halladay                    6.9 <-- ACTUAL WINNER
-    3. Josh Johnson                    6.3
+  2010 NL Cy Young  [AGREE]
+    1. Roy Halladay                    6.9 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Adam Wainwright                 6.9
+    3. Josh Johnson                    6.2
 
-  2010 NL MVP  [DISAGREE]
-    1. Carlos Gonzalez                 8.0 <-- BRAVS #1
-    2. Joey Votto                      7.5 <-- ACTUAL WINNER
-    3. Stephen Drew                    7.3
-    4. Rickie Weeks                    6.8
-    5. Kelly Johnson                   6.6
+  2010 NL MVP  [AGREE]
+    1. Joey Votto                      8.0 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Carlos Gonzalez                 6.8
+    3. Rickie Weeks                    6.7
+    4. Dan Uggla                       6.6
+    5. Albert Pujols                   6.3
 
   2011 AL Cy Young  [AGREE]
-    1. Justin Verlander                7.7 <-- ACTUAL WINNER <-- BRAVS #1
-    2. CC Sabathia                     7.6
-    3. Dan Haren                       7.3
+    1. Justin Verlander                7.4 <-- ACTUAL WINNER <-- BRAVS #1
+    2. CC Sabathia                     7.2
+    3. Dan Haren                       7.1
 
   2011 AL MVP  [DISAGREE]
-    1. Jacoby Ellsbury                 9.6 <-- BRAVS #1
-    2. Curtis Granderson               9.6
-    3. Jose Bautista                   8.3
-    4. Robinson Cano                   7.3
+    1. Jacoby Ellsbury                 9.1 <-- BRAVS #1
+    2. Jose Bautista                   8.4
+    3. Curtis Granderson               7.8
+    4. Miguel Cabrera                  7.8
     5. Dustin Pedroia                  7.1
 
   2011 NL Cy Young  [DISAGREE]
     1. Roy Halladay                    8.9 <-- BRAVS #1
-    2. Clayton Kershaw                 8.6 <-- ACTUAL WINNER
-    3. Cliff Lee                       8.1
+    2. Clayton Kershaw                 8.4 <-- ACTUAL WINNER
+    3. Cliff Lee                       8.0
 
   2011 NL MVP  [DISAGREE]
-    1. Jose Reyes                      9.0 <-- BRAVS #1
-    2. Ryan Braun                      8.9 <-- ACTUAL WINNER
-    3. Shane Victorino                 8.6
-    4. Matt Kemp                       8.5
-    5. Troy Tulowitzki                 6.8
+    1. Matt Kemp                       8.2 <-- BRAVS #1
+    2. Ryan Braun                      8.2 <-- ACTUAL WINNER
+    3. Troy Tulowitzki                 6.7
+    4. Joey Votto                      6.6
+    5. Jose Reyes                      6.0
 
   2012 AL Cy Young  [DISAGREE]
-    1. Felix Hernandez                 7.7 <-- BRAVS #1
-    2. Justin Verlander                7.6
-    3. David Price                     6.4 <-- ACTUAL WINNER
+    1. Felix Hernandez                 7.3 <-- BRAVS #1
+    2. Justin Verlander                7.2
+    3. David Price                     6.0 <-- ACTUAL WINNER
 
   2012 AL MVP  [DISAGREE]
-    1. Mike Trout                     10.0 <-- BRAVS #1
-    2. Miguel Cabrera                  7.5 <-- ACTUAL WINNER
-    3. Austin Jackson                  7.4
-    4. Robinson Cano                   7.0
-    5. Adrian Beltre                   6.7
+    1. Mike Trout                      8.8 <-- BRAVS #1
+    2. Miguel Cabrera                  8.2 <-- ACTUAL WINNER
+    3. Robinson Cano                   7.4
+    4. Adrian Beltre                   7.0
+    5. Josh Hamilton                   6.2
 
   2012 NL Cy Young  [DISAGREE]
-    1. Clayton Kershaw                 7.2 <-- BRAVS #1
-    2. Gio Gonzalez                    6.1
-    3. R. A. Dickey                    5.8 <-- ACTUAL WINNER
+    1. Clayton Kershaw                 6.9 <-- BRAVS #1
+    2. Cliff Lee                       5.8
+    3. Gio Gonzalez                    5.7
+    Actual winner: dickera01 (#4, 5.5 WAR-eq)
 
   2012 NL MVP  [DISAGREE]
-    1. Andrew McCutchen                8.7 <-- BRAVS #1
-    2. Angel Pagan                     7.6
-    3. Buster Posey                    7.5 <-- ACTUAL WINNER
-    4. Ryan Braun                      7.5
-    5. Aaron Hill                      7.4
+    1. Andrew McCutchen                7.9 <-- BRAVS #1
+    2. Buster Posey                    7.9 <-- ACTUAL WINNER
+    3. Ryan Braun                      7.5
+    4. Chase Headley                   7.4
+    5. Aaron Hill                      6.5
 
   2013 AL Cy Young  [DISAGREE]
-    1. Felix Hernandez                 7.5 <-- BRAVS #1
-    2. Max Scherzer                    7.5 <-- ACTUAL WINNER
-    3. Anibal Sanchez                  7.2
+    1. Felix Hernandez                 7.3 <-- BRAVS #1
+    2. Max Scherzer                    7.2 <-- ACTUAL WINNER
+    3. Anibal Sanchez                  6.9
 
   2013 AL MVP  [DISAGREE]
-    1. Mike Trout                     12.3 <-- BRAVS #1
-    2. Miguel Cabrera                  8.9 <-- ACTUAL WINNER
-    3. Chris Davis                     7.2
+    1. Mike Trout                     10.6 <-- BRAVS #1
+    2. Miguel Cabrera                  9.7 <-- ACTUAL WINNER
+    3. Chris Davis                     7.8
     4. Josh Donaldson                  7.0
-    5. Carlos Santana                  6.6
+    5. Carlos Santana                  6.8
 
   2013 NL Cy Young  [AGREE]
-    1. Clayton Kershaw                 9.2 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Adam Wainwright                 8.9
-    3. Cliff Lee                       7.5
+    1. Clayton Kershaw                 9.0 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Adam Wainwright                 8.8
+    3. Matt Harvey                     7.3
 
   2013 NL MVP  [DISAGREE]
-    1. Matt Carpenter                  8.8 <-- BRAVS #1
-    2. Shin-Soo Choo                   8.4
-    3. Andrew McCutchen                7.9 <-- ACTUAL WINNER
-    4. Carlos Gomez                    7.6
-    5. Joey Votto                      6.5
+    1. Shin-Soo Choo                   8.5 <-- BRAVS #1
+    2. Matt Carpenter                  7.8
+    3. Andrew McCutchen                7.3 <-- ACTUAL WINNER
+    4. Joey Votto                      6.6
+    5. Troy Tulowitzki                 6.4
 
   2014 AL Cy Young  [AGREE]
-    1. Corey Kluber                   10.2 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Felix Hernandez                 9.5
-    3. David Price                     9.2
+    1. Corey Kluber                    9.8 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Felix Hernandez                 9.1
+    3. David Price                     8.9
 
   2014 AL MVP  [AGREE]
-    1. Mike Trout                     10.9 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Jose Altuve                     6.7
-    3. Michael Brantley                6.5
-    4. Jose Bautista                   6.2
-    5. Jose Abreu                      5.7
+    1. Mike Trout                      9.2 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Jose Bautista                   6.7
+    3. Michael Brantley                6.6
+    4. Jose Altuve                     6.5
+    5. Jose Abreu                      5.9
 
   2014 NL Cy Young  [AGREE]
-    1. Clayton Kershaw                10.0 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Adam Wainwright                 7.8
-    3. Madison Bumgarner               7.5
+    1. Clayton Kershaw                 9.7 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Adam Wainwright                 7.5
+    3. Jordan Zimmermann               7.3
 
   2014 NL MVP  [DISAGREE]
-    1. Andrew McCutchen                9.3 <-- BRAVS #1
-    2. Yasiel Puig                     7.0
-    3. Jonathan Lucroy                 6.7
-    4. Anthony Rendon                  6.7
-    5. Denard Span                     6.7
+    1. Andrew McCutchen                8.5 <-- BRAVS #1
+    2. Jonathan Lucroy                 6.8
+    3. Buster Posey                    6.1
+    4. Carlos Gomez                    6.0
+    5. Anthony Rendon                  5.9
 
-  2015 AL Cy Young  [AGREE]
-    1. Dallas Keuchel                  7.7 <-- ACTUAL WINNER <-- BRAVS #1
-    2. David Price                     7.7
-    3. Chris Sale                      7.4
+  2015 AL Cy Young  [DISAGREE]
+    1. David Price                     7.5 <-- BRAVS #1
+    2. Dallas Keuchel                  7.5 <-- ACTUAL WINNER
+    3. Chris Sale                      7.1
 
   2015 AL MVP  [DISAGREE]
-    1. Mike Trout                     10.1 <-- BRAVS #1
-    2. Josh Donaldson                  8.6 <-- ACTUAL WINNER
-    3. Mookie Betts                    7.0
-    4. Adam Eaton                      6.9
-    5. Manny Machado                   6.7
+    1. Mike Trout                      9.1 <-- BRAVS #1
+    2. Josh Donaldson                  8.7 <-- ACTUAL WINNER
+    3. Manny Machado                   6.9
+    4. Nelson Cruz                     6.5
+    5. Jose Bautista                   6.1
 
   2015 NL Cy Young  [DISAGREE]
-    1. Clayton Kershaw                10.1 <-- BRAVS #1
-    2. Jake Arrieta                    9.3 <-- ACTUAL WINNER
-    3. Max Scherzer                    7.9
+    1. Clayton Kershaw                10.0 <-- BRAVS #1
+    2. Jake Arrieta                    8.8 <-- ACTUAL WINNER
+    3. Max Scherzer                    7.8
 
   2015 NL MVP  [AGREE]
-    1. Bryce Harper                    9.4 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Joey Votto                      8.2
-    3. AJ Pollock                      7.7
-    4. Paul Goldschmidt                7.2
-    5. Charlie Blackmon                7.1
+    1. Bryce Harper                    9.8 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Joey Votto                      8.5
+    3. Paul Goldschmidt                7.3
+    4. Andrew McCutchen                6.9
+    5. AJ Pollock                      6.8
 
   2016 AL Cy Young  [DISAGREE]
-    1. Corey Kluber                    5.8 <-- BRAVS #1
-    2. Rick Porcello                   5.7 <-- ACTUAL WINNER
-    3. Chris Sale                      5.5
+    1. Corey Kluber                    5.5 <-- BRAVS #1
+    2. Rick Porcello                   5.5 <-- ACTUAL WINNER
+    3. Chris Sale                      5.3
 
   2016 AL MVP  [AGREE]
-    1. Mike Trout                     10.2 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Josh Donaldson                  8.7
-    3. Jose Altuve                     7.5
-    4. Mookie Betts                    7.4
-    5. Brian Dozier                    7.1
+    1. Mike Trout                      9.6 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Josh Donaldson                  8.3
+    3. Jose Altuve                     7.3
+    4. Mookie Betts                    6.9
+    5. Brian Dozier                    6.6
 
   2016 NL Cy Young  [DISAGREE]
     1. Noah Syndergaard                7.2 <-- BRAVS #1
-    2. Jose Fernandez                  7.0
-    3. Clayton Kershaw                 6.4
-    Actual winner: scherma01 (#6, 5.9 WAR-eq)
+    2. Jose Fernandez                  6.8
+    3. Clayton Kershaw                 6.6
+    Actual winner: scherma01 (#6, 5.7 WAR-eq)
 
-  2016 NL MVP  [DISAGREE]
-    1. DJ LeMahieu                     8.1 <-- BRAVS #1
-    2. Nolan Arenado                   8.1
-    3. Kris Bryant                     7.7 <-- ACTUAL WINNER
-    4. Jean Segura                     7.7
-    5. Charlie Blackmon                7.7
+  2016 NL MVP  [AGREE]
+    1. Kris Bryant                     8.0 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Charlie Blackmon                7.3
+    3. Nolan Arenado                   7.2
+    4. Joey Votto                      6.9
+    5. Jean Segura                     6.9
 
   2017 AL Cy Young  [DISAGREE]
-    1. Chris Sale                      7.6 <-- BRAVS #1
-    2. Corey Kluber                    7.1 <-- ACTUAL WINNER
-    3. Carlos Carrasco                 5.6
+    1. Chris Sale                      7.5 <-- BRAVS #1
+    2. Corey Kluber                    7.0 <-- ACTUAL WINNER
+    3. Carlos Carrasco                 5.4
 
   2017 AL MVP  [DISAGREE]
-    1. Aaron Judge                     8.1 <-- BRAVS #1
-    2. Jose Ramirez                    7.7
-    3. Jose Altuve                     7.5 <-- ACTUAL WINNER
+    1. Aaron Judge                     8.2 <-- BRAVS #1
+    2. Jose Altuve                     7.6 <-- ACTUAL WINNER
+    3. Jose Ramirez                    7.2
     4. Mike Trout                      6.7
-    5. Brian Dozier                    6.2
+    5. Francisco Lindor                6.0
 
   2017 NL Cy Young  [AGREE]
-    1. Max Scherzer                    5.9 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Stephen Strasburg               5.5
-    3. Zack Greinke                    5.2
+    1. Max Scherzer                    5.7 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Stephen Strasburg               5.4
+    3. Zack Greinke                    5.0
 
   2017 NL MVP  [DISAGREE]
-    1. Charlie Blackmon               11.5 <-- BRAVS #1
-    2. Nolan Arenado                   8.0
-    3. Joey Votto                      7.6
-    4. Kris Bryant                     7.5
-    5. Giancarlo Stanton               6.7 <-- ACTUAL WINNER
+    1. Charlie Blackmon                9.3 <-- BRAVS #1
+    2. Joey Votto                      8.1
+    3. Kris Bryant                     7.4
+    4. Giancarlo Stanton               7.4 <-- ACTUAL WINNER
+    5. Nolan Arenado                   7.1
 
   2018 AL Cy Young  [DISAGREE]
-    1. Justin Verlander                7.2 <-- BRAVS #1
-    2. Gerrit Cole                     6.9
-    3. Chris Sale                      6.8
-    Actual winner: snellbl01 (#8, 5.6 WAR-eq)
+    1. Justin Verlander                7.0 <-- BRAVS #1
+    2. Chris Sale                      6.6
+    3. Gerrit Cole                     6.6
+    Actual winner: snellbl01 (#8, 5.3 WAR-eq)
 
-  2018 AL MVP  [AGREE]
-    1. Mookie Betts                    9.5 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Mike Trout                      9.5
+  2018 AL MVP  [DISAGREE]
+    1. Mike Trout                      9.2 <-- BRAVS #1
+    2. Mookie Betts                    9.1 <-- ACTUAL WINNER
     3. Jose Ramirez                    7.9
-    4. Alex Bregman                    7.3
-    5. Francisco Lindor                7.0
+    4. Alex Bregman                    7.9
+    5. Francisco Lindor                7.3
 
   2018 NL Cy Young  [AGREE]
-    1. Jacob deGrom                    9.2 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Max Scherzer                    7.7
-    3. Patrick Corbin                  7.2
+    1. Jacob deGrom                    9.1 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Max Scherzer                    7.5
+    3. Patrick Corbin                  7.1
 
   2018 NL MVP  [AGREE]
-    1. Christian Yelich                8.7 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Trevor Story                    8.3
-    3. Javier Baez                     7.3
-    4. Charlie Blackmon                7.1
-    5. Manny Machado                   6.8
+    1. Christian Yelich                8.0 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Trevor Story                    7.6
+    3. Nolan Arenado                   6.9
+    4. Manny Machado                   6.7
+    5. Charlie Blackmon                6.3
 
   2019 AL Cy Young  [DISAGREE]
     1. Gerrit Cole                     6.9 <-- BRAVS #1
-    2. Charlie Morton                  6.0
-    3. Zack Greinke                    5.9
-    Actual winner: verlaju01 (#4, 5.7 WAR-eq)
+    2. Charlie Morton                  5.8
+    3. Zack Greinke                    5.7
+    Actual winner: verlaju01 (#4, 5.6 WAR-eq)
 
   2019 AL MVP  [DISAGREE]
-    1. Alex Bregman                    8.8 <-- BRAVS #1
-    2. Marcus Semien                   8.2
-    3. Mike Trout                      8.1 <-- ACTUAL WINNER
-    4. Mookie Betts                    6.7
-    5. Whit Merrifield                 6.7
+    1. Alex Bregman                    9.2 <-- BRAVS #1
+    2. Mike Trout                      8.4 <-- ACTUAL WINNER
+    3. Xander Bogaerts                 7.6
+    4. Marcus Semien                   7.5
+    5. Rafael Devers                   6.5
 
   2019 NL Cy Young  [AGREE]
     1. Jacob deGrom                    6.6 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Max Scherzer                    5.7
-    3. Stephen Strasburg               5.2
+    2. Max Scherzer                    5.8
+    3. Stephen Strasburg               5.0
 
   2019 NL MVP  [DISAGREE]
-    1. Ketel Marte                     8.6 <-- BRAVS #1
-    2. Trevor Story                    7.9
-    3. Anthony Rendon                  7.5
-    4. Christian Yelich                7.3
+    1. Anthony Rendon                  7.7 <-- BRAVS #1
+    2. Ketel Marte                     7.6
+    3. Christian Yelich                7.5
+    4. Trevor Story                    7.5
     5. Cody Bellinger                  7.1 <-- ACTUAL WINNER
 
   2021 AL Cy Young  [DISAGREE]
-    1. Shohei Ohtani                  10.1 <-- BRAVS #1
-    2. Nathan Eovaldi                  6.4
-    3. Gerrit Cole                     6.0
-    Actual winner: rayro02 (#7, 4.5 WAR-eq)
+    1. Shohei Ohtani                   8.7 <-- BRAVS #1
+    2. Nathan Eovaldi                  6.2
+    3. Gerrit Cole                     5.8
+    Actual winner: rayro02 (#7, 4.1 WAR-eq)
 
   2021 AL MVP  [AGREE]
-    1. Shohei Ohtani                  10.1 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Cedric Mullins                  8.3
-    3. Vladimir Guerrero               7.6
-    4. Marcus Semien                   6.9
-    5. Jose Ramirez                    6.6
+    1. Shohei Ohtani                   8.7 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Vladimir Guerrero               8.1
+    3. Cedric Mullins                  7.5
+    4. Marcus Semien                   7.3
+    5. Salvador Perez                  6.7
 
   2021 NL Cy Young  [AGREE]
-    1. Corbin Burnes                   8.2 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Zack Wheeler                    7.7
-    3. Kevin Gausman                   6.1
+    1. Corbin Burnes                   8.1 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Zack Wheeler                    7.5
+    3. Kevin Gausman                   5.8
 
-  2021 NL MVP  [DISAGREE]
-    1. Bryan Reynolds                  8.7 <-- BRAVS #1
-    2. Trea Turner                     7.2
-    3. Bryce Harper                    7.0 <-- ACTUAL WINNER
-    4. Juan Soto                       6.9
-    5. Austin Riley                    6.4
+  2021 NL MVP  [AGREE]
+    1. Bryce Harper                    7.5 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Trea Turner                     7.4
+    3. Bryan Reynolds                  7.2
+    4. Fernando Tatis                  7.0
+    5. Juan Soto                       7.0
 
   2022 AL Cy Young  [DISAGREE]
-    1. Shohei Ohtani                  11.5 <-- BRAVS #1
-    2. Kevin Gausman                   6.9
-    3. Shane Bieber                    6.6
-    Actual winner: verlaju01 (#4, 6.6 WAR-eq)
+    1. Shohei Ohtani                  10.7 <-- BRAVS #1
+    2. Kevin Gausman                   6.8
+    3. Justin Verlander                6.5 <-- ACTUAL WINNER
 
-  2022 AL MVP  [DISAGREE]
-    1. Shohei Ohtani                  11.5 <-- BRAVS #1
-    2. Aaron Judge                    10.6 <-- ACTUAL WINNER
-    3. Jose Ramirez                    6.1
-    4. Mike Trout                      5.8
-    5. Jose Altuve                     5.5
+  2022 AL MVP  [AGREE]
+    1. Aaron Judge                    11.3 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Shohei Ohtani                  10.7
+    3. Jose Altuve                     6.6
+    4. Mike Trout                      6.0
+    5. Xander Bogaerts                 5.9
 
   2022 NL Cy Young  [DISAGREE]
-    1. Aaron Nola                      7.6 <-- BRAVS #1
-    2. Carlos Rodon                    7.3
-    3. Sandy Alcantara                 7.2 <-- ACTUAL WINNER
+    1. Aaron Nola                      7.4 <-- BRAVS #1
+    2. Carlos Rodon                    7.1
+    3. Sandy Alcantara                 6.9 <-- ACTUAL WINNER
 
   2022 NL MVP  [AGREE]
-    1. Paul Goldschmidt                7.3 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Freddie Freeman                 6.4
-    3. Brandon Nimmo                   6.3
-    4. J. T. Realmuto                  6.3
-    5. Austin Riley                    6.1
+    1. Paul Goldschmidt                8.0 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Freddie Freeman                 6.7
+    3. Austin Riley                    6.6
+    4. Manny Machado                   6.2
+    5. Nolan Arenado                   6.0
 
   2023 AL Cy Young  [DISAGREE]
-    1. Shohei Ohtani                  10.0 <-- BRAVS #1
-    2. Sonny Gray                      6.0
-    3. Gerrit Cole                     6.0 <-- ACTUAL WINNER
+    1. Shohei Ohtani                   8.8 <-- BRAVS #1
+    2. Gerrit Cole                     5.8 <-- ACTUAL WINNER
+    3. Sonny Gray                      5.8
 
   2023 AL MVP  [AGREE]
-    1. Shohei Ohtani                  10.0 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Bobby Witt                      6.8
-    3. Marcus Semien                   6.4
-    4. Corey Seager                    5.8
-    5. Kyle Tucker                     5.8
+    1. Shohei Ohtani                   8.8 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Corey Seager                    6.5
+    3. Marcus Semien                   6.3
+    4. Adley Rutschman                 5.7
+    5. J. P. Crawford                  5.4
 
   2023 NL Cy Young  [DISAGREE]
-    1. Logan Webb                      6.2 <-- BRAVS #1
-    2. Spencer Strider                 6.0
-    3. Zac Gallen                      5.8
-    Actual winner: snellbl01 (#6, 4.5 WAR-eq)
+    1. Logan Webb                      6.1 <-- BRAVS #1
+    2. Spencer Strider                 5.8
+    3. Zac Gallen                      5.6
+    Actual winner: snellbl01 (#8, 3.7 WAR-eq)
 
   2023 NL MVP  [AGREE]
-    1. Ronald Acuña                    9.8 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Mookie Betts                    7.8
-    3. Freddie Freeman                 7.4
-    4. Corbin Carroll                  7.3
-    5. Matt Olson                      7.3
+    1. Ronald AcuÃ±a                    9.8 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Mookie Betts                    8.3
+    3. Freddie Freeman                 7.8
+    4. Matt Olson                      7.5
+    5. Juan Soto                       6.3
 
   2024 AL Cy Young  [AGREE]
-    1. Tarik Skubal                    7.0 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Cole Ragans                     5.6
-    3. Logan Gilbert                   5.6
+    1. Tarik Skubal                    6.9 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Logan Gilbert                   5.5
+    3. Seth Lugo                       5.4
 
   2024 AL MVP  [AGREE]
-    1. Aaron Judge                    11.4 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Bobby Witt                     10.9
-    3. Gunnar Henderson                9.1
-    4. Juan Soto                       8.9
-    5. Jarren Duran                    8.7
+    1. Aaron Judge                    11.9 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Bobby Witt                      9.3
+    3. Juan Soto                       8.6
+    4. Gunnar Henderson                8.3
+    5. Jarren Duran                    6.4
 
   2024 NL Cy Young  [AGREE]
-    1. Chris Sale                      7.3 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Logan Webb                      6.3
-    3. Zack Wheeler                    5.7
+    1. Chris Sale                      7.2 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Logan Webb                      6.1
+    3. Zack Wheeler                    5.5
 
   2024 NL MVP  [AGREE]
-    1. Shohei Ohtani                   9.9 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Elly De La Cruz                 7.3
-    3. Corbin Carroll                  6.9
-    4. Ketel Marte                     6.2
-    5. Francisco Lindor                6.2
+    1. Shohei Ohtani                   9.3 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Francisco Lindor                6.7
+    3. Ketel Marte                     6.2
+    4. William Contreras               6.0
+    5. Elly De La Cruz                 5.8
 
   2025 AL Cy Young  [AGREE]
-    1. Tarik Skubal                    7.3 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Garrett Crochet                 6.5
-    3. Max Fried                       5.8
+    1. Tarik Skubal                    7.2 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Garrett Crochet                 6.3
+    3. Max Fried                       5.5
 
   2025 AL MVP  [AGREE]
-    1. Aaron Judge                     8.9 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Cal Raleigh                     8.0
-    3. Bobby Witt                      7.2
-    4. Byron Buxton                    6.0
-    5. Gunnar Henderson                6.0
+    1. Aaron Judge                     9.1 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Cal Raleigh                     8.6
+    3. Bobby Witt                      6.5
+    4. Jose Ramirez                    5.5
+    5. George Springer                 5.4
 
   2025 NL Cy Young  [DISAGREE]
-    1. Logan Webb                      7.4 <-- BRAVS #1
-    2. Cristopher Sanchez              7.3
-    3. Paul Skenes                     7.2 <-- ACTUAL WINNER
+    1. Logan Webb                      7.2 <-- BRAVS #1
+    2. Cristopher Sanchez              7.1
+    3. Paul Skenes                     7.0 <-- ACTUAL WINNER
 
   2025 NL MVP  [AGREE]
-    1. Shohei Ohtani                  10.8 <-- ACTUAL WINNER <-- BRAVS #1
-    2. Corbin Carroll                  8.5
-    3. Geraldo Perdomo                 8.1
-    4. Juan Soto                       6.2
-    5. Trea Turner                     6.2
-
-Saved to C:\Users\logiu\Desktop\testing\baseball\scripts\..\logs\all_award_races.log
+    1. Shohei Ohtani                   9.8 <-- ACTUAL WINNER <-- BRAVS #1
+    2. Geraldo Perdomo                 7.5
+    3. Juan Soto                       6.7
+    4. Francisco Lindor                6.5
+    5. Kyle Schwarber                  6.4

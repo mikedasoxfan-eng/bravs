@@ -104,6 +104,12 @@ def main():
 
     print(f"  Fielding estimates computed for {len(fld_lookup):,} player-seasons")
 
+    # Load Gold Glove awards
+    awards = pd.read_csv(lahman.CONTRIB_DIR / "AwardsPlayers.csv")
+    gg = awards[awards.awardID.str.contains("Gold Glove", na=False)]
+    gg_set = set(zip(gg.playerID, gg.yearID.astype(int)))
+    print(f"  Gold Glove awards loaded: {len(gg_set)}")
+
     # Merge batting and pitching into unified player-season records
     all_records = {}
 
@@ -126,13 +132,16 @@ def main():
             "BB_allowed": 0, "HBP_allowed": 0, "K_pitch": 0,
             "G_pitched": 0, "GS": 0, "SV": 0,
             "park_factor": 1.0, "season_games": season_games,
-            "fielding_rf": 0.0, "fielding_e": 0.0,
+            "fielding_rf": 0.0, "fielding_e": 0.0, "gold_glove": 0,
         }
         # Add fielding data
         fld_key = (r.playerID, int(r.yearID))
         if fld_key in fld_lookup:
             all_records[key]["fielding_rf"] = round(fld_lookup[fld_key][0], 1)
             all_records[key]["fielding_e"] = round(fld_lookup[fld_key][1], 1)
+        # Gold Glove bonus
+        if (r.playerID, int(r.yearID)) in gg_set:
+            all_records[key]["gold_glove"] = 1
 
     for _, r in pit_season.iterrows():
         key = (r.playerID, int(r.yearID))
@@ -161,12 +170,14 @@ def main():
                 "K_pitch": int(r.SO), "G_pitched": int(r.G),
                 "GS": int(r.GS), "SV": int(r.get("SV", 0) or 0),
                 "park_factor": 1.0, "season_games": season_games,
-                "fielding_rf": 0.0, "fielding_e": 0.0,
+                "fielding_rf": 0.0, "fielding_e": 0.0, "gold_glove": 0,
             }
             fld_key = (r.playerID, int(r.yearID))
             if fld_key in fld_lookup:
                 all_records[(r.playerID, int(r.yearID))]["fielding_rf"] = round(fld_lookup[fld_key][0], 1)
                 all_records[(r.playerID, int(r.yearID))]["fielding_e"] = round(fld_lookup[fld_key][1], 1)
+            if (r.playerID, int(r.yearID)) in gg_set:
+                all_records[(r.playerID, int(r.yearID))]["gold_glove"] = 1
 
     player_data = list(all_records.values())
     total = len(player_data)

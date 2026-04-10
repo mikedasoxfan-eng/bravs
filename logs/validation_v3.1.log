@@ -1,0 +1,51 @@
+======================================================================
+  BRAVS v3.1 COMPREHENSIVE VALIDATION REPORT
+======================================================================
+
+1. SCALE:
+   Season range: 1920-2025
+   Player-seasons: 75,265
+   Careers: 14,092
+   Mean season WAR-eq (qualified batters): 2.8
+   Mean season WAR-eq (qualified pitchers): 2.8
+
+2. fWAR CAREER CORRELATION (21 benchmarks):
+   Pearson r: 0.807
+   RMSE: 14.5
+   MAE: 12.5
+   Mean diff: +1.4
+
+3. HOF SEPARATION:
+   HOFers: n=209, mean=62.0
+   Non-HOF: n=1181, mean=16.9
+   AUC: 0.9330
+   HOF classifier: 94.7% accuracy at 80% confidence
+
+4. AWARD RACE AGREEMENT: 41.5% (110/265 races)
+
+5. TOP 10 CAREERS:
+    1. Babe Ruth               151.7 WAR-eq
+    2. Ted Williams            146.8 WAR-eq
+    3. Willie Mays             144.3 WAR-eq
+    4. Stan Musial             136.7 WAR-eq
+    5. Barry Bonds             131.2 WAR-eq
+    6. Mickey Mantle           126.6 WAR-eq
+    7. Lou Gehrig              125.1 WAR-eq
+    8. Hank Aaron              124.2 WAR-eq
+    9. Roger Clemens           120.7 WAR-eq
+   10. Alex Rodriguez          120.3 WAR-eq
+
+6. TOP 10 SINGLE SEASONS:
+    1. Babe Ruth              1921 LF     16.4
+    2. Babe Ruth              1920 RF     14.9
+    3. Babe Ruth              1923 RF     14.6
+    4. Bob Gibson             1968 P      14.0
+    5. Rogers Hornsby         1922 2B     13.8
+    6. Sandy Koufax           1965 P      13.6
+    7. Mickey Mantle          1956 CF     13.0
+    8. Ted Williams           1941 LF     13.0
+    9. Ted Williams           1946 LF     12.9
+   10. Babe Ruth              1924 RF     12.9
+
+7. GPU PERFORMANCE: 75,265 player-seasons in 1.57 seconds
+   Rate: 47,939 player-seasons/second
