@@ -26,7 +26,7 @@ EVENTS_ROOT = os.path.join(ROOT, "data", "retrosheet", "events")
 OUT_PARQUET = os.path.join(ROOT, "data", "retrosheet", "events_parsed.parquet")
 OUT_CSV = os.path.join(ROOT, "data", "retrosheet", "events_parsed.csv")
 
-YEARS = list(range(2015, 2025))
+YEARS = list(range(2000, 2026))
 
 # ---------------------------------------------------------------------------
 # Event-field classification

@@ -274,11 +274,11 @@ def assemble():
 
     # Save raw stats in Lahman format
     bat_df = pd.DataFrame(batting_rows)
-    bat_df.to_csv(f"{OUT_DIR}/batting_2026.csv", index=False)
+    bat_df.to_csv(f"{OUT_DIR}/batting_2026.csv", index=False, encoding="utf-8-sig")
     log.info("Saved %s (%d rows)", f"{OUT_DIR}/batting_2026.csv", len(bat_df))
 
     pit_df = pd.DataFrame(pitching_rows)
-    pit_df.to_csv(f"{OUT_DIR}/pitching_2026.csv", index=False)
+    pit_df.to_csv(f"{OUT_DIR}/pitching_2026.csv", index=False, encoding="utf-8-sig")
     log.info("Saved %s (%d rows)", f"{OUT_DIR}/pitching_2026.csv", len(pit_df))
 
     # Build GPU-compatible player data
@@ -353,7 +353,7 @@ def assemble():
 
     # Save BRAVS CSV
     bravs_df = pd.DataFrame(results)
-    bravs_df.to_csv(f"{OUT_DIR}/bravs_2026.csv", index=False)
+    bravs_df.to_csv(f"{OUT_DIR}/bravs_2026.csv", index=False, encoding="utf-8-sig")
     log.info("Saved %s (%d rows)", f"{OUT_DIR}/bravs_2026.csv", len(bravs_df))
 
     # Merge with historical careers
@@ -371,7 +371,7 @@ def assemble():
                 hist.at[idx, "seasons"] = hist.at[idx, "seasons"] + 1
                 if r.get("bravs", 0) > hist.at[idx, "peak_bravs"]:
                     hist.at[idx, "peak_bravs"] = r.get("bravs", 0)
-        hist.to_csv(f"{OUT_DIR}/careers_2026.csv", index=False)
+        hist.to_csv(f"{OUT_DIR}/careers_2026.csv", index=False, encoding="utf-8-sig")
         log.info("Saved %s with 2026 updates", f"{OUT_DIR}/careers_2026.csv")
     except Exception as e:
         log.warning("Could not update careers: %s", e)

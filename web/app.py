@@ -26,6 +26,58 @@ from baseball_metric.adjustments.park_factors import get_park_factor
 # Load pre-computed BRAVS from GPU engine (instant, no API needed)
 _PRECOMPUTED = None
 _CAREERS = None
+_BRAVS_2026 = None
+_MLB_TO_LAHMAN: dict[int, str] | None = None
+_LAHMAN_TO_MLB: dict[str, int] | None = None
+
+# MLB-API team abbreviations -> Lahman/Retrosheet codes used in
+# bravs_all_seasons.csv. Most teams are identical; only list differences.
+_MLB_TO_LAHMAN_TEAM = {
+    "CWS": "CHA", "CHW": "CHA",
+    "CHC": "CHN",
+    "NYY": "NYA",
+    "NYM": "NYN",
+    "KC": "KCA", "KCR": "KCA",
+    "LAD": "LAN",
+    "SF": "SFN", "SFG": "SFN",
+    "SD": "SDN", "SDP": "SDN",
+    "STL": "SLN",
+    "TB": "TBA", "TBR": "TBA",
+    "WSH": "WAS", "WSN": "WAS",
+}
+
+
+def _team_to_lahman(abbrev: str) -> str:
+    """Convert an MLB-style team abbreviation to the Lahman/Retrosheet code
+    used in bravs_all_seasons.csv (e.g. NYY -> NYA, CWS -> CHA)."""
+    if not abbrev:
+        return abbrev
+    a = abbrev.upper()
+    return _MLB_TO_LAHMAN_TEAM.get(a, a)
+
+
+def _load_crosswalk():
+    """Lazy-load the MLB <-> Lahman ID crosswalk."""
+    global _MLB_TO_LAHMAN, _LAHMAN_TO_MLB
+    if _MLB_TO_LAHMAN is None:
+        try:
+            cw = pd.read_csv("data/id_crosswalk.csv")
+            _MLB_TO_LAHMAN = dict(zip(cw.mlbam_id.astype(int), cw.lahman_id))
+            _LAHMAN_TO_MLB = dict(zip(cw.lahman_id, cw.mlbam_id.astype(int)))
+        except Exception as e:
+            logger.warning("Could not load id crosswalk: %s", e)
+            _MLB_TO_LAHMAN = {}
+            _LAHMAN_TO_MLB = {}
+    return _MLB_TO_LAHMAN, _LAHMAN_TO_MLB
+
+
+def _mlb_to_lahman_id(mlb_id: int | str) -> str | None:
+    """Return the Lahman playerID for an MLB ID, or None."""
+    m, _ = _load_crosswalk()
+    try:
+        return m.get(int(mlb_id))
+    except (ValueError, TypeError):
+        return None
 
 
 def _load_precomputed():
@@ -40,6 +92,20 @@ def _load_precomputed():
             _PRECOMPUTED = pd.DataFrame()
             _CAREERS = pd.DataFrame()
     return _PRECOMPUTED, _CAREERS
+
+
+def _load_bravs_2026():
+    """Load the live 2026 BRAVS table built daily by the assembler.
+    PlayerIDs in this CSV are MLB integer IDs (not Lahman strings)."""
+    global _BRAVS_2026
+    if _BRAVS_2026 is None:
+        try:
+            _BRAVS_2026 = pd.read_csv("data/2026/bravs_2026.csv")
+            logger.info("Loaded 2026 BRAVS: %d player-seasons", len(_BRAVS_2026))
+        except Exception as e:
+            logger.warning("Could not load 2026 BRAVS: %s", e)
+            _BRAVS_2026 = pd.DataFrame()
+    return _BRAVS_2026
 
 
 # Try Rust engine for faster computation
@@ -100,27 +166,8 @@ def _display_name(full_name: str) -> str:
     return " ".join([first, last] + last_parts).strip()
 
 
-def _get_precomputed_bravs(player_id_or_name, season):
-    """Look up pre-computed BRAVS from CSV. Returns dict or None."""
-    seasons, _ = _load_precomputed()
-    if seasons.empty:
-        return None
-
-    # Try by playerID first
-    row = seasons[(seasons.playerID == player_id_or_name) & (seasons.yearID == season)]
-    if row.empty:
-        # Try by name (partial match)
-        row = seasons[(seasons.name.str.contains(str(player_id_or_name), case=False, na=False)) & (seasons.yearID == season)]
-    if row.empty:
-        return None
-
-    r = row.iloc[0]
-
-    HEADSHOT = "https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_213,q_auto:best/v1/people/{}/headshot/67/current"
-
-    headshot = ""
-    team_logo = ""
-
+def _row_to_bravs_dict(r: pd.Series) -> dict:
+    """Format one row of a precomputed BRAVS CSV into the API response shape."""
     result = {
         "player_name": r.get("name", "Unknown"),
         "season": int(r.yearID),
@@ -138,7 +185,7 @@ def _get_precomputed_bravs(player_id_or_name, season):
         "leverage_mult": 1.0,
         "park_factor": 1.0,
         "engine": "gpu_precomputed",
-        "headshot": headshot,
+        "headshot": "",
         "components": [
             {"name": "hitting", "runs": round(float(r.get("hitting_runs", 0)), 1), "ci_lo": 0, "ci_hi": 0},
             {"name": "pitching", "runs": round(float(r.get("pitching_runs", 0)), 1), "ci_lo": 0, "ci_hi": 0},
@@ -157,6 +204,61 @@ def _get_precomputed_bravs(player_id_or_name, season):
         result["traditional"]["pitching"] = {"IP": round(float(r.IP), 1), "G": int(r.G)}
 
     return result
+
+
+def _get_precomputed_bravs(player_id_or_name, season: int) -> dict | None:
+    """Look up pre-computed BRAVS for one (player, season).
+
+    `player_id_or_name` accepts an MLB integer id, a Lahman string id, or a
+    name (last-resort fuzzy match). The function dispatches to the 2026 live
+    table for season==2026 and to the historical 1920-2025 table otherwise.
+    """
+    season = int(season)
+
+    # 2026 live table uses MLB integer playerIDs natively
+    if season == 2026:
+        df = _load_bravs_2026()
+        if df.empty:
+            return None
+        try:
+            mlb_id = int(player_id_or_name)
+            row = df[(df.playerID == mlb_id) & (df.yearID == 2026)]
+        except (ValueError, TypeError):
+            row = df[(df.name.str.contains(str(player_id_or_name), case=False,
+                                            na=False)) & (df.yearID == 2026)]
+        if row.empty:
+            return None
+        return _row_to_bravs_dict(row.iloc[0])
+
+    # Historical table uses Lahman string playerIDs. Resolve MLB ints first.
+    seasons, _ = _load_precomputed()
+    if seasons.empty:
+        return None
+
+    lahman_id = None
+    if isinstance(player_id_or_name, (int,)) or (
+        isinstance(player_id_or_name, str) and player_id_or_name.isdigit()
+    ):
+        lahman_id = _mlb_to_lahman_id(player_id_or_name)
+    elif isinstance(player_id_or_name, str):
+        # Already a Lahman id like "troutmi01"
+        lahman_id = player_id_or_name
+
+    if lahman_id:
+        row = seasons[(seasons.playerID == lahman_id)
+                      & (seasons.yearID == season)]
+        if not row.empty:
+            return _row_to_bravs_dict(row.iloc[0])
+
+    # Last-resort: fuzzy name match
+    row = seasons[
+        (seasons.name.str.contains(str(player_id_or_name),
+                                    case=False, na=False))
+        & (seasons.yearID == season)
+    ]
+    if row.empty:
+        return None
+    return _row_to_bravs_dict(row.iloc[0])
 
 
 # Team abbreviation -> MLB team ID
@@ -358,13 +460,12 @@ def compute_player_bravs(player_id: int, season: int):
         return jsonify({"error": "Player not found"}), 404
     pinfo = player_info["people"][0]
 
-    # Try pre-computed GPU data first (instant, no API calls for 1920-2025)
-    if season <= 2025 and season >= 1920:
-        # Need to find the Lahman playerID from the MLB API ID
-        # For now, try the career endpoint approach
-        precomputed = _get_precomputed_bravs(str(player_id), season)
+    # Try pre-computed GPU data first (instant, no live compute).
+    # 1920-2025 -> bravs_all_seasons.csv via MLB->Lahman crosswalk.
+    # 2026      -> live 2026/bravs_2026.csv (MLB IDs native).
+    if 1920 <= season <= 2026:
+        precomputed = _get_precomputed_bravs(player_id, season)
         if precomputed is None:
-            # Try by name
             name = pinfo.get("fullName", "")
             precomputed = _get_precomputed_bravs(name, season)
         if precomputed:
@@ -719,14 +820,61 @@ def _fetch_pitching_leaders(category: str, season: int, league_id: int, limit: i
 
 @app.route("/api/awards/<award>/<int:season>/<league>")
 def award_race(award: str, season: int, league: str):
-    """Compute BRAVS for all top candidates in an award race.
+    """Top BRAVS candidates for an award race, served from precomputed
+    GPU output. For 1920-2025 reads bravs_all_seasons.csv; for 2026 reads
+    the live 2026/bravs_2026.csv. Falls back to per-player live compute
+    for seasons outside the GPU table."""
+    lg_up = league.upper()
 
-    Uses multiple leader categories to build a robust candidate pool:
-    - MVP: OPS leaders + PA leaders + HR leaders (deduped)
-    - Cy Young: ERA leaders + K leaders + IP leaders + SV leaders (deduped)
-    """
-    league_id = 103 if league.upper() == "AL" else 104
+    # ---- GPU precomputed fast path ----
+    if 1920 <= season <= 2026:
+        if season == 2026:
+            df = _load_bravs_2026()
+        else:
+            df, _ = _load_precomputed()
+        if df is not None and not df.empty:
+            d = df[df.yearID == season].copy()
+            # League filter: handle both modern (AL/NL) and 2026 (AM/NA) codes
+            if lg_up == "AL":
+                d = d[d.lgID.isin(["AL", "AM"])]
+            elif lg_up == "NL":
+                d = d[d.lgID.isin(["NL", "NA"])]
+            # Award-specific: Cy Young = pitchers, MVP = position players + 2-way
+            if award == "cy_young":
+                d = d[d.IP >= 50]
+                top = d.nlargest(12, "bravs")
+            else:
+                d = d[d.PA >= 200]
+                top = d.nlargest(12, "bravs")
 
+            # Resolve MLB IDs for headshots/logos
+            results = []
+            for _, r in top.iterrows():
+                rec = _row_to_bravs_dict(r)
+                # 2026 already has int MLB IDs; pre-2026 needs Lahman->MLB
+                if season == 2026:
+                    mlb_pid = int(r.playerID)
+                else:
+                    _, l2m = _load_crosswalk()
+                    mlb_pid = l2m.get(r.playerID, 0) if l2m else 0
+                rec["player_id"] = mlb_pid
+                if mlb_pid:
+                    rec["headshot"] = HEADSHOT_URL.format(pid=mlb_pid)
+                _tid = TEAM_IDS.get(rec.get("team_abbrev", ""))
+                rec["team_id"] = _tid or 0
+                if _tid:
+                    rec["team_logo"] = TEAM_LOGO_URL.format(tid=_tid)
+                results.append(rec)
+            return jsonify({
+                "award": award,
+                "season": season,
+                "league": lg_up,
+                "engine": "gpu_precomputed",
+                "candidates": results,
+            })
+
+    # ---- Live fallback (pre-1920 won't have data; this branch unused) ----
+    league_id = 103 if lg_up == "AL" else 104
     seen_ids: set[int] = set()
     candidates: list[dict] = []
 
@@ -742,12 +890,10 @@ def award_race(award: str, season: int, league: str):
         _add_candidates(_fetch_pitching_leaders("inningsPitched", season, league_id, 8))
         _add_candidates(_fetch_pitching_leaders("saves", season, league_id, 5))
     else:
-        # MVP: combine OPS leaders (best performers) + PA leaders (everyday players)
         _add_candidates(_fetch_leaders("onBasePlusSlugging", season, league_id, 12))
         _add_candidates(_fetch_leaders("plateAppearances", season, league_id, 8))
         _add_candidates(_fetch_leaders("homeRuns", season, league_id, 5))
 
-    # Compute BRAVS for all candidates in parallel
     results = []
     with ThreadPoolExecutor(max_workers=6) as pool:
         futures = {
@@ -769,7 +915,7 @@ def award_race(award: str, season: int, league: str):
     return jsonify({
         "award": award,
         "season": season,
-        "league": league.upper(),
+        "league": lg_up,
         "candidates": results,
     })
 
@@ -1084,11 +1230,47 @@ def what_if():
 
 @app.route("/api/team/<team_abbrev>/<int:season>")
 def team_roster(team_abbrev, season):
-    """Get all players on a team for a season and rank by BRAVS."""
-    # Resolve team abbreviation to MLB team ID
+    """Get all players on a team for a season and rank by BRAVS — served
+    from precomputed GPU output (bravs_all_seasons.csv 1920-2025, or
+    2026/bravs_2026.csv for the live season)."""
     team_id = TEAM_IDS.get(team_abbrev.upper())
+
+    # ---- GPU precomputed fast path ----
+    if 1920 <= season <= 2026:
+        if season == 2026:
+            df = _load_bravs_2026()
+            csv_team = team_abbrev.upper()  # 2026 uses MLB-style abbrevs
+        else:
+            df, _ = _load_precomputed()
+            csv_team = _team_to_lahman(team_abbrev)  # historical uses Retrosheet
+        if df is not None and not df.empty:
+            d = df[(df.yearID == season) & (df.team == csv_team)]
+            if not d.empty:
+                results = []
+                _, l2m = _load_crosswalk() if season != 2026 else (None, None)
+                for _, r in d.sort_values("bravs", ascending=False).iterrows():
+                    rec = _row_to_bravs_dict(r)
+                    if season == 2026:
+                        mlb_pid = int(r.playerID)
+                    else:
+                        mlb_pid = (l2m or {}).get(r.playerID, 0)
+                    rec["player_id"] = mlb_pid
+                    if mlb_pid:
+                        rec["headshot"] = HEADSHOT_URL.format(pid=mlb_pid)
+                    if team_id:
+                        rec["team_id"] = team_id
+                        rec["team_logo"] = TEAM_LOGO_URL.format(tid=team_id)
+                    results.append(rec)
+                return jsonify({
+                    "team": team_abbrev,
+                    "season": season,
+                    "engine": "gpu_precomputed",
+                    "players": results,
+                    "team_bravs": round(sum(r.get("bravs", 0) for r in results), 1),
+                })
+
+    # ---- Live fallback (out-of-range seasons) ----
     if not team_id:
-        # Try looking up by searching all teams
         teams_data = _mlb_get(f"{MLB_API}/teams", {"season": season, "sportId": 1})
         if teams_data and "teams" in teams_data:
             for t in teams_data["teams"]:
@@ -1102,7 +1284,6 @@ def team_roster(team_abbrev, season):
     if not team_id:
         return jsonify({"error": f"Unknown team: {team_abbrev}"}), 404
 
-    # Fetch actual roster from MLB API
     roster_data = _mlb_get(
         f"{MLB_API}/teams/{team_id}/roster",
         {"season": season, "rosterType": "fullSeason"},
@@ -1110,7 +1291,6 @@ def team_roster(team_abbrev, season):
     if not roster_data or "roster" not in roster_data:
         return jsonify({"error": "Could not fetch roster"}), 500
 
-    # Extract player IDs and names
     roster_players = []
     for entry in roster_data["roster"]:
         person = entry.get("person", {})
@@ -1120,7 +1300,6 @@ def team_roster(team_abbrev, season):
         if pid:
             roster_players.append({"id": pid, "name": name, "position": pos})
 
-    # Compute BRAVS for all roster players in parallel
     results = []
     with ThreadPoolExecutor(max_workers=8) as pool:
         futures = {
@@ -1305,128 +1484,62 @@ def player_similar(player_id, season):
 
 @app.route("/api/mvp/live/<league>")
 def live_mvp(league):
-    """Live MVP race for the current season, adjusted for pace."""
-    import datetime
-    current_year = datetime.date.today().year
-    league_id = 103 if league.upper() == "AL" else 104
+    """Live MVP race for the current season — served from the daily 2026
+    GPU CSV (data/2026/bravs_2026.csv). The assembler runs at 2 AM and
+    refreshes BRAVS for every active player; we just rank and return."""
+    df = _load_bravs_2026()
+    if df is None or df.empty:
+        return jsonify({
+            "season": 2026,
+            "league": league.upper(),
+            "candidates": [],
+            "engine": "gpu_2026",
+            "error": "2026 BRAVS table not available",
+        }), 503
 
-    # Gather candidates from multiple leader categories
-    seen_ids: set[int] = set()
-    candidates: list[dict] = []
+    lg_up = league.upper()
+    d = df[df.yearID == 2026].copy()
+    if lg_up == "AL":
+        d = d[d.lgID.isin(["AL", "AM"])]
+    elif lg_up == "NL":
+        d = d[d.lgID.isin(["NL", "NA"])]
+    # Need at least token playing time so the leaderboard isn't all noise
+    d = d[(d.PA >= 20) | (d.IP >= 5)]
 
-    def _add(leaders: list[dict]) -> None:
-        for p in leaders:
-            if p["id"] not in seen_ids:
-                seen_ids.add(p["id"])
-                candidates.append(p)
+    # Estimate league-wide team_games from max G in the table
+    team_games_est = int(d.G.max()) if not d.empty else 0
 
-    _add(_fetch_leaders("onBasePlusSlugging", current_year, league_id, 12))
-    _add(_fetch_leaders("plateAppearances", current_year, league_id, 8))
-    _add(_fetch_leaders("homeRuns", current_year, league_id, 5))
-    _add(_fetch_pitching_leaders("earnedRunAverage", current_year, league_id, 8))
-    _add(_fetch_pitching_leaders("strikeouts", current_year, league_id, 5))
-    _add(_fetch_pitching_leaders("inningsPitched", current_year, league_id, 5))
+    candidates = []
+    for _, r in d.nlargest(20, "bravs").iterrows():
+        rec = _row_to_bravs_dict(r)
+        mlb_pid = int(r.playerID)  # 2026 CSV stores MLB ids natively
+        rec["player_id"] = mlb_pid
+        rec["headshot"] = HEADSHOT_URL.format(pid=mlb_pid)
+        _tid = TEAM_IDS.get(rec.get("team_abbrev", ""))
+        rec["team_id"] = _tid or 0
+        if _tid:
+            rec["team_logo"] = TEAM_LOGO_URL.format(tid=_tid)
 
-    # Figure out how far into the season we are by checking schedule
-    schedule = _mlb_get(
-        f"{MLB_API}/schedule",
-        {"sportId": 1, "season": current_year, "gameType": "R"},
-    )
-    games_played_league = 0
-    if schedule and "dates" in schedule:
-        for dt in schedule["dates"]:
-            for g in dt.get("games", []):
-                if g.get("status", {}).get("abstractGameState") == "Final":
-                    games_played_league += 1
-    # Estimate per-team games (30 teams, 2 teams per game)
-    team_games_est = max(games_played_league * 2 // 30, 5)
+        # Extrapolate to a 162-game pace for the headline number
+        games = int(r.G) if pd.notna(r.G) else 0
+        bravs_now = float(r.bravs)
+        pace_factor = (162.0 / games) if games > 0 else 1.0
+        pace_factor = min(pace_factor, 20.0)
+        rec["games_played"] = games
+        rec["team_games"] = team_games_est
+        rec["bravs_raw"] = bravs_now
+        rec["bravs_pace"] = round(bravs_now * pace_factor, 1)
+        rec["bravs_war_eq"] = round(rec["bravs_pace"] * 0.57, 1)
+        candidates.append(rec)
 
-    # Compute BRAVS with correct season_games so durability prorates properly.
-    # We can't pass season_games through compute_player_bravs_internal directly,
-    # so we compute manually here for each candidate.
-    raw_results: list[dict] = []
-
-    def _compute_live(cand_id: int, cand_name: str) -> dict | None:
-        """Compute BRAVS for a live-season player with prorated season length."""
-        # We need to call the full compute endpoint logic but with season_games override.
-        # Simplest approach: call the normal endpoint and then adjust.
-        with app.test_request_context():
-            resp = compute_player_bravs(cand_id, current_year)
-            if isinstance(resp, tuple):
-                return None
-            return resp.get_json()
-
-    with ThreadPoolExecutor(max_workers=6) as pool:
-        futures = {
-            pool.submit(_compute_live, cand["id"], cand["name"]): cand
-            for cand in candidates[:20]
-        }
-        for future in as_completed(futures):
-            cand = futures[future]
-            try:
-                resp_data = future.result()
-                if resp_data and "error" not in resp_data:
-                    resp_data["player_id"] = cand["id"]
-                    raw_results.append(resp_data)
-            except Exception as e:
-                logger.warning("Live MVP failed for %s: %s", cand["name"], e)
-
-    # For each candidate: strip out durability entirely and extrapolate to
-    # 162-game pace. This gives a "what would their full season look like"
-    # projection based on current rate of production.
-    adjusted: list[dict] = []
-    for r in raw_results:
-        comps = _extract_component_runs(r)
-        durability_runs = comps.get("durability", 0.0)
-        rpw = r.get("rpw", 5.9)
-
-        # Get games played
-        games = 0
-        trad = r.get("traditional", {})
-        if trad.get("batting", {}).get("G"):
-            games = trad["batting"]["G"]
-        elif trad.get("pitching", {}).get("G"):
-            games = trad["pitching"]["G"]
-
-        # Raw BRAVS as-is (with full-season durability penalty)
-        raw_bravs = r.get("bravs", 0.0)
-
-        # Actual BRAVS: strip durability entirely to get pure production rate
-        production_runs = r.get("total_runs", 0.0) - durability_runs
-        actual_bravs = round(production_runs / rpw, 1)
-
-        # 162-game pace: extrapolate current production rate to full season
-        if games > 0:
-            pace_factor = 162.0 / games
-            pace_bravs = round(actual_bravs * min(pace_factor, 20.0), 1)  # cap at 20x
-        else:
-            pace_bravs = 0.0
-
-        adjusted.append({
-            "player_name": r.get("player_name", ""),
-            "player_id": r.get("player_id"),
-            "position": r.get("position", ""),
-            "team": r.get("team", ""),
-            "team_abbrev": r.get("team_abbrev", ""),
-            "team_id": r.get("team_id"),
-            "headshot": r.get("headshot", ""),
-            "bravs": actual_bravs,
-            "bravs_pace": pace_bravs,
-            "bravs_raw": raw_bravs,
-            "bravs_era_std": r.get("bravs_era_std", 0),
-            "bravs_war_eq": round(pace_bravs * 0.57, 1),
-            "games_played": games,
-            "team_games": team_games_est,
-            "components": r.get("components", []),
-        })
-
-    adjusted.sort(key=lambda x: x["bravs_pace"], reverse=True)
+    candidates.sort(key=lambda x: x.get("bravs_pace", 0), reverse=True)
 
     return jsonify({
-        "season": current_year,
-        "league": league.upper(),
+        "season": 2026,
+        "league": lg_up,
         "team_games": team_games_est,
-        "candidates": adjusted,
+        "engine": "gpu_2026",
+        "candidates": candidates,
     })
 
 
@@ -2937,24 +3050,133 @@ def api_leaderboard_all(year):
 from datetime import date as _date
 
 
-def _win_probability(score_ahead, score_behind, inning, top_bottom="top"):
-    """Pythagorean-style live win probability.
+_WP_BUNDLE = None
 
-    WP ≈ 0.5 + D * (I/9) * 0.08, clamped to [0.01, 0.99].
-    *inning* is the current inning number (1-based).
+
+def _load_wp_bundle():
+    """Lazy-load the v7 model bundle (includes v5 table for state lookups)."""
+    global _WP_BUNDLE
+    if _WP_BUNDLE is not None:
+        return _WP_BUNDLE
+    import pickle
+    path = os.path.join(os.path.dirname(__file__), "..",
+                        "data", "win_prob", "wp_model_v7.pkl")
+    if not os.path.exists(path):
+        # Fall back to v6, then nothing
+        alt = os.path.join(os.path.dirname(__file__), "..",
+                           "data", "win_prob", "wp_model_v6.pkl")
+        path = alt if os.path.exists(alt) else None
+    if path is None:
+        _WP_BUNDLE = {}
+        return _WP_BUNDLE
+    with open(path, "rb") as f:
+        _WP_BUNDLE = pickle.load(f)
+    return _WP_BUNDLE
+
+
+def _wp_lookup_state(inning, is_bot, outs, diff, bases, prior_weight=15.0):
+    """State-only WP from the empirical v5 table. Batter's POV."""
+    bundle = _load_wp_bundle()
+    table = bundle.get("v5_table")
+    prior_map = bundle.get("v5_prior_map")
+    if not table:
+        return 0.5
+    inning_b = min(max(int(inning), 1), 12)
+    diff_c = max(-10, min(10, int(diff)))
+    is_bot = 1 if int(is_bot) else 0
+    outs = max(0, min(2, int(outs)))
+    bases = max(0, min(7, int(bases)))
+
+    p = prior_map["ihd"].get((inning_b, is_bot, diff_c))
+    if p is None:
+        p = prior_map["d"].get(diff_c, 0.5)
+
+    key = (inning_b, is_bot, outs, diff_c, bases)
+    if key in table:
+        w, t = table[key]
+        return (w + p * prior_weight) / (t + prior_weight)
+    # Fall back: aggregate across outs+bases at same (inning, half, diff)
+    wa, ta = 0, 0
+    for o in range(3):
+        for b in range(8):
+            k = (inning_b, is_bot, o, diff_c, b)
+            if k in table:
+                w, t = table[k]
+                wa += w
+                ta += t
+    if ta > 0:
+        return (wa + p * prior_weight) / (ta + prior_weight)
+    return p
+
+
+def _win_probability(score_ahead, score_behind, inning, top_bottom="top"):
+    """Empirical v5-table win probability from home team's POV.
+
+    Uses ~1.7M plays of real Retrosheet outcomes. When live-game state is
+    partial (no outs/bases info from the MLB StatsAPI schedule), we assume
+    0 outs / empty bases — the inning and score diff still dominate.
     """
-    diff = score_ahead - score_behind
-    inn = max(inning, 1)
-    wp = 0.5 + diff * (inn / 9.0) * 0.08
-    return max(0.01, min(0.99, wp))
+    # Normalise: our table keys on the BATTING team's score diff.
+    is_bot = 1 if str(top_bottom).lower().startswith("b") else 0
+    diff = score_ahead - score_behind  # from the "ahead" (home) perspective
+    # Convert to batter's POV and look up
+    bat_diff = diff if is_bot else -diff
+    wp_bat = _wp_lookup_state(int(inning), is_bot, 0, bat_diff, 0)
+    # Return from home's POV
+    wp_home = wp_bat if is_bot else 1.0 - wp_bat
+    return max(0.01, min(0.99, float(wp_home)))
+
+
+def _team_record_str(rec: dict | None) -> str:
+    if not rec:
+        return ""
+    w = rec.get("wins")
+    l = rec.get("losses")
+    if w is None or l is None:
+        return ""
+    return f"{w}-{l}"
+
+
+def _format_game_time(date_str: str | None) -> str:
+    """Convert MLB schedule date string to a friendly local time."""
+    if not date_str:
+        return ""
+    try:
+        from datetime import datetime, timezone
+        # MLB returns ISO 8601 like 2026-04-14T18:35:00Z
+        dt = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+        local = dt.astimezone()
+        return local.strftime("%-I:%M %p") if os.name != "nt" else local.strftime("%#I:%M %p")
+    except Exception:
+        return date_str
+
+
+def _bases_state(linescore: dict) -> dict:
+    """Return which bases are occupied from linescore.offense block."""
+    off = linescore.get("offense", {}) or {}
+    return {
+        "first": bool(off.get("first")),
+        "second": bool(off.get("second")),
+        "third": bool(off.get("third")),
+    }
+
+
+def _bases_idx(bases: dict) -> int:
+    return (1 if bases.get("first") else 0) + (2 if bases.get("second") else 0) + (4 if bases.get("third") else 0)
 
 
 @app.route("/api/live/scoreboard")
 def api_live_scoreboard():
-    """Return today's MLB games with scores, status, and win probability."""
+    """Today's MLB games with rich data: logos, records, probable pitcher,
+    bases, count, broadcast, weather, venue, and v5-empirical win probability.
+    """
     today = flask_request.args.get("date", _date.today().isoformat())
     try:
-        url = f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={today}&hydrate=linescore,team"
+        hydrate = (
+            "linescore(matchup,runners),team,probablePitcher,broadcasts(all),"
+            "weather,venue,decisions,flags,seriesStatus,game(content(summary,media(epg)))"
+        )
+        url = f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={today}&hydrate={hydrate}"
         resp = requests.get(url, timeout=10)
         resp.raise_for_status()
         data = resp.json()
@@ -2964,28 +3186,76 @@ def api_live_scoreboard():
                 away = g.get("teams", {}).get("away", {})
                 home = g.get("teams", {}).get("home", {})
                 status = g.get("status", {})
-                linescore = g.get("linescore", {})
+                linescore = g.get("linescore", {}) or {}
                 inning = linescore.get("currentInning", 0) or 0
-                half = linescore.get("inningHalf", "Top")
+                half = linescore.get("inningHalf", "Top") or "Top"
+                inning_state = linescore.get("inningState", "") or ""
                 away_score = away.get("score", 0) or 0
                 home_score = home.get("score", 0) or 0
 
                 abstract = status.get("abstractGameState", "Preview")
                 detail = status.get("detailedState", "Scheduled")
 
-                # Win probability (home perspective)
+                # Bases / count / outs (only meaningful when game is live)
+                bases = _bases_state(linescore)
+                bases_idx = _bases_idx(bases)
+                balls = linescore.get("balls", 0) or 0
+                strikes = linescore.get("strikes", 0) or 0
+                outs = linescore.get("outs", 0) or 0
+                away_h = (linescore.get("teams", {}).get("away", {}) or {}).get("hits", 0)
+                home_h = (linescore.get("teams", {}).get("home", {}) or {}).get("hits", 0)
+                away_e = (linescore.get("teams", {}).get("away", {}) or {}).get("errors", 0)
+                home_e = (linescore.get("teams", {}).get("home", {}) or {}).get("errors", 0)
+                away_lob = (linescore.get("teams", {}).get("away", {}) or {}).get("leftOnBase", 0)
+                home_lob = (linescore.get("teams", {}).get("home", {}) or {}).get("leftOnBase", 0)
+
+                # Win probability via v5 empirical table (state-aware when live)
                 if abstract == "Live":
-                    home_wp = _win_probability(home_score, away_score, inning, half)
-                    away_wp = 1.0 - home_wp
+                    is_bot = 1 if str(half).lower().startswith("b") else 0
+                    bat_diff = (home_score - away_score) if is_bot else (away_score - home_score)
+                    wp_bat = _wp_lookup_state(inning, is_bot, outs, bat_diff, bases_idx)
+                    home_wp = wp_bat if is_bot else 1.0 - wp_bat
                 elif abstract == "Final":
-                    home_wp = 1.0 if home_score > away_score else (0.5 if home_score == away_score else 0.0)
-                    away_wp = 1.0 - home_wp
+                    if home_score > away_score:
+                        home_wp = 1.0
+                    elif home_score < away_score:
+                        home_wp = 0.0
+                    else:
+                        home_wp = 0.5
                 else:
                     home_wp = 0.5
-                    away_wp = 0.5
+                away_wp = 1.0 - home_wp
 
-                away_team = away.get("team", {})
-                home_team = home.get("team", {})
+                away_team = away.get("team", {}) or {}
+                home_team = home.get("team", {}) or {}
+
+                # Probable / current pitcher
+                def _pitcher_summary(p: dict) -> dict | None:
+                    if not p:
+                        return None
+                    pid = p.get("id")
+                    return {
+                        "id": pid,
+                        "name": p.get("fullName") or p.get("name", "?"),
+                        "headshot": HEADSHOT_URL.format(pid=pid) if pid else "",
+                    }
+
+                away_prob = _pitcher_summary(away.get("probablePitcher"))
+                home_prob = _pitcher_summary(home.get("probablePitcher"))
+
+                # Decisions (winning/losing pitcher — only post-game)
+                decisions = g.get("decisions", {}) or {}
+                winner_p = decisions.get("winner")
+                loser_p = decisions.get("loser")
+                save_p = decisions.get("save")
+
+                # Broadcasts (filter to TV)
+                bcasts = g.get("broadcasts", []) or []
+                tv = [b.get("name") for b in bcasts
+                      if b.get("type") == "TV" and b.get("name")]
+
+                weather = g.get("weather", {}) or {}
+                venue = g.get("venue", {}) or {}
 
                 games.append({
                     "gamePk": g.get("gamePk"),
@@ -2993,23 +3263,61 @@ def api_live_scoreboard():
                     "detailedState": detail,
                     "inning": inning,
                     "inningHalf": half,
+                    "inningState": inning_state,
+                    "gameTime": _format_game_time(g.get("gameDate")),
+                    "venue": venue.get("name", ""),
+                    "weather": {
+                        "condition": weather.get("condition", ""),
+                        "temp": weather.get("temp", ""),
+                        "wind": weather.get("wind", ""),
+                    },
+                    "broadcasts": tv,
+                    "bases": bases,
+                    "basesIdx": bases_idx,
+                    "balls": balls,
+                    "strikes": strikes,
+                    "outs": outs,
+                    "decisions": {
+                        "win": _pitcher_summary(winner_p),
+                        "loss": _pitcher_summary(loser_p),
+                        "save": _pitcher_summary(save_p),
+                    } if (winner_p or loser_p or save_p) else None,
                     "away": {
                         "name": away_team.get("name", "?"),
                         "abbreviation": away_team.get("abbreviation", "?"),
+                        "shortName": away_team.get("teamName", away_team.get("name", "?")),
                         "id": away_team.get("id"),
+                        "logo": TEAM_LOGO_URL.format(tid=away_team.get("id")) if away_team.get("id") else "",
                         "score": away_score,
+                        "hits": away_h,
+                        "errors": away_e,
+                        "lob": away_lob,
                         "wp": round(away_wp, 3),
+                        "record": _team_record_str(away.get("leagueRecord")),
+                        "probablePitcher": away_prob,
                     },
                     "home": {
                         "name": home_team.get("name", "?"),
                         "abbreviation": home_team.get("abbreviation", "?"),
+                        "shortName": home_team.get("teamName", home_team.get("name", "?")),
                         "id": home_team.get("id"),
+                        "logo": TEAM_LOGO_URL.format(tid=home_team.get("id")) if home_team.get("id") else "",
                         "score": home_score,
+                        "hits": home_h,
+                        "errors": home_e,
+                        "lob": home_lob,
                         "wp": round(home_wp, 3),
+                        "record": _team_record_str(home.get("leagueRecord")),
+                        "probablePitcher": home_prob,
                     },
                 })
         has_live = any(g["status"] == "Live" for g in games)
-        return jsonify({"date": today, "games": games, "hasLive": has_live})
+        return jsonify({
+            "date": today,
+            "games": games,
+            "hasLive": has_live,
+            "fetchedAt": _date.today().isoformat(),
+        })
     except Exception as e:
         logger.error("Live scoreboard error: %s", e)
         return jsonify({"error": str(e), "games": []}), 500
@@ -3017,80 +3325,222 @@ def api_live_scoreboard():
 
 @app.route("/api/live/game/<int:game_pk>")
 def api_live_game(game_pk):
-    """Return detailed live game data: linescore, current batter/pitcher, scoring plays."""
+    """Rich game data for the modal view: full linescore w/ R/H/E,
+    current at-bat with last few pitches, recent plays, scoring summary,
+    box-score totals, decisions, weather, venue."""
     try:
-        url = f"https://statsapi.mlb.com/api/v1/game/{game_pk}/linescore"
-        resp = requests.get(url, timeout=10)
-        resp.raise_for_status()
-        ls = resp.json()
+        feed_url = f"https://statsapi.mlb.com/api/v1.1/game/{game_pk}/feed/live"
+        feed_resp = requests.get(feed_url, timeout=12)
+        feed_resp.raise_for_status()
+        feed = feed_resp.json()
 
-        # Also fetch boxscore for current matchup
-        box_url = f"https://statsapi.mlb.com/api/v1/game/{game_pk}/boxscore"
-        try:
-            box_resp = requests.get(box_url, timeout=10)
-            box_resp.raise_for_status()
-            box = box_resp.json()
-        except Exception:
-            box = {}
+        gamedata = feed.get("gameData", {}) or {}
+        livedata = feed.get("liveData", {}) or {}
+        ls = livedata.get("linescore", {}) or {}
+        plays_block = livedata.get("plays", {}) or {}
+        all_plays = plays_block.get("allPlays", []) or []
+        cur_play = plays_block.get("currentPlay") or {}
 
+        teams = gamedata.get("teams", {}) or {}
+        away_team = teams.get("away", {}) or {}
+        home_team = teams.get("home", {}) or {}
+        status = gamedata.get("status", {}) or {}
+        venue = gamedata.get("venue", {}) or {}
+        weather = gamedata.get("weather", {}) or {}
+
+        away_id = away_team.get("id")
+        home_id = home_team.get("id")
+        away_logo = TEAM_LOGO_URL.format(tid=away_id) if away_id else ""
+        home_logo = TEAM_LOGO_URL.format(tid=home_id) if home_id else ""
+
+        # Inning-by-inning linescore with R/H/E
         innings = []
         for inn in ls.get("innings", []):
             innings.append({
                 "num": inn.get("num"),
-                "away": {"runs": (inn.get("away", {}) or {}).get("runs", 0)},
-                "home": {"runs": (inn.get("home", {}) or {}).get("runs", 0)},
+                "away": {
+                    "runs": (inn.get("away", {}) or {}).get("runs"),
+                    "hits": (inn.get("away", {}) or {}).get("hits"),
+                    "errors": (inn.get("away", {}) or {}).get("errors"),
+                },
+                "home": {
+                    "runs": (inn.get("home", {}) or {}).get("runs"),
+                    "hits": (inn.get("home", {}) or {}).get("hits"),
+                    "errors": (inn.get("home", {}) or {}).get("errors"),
+                },
             })
+        ls_teams = ls.get("teams", {}) or {}
+        away_totals = {
+            "R": (ls_teams.get("away", {}) or {}).get("runs", 0),
+            "H": (ls_teams.get("away", {}) or {}).get("hits", 0),
+            "E": (ls_teams.get("away", {}) or {}).get("errors", 0),
+            "LOB": (ls_teams.get("away", {}) or {}).get("leftOnBase", 0),
+        }
+        home_totals = {
+            "R": (ls_teams.get("home", {}) or {}).get("runs", 0),
+            "H": (ls_teams.get("home", {}) or {}).get("hits", 0),
+            "E": (ls_teams.get("home", {}) or {}).get("errors", 0),
+            "LOB": (ls_teams.get("home", {}) or {}).get("leftOnBase", 0),
+        }
 
-        offense = ls.get("offense", {})
-        defense = ls.get("defense", {})
+        # Current at-bat
+        offense = ls.get("offense", {}) or {}
+        defense = ls.get("defense", {}) or {}
+        cur_batter_obj = offense.get("batter") or {}
+        cur_pitcher_obj = defense.get("pitcher") or {}
 
-        current_batter = None
-        current_pitcher = None
-        if offense.get("batter"):
-            b = offense["batter"]
-            current_batter = {"id": b.get("id"), "name": b.get("fullName", "?")}
-        if defense.get("pitcher"):
-            p = defense["pitcher"]
-            current_pitcher = {
-                "id": p.get("id"),
-                "name": p.get("fullName", "?"),
-                "pitchCount": (ls.get("defense", {}).get("pitcher", {}) or {}).get("pitchCount"),
+        def _person_card(p: dict) -> dict | None:
+            if not p:
+                return None
+            pid = p.get("id")
+            return {
+                "id": pid,
+                "name": p.get("fullName", p.get("name", "?")),
+                "headshot": HEADSHOT_URL.format(pid=pid) if pid else "",
             }
 
-        # Scoring plays from feed
+        # Pull last few pitches of the current at-bat
+        recent_pitches = []
+        if cur_play and isinstance(cur_play, dict):
+            for ev in (cur_play.get("playEvents", []) or []):
+                if not ev.get("isPitch"):
+                    continue
+                det = ev.get("details", {}) or {}
+                pd_ = ev.get("pitchData", {}) or {}
+                recent_pitches.append({
+                    "type": (det.get("type", {}) or {}).get("description", ""),
+                    "code": (det.get("type", {}) or {}).get("code", ""),
+                    "result": det.get("description", ""),
+                    "ball": det.get("isBall", False),
+                    "strike": det.get("isStrike", False),
+                    "inPlay": det.get("isInPlay", False),
+                    "velocity": round(pd_.get("startSpeed", 0), 1) if pd_.get("startSpeed") else None,
+                    "nastyFactor": pd_.get("breaks", {}).get("breakLength") if isinstance(pd_.get("breaks"), dict) else None,
+                })
+            recent_pitches = recent_pitches[-6:]  # last 6
+
+        # Recent plays (last 8, completed only)
+        recent_plays = []
+        for p in reversed(all_plays):
+            if not p.get("about", {}).get("isComplete"):
+                continue
+            about = p.get("about", {}) or {}
+            res = p.get("result", {}) or {}
+            recent_plays.append({
+                "halfInning": about.get("halfInning", ""),
+                "inning": about.get("inning"),
+                "event": res.get("event", ""),
+                "description": res.get("description", ""),
+                "rbi": res.get("rbi", 0),
+                "awayScore": res.get("awayScore", 0),
+                "homeScore": res.get("homeScore", 0),
+                "isScoringPlay": about.get("isScoringPlay", False),
+            })
+            if len(recent_plays) >= 8:
+                break
+
+        # Scoring plays (canonical list)
         scoring = []
-        try:
-            feed_url = f"https://statsapi.mlb.com/api/v1.1/game/{game_pk}/feed/live"
-            feed_resp = requests.get(feed_url, timeout=10)
-            feed_data = feed_resp.json()
-            for play in feed_data.get("liveData", {}).get("plays", {}).get("scoringPlays", []):
-                if isinstance(play, int):
-                    all_plays = feed_data.get("liveData", {}).get("plays", {}).get("allPlays", [])
-                    if play < len(all_plays):
-                        p = all_plays[play]
-                        scoring.append({
-                            "inning": p.get("about", {}).get("halfInning", "") + " " + str(p.get("about", {}).get("inning", "")),
-                            "description": p.get("result", {}).get("description", ""),
-                        })
-                elif isinstance(play, dict):
-                    scoring.append({
-                        "inning": play.get("about", {}).get("halfInning", "") + " " + str(play.get("about", {}).get("inning", "")),
-                        "description": play.get("result", {}).get("description", ""),
-                    })
-        except Exception:
-            pass
+        for idx in plays_block.get("scoringPlays", []) or []:
+            if isinstance(idx, int) and 0 <= idx < len(all_plays):
+                p = all_plays[idx]
+                about = p.get("about", {}) or {}
+                res = p.get("result", {}) or {}
+                scoring.append({
+                    "halfInning": about.get("halfInning", ""),
+                    "inning": about.get("inning"),
+                    "description": res.get("description", ""),
+                    "awayScore": res.get("awayScore", 0),
+                    "homeScore": res.get("homeScore", 0),
+                })
+
+        # Decisions (post-game)
+        decisions_raw = livedata.get("decisions", {}) or {}
+        decisions = None
+        if decisions_raw:
+            decisions = {
+                "win": _person_card(decisions_raw.get("winner")),
+                "loss": _person_card(decisions_raw.get("loser")),
+                "save": _person_card(decisions_raw.get("save")),
+            }
+
+        # Probable pitchers (from gameData.probablePitchers)
+        prob = gamedata.get("probablePitchers", {}) or {}
+        prob_away = _person_card(prob.get("away"))
+        prob_home = _person_card(prob.get("home"))
+
+        # Bases
+        bases = {
+            "first": bool(offense.get("first")),
+            "second": bool(offense.get("second")),
+            "third": bool(offense.get("third")),
+        }
+        bases_idx = _bases_idx(bases)
+
+        # Win probability snapshot
+        inning = ls.get("currentInning", 0) or 0
+        half = ls.get("inningHalf", "Top") or "Top"
+        outs = ls.get("outs", 0) or 0
+        balls = ls.get("balls", 0) or 0
+        strikes = ls.get("strikes", 0) or 0
+        abstract = status.get("abstractGameState", "Preview")
+        if abstract == "Live" and inning:
+            is_bot = 1 if str(half).lower().startswith("b") else 0
+            bat_diff = (home_totals["R"] - away_totals["R"]) if is_bot \
+                else (away_totals["R"] - home_totals["R"])
+            wp_bat = _wp_lookup_state(inning, is_bot, outs, bat_diff, bases_idx)
+            home_wp = wp_bat if is_bot else 1.0 - wp_bat
+        elif abstract == "Final":
+            home_wp = 1.0 if home_totals["R"] > away_totals["R"] else (
+                0.5 if home_totals["R"] == away_totals["R"] else 0.0)
+        else:
+            home_wp = 0.5
+        away_wp = 1.0 - home_wp
 
         return jsonify({
             "gamePk": game_pk,
+            "status": abstract,
+            "detailedState": status.get("detailedState", ""),
+            "venue": venue.get("name", ""),
+            "weather": {
+                "condition": weather.get("condition", ""),
+                "temp": weather.get("temp", ""),
+                "wind": weather.get("wind", ""),
+            },
+            "away": {
+                "id": away_id,
+                "name": away_team.get("name", "?"),
+                "abbreviation": away_team.get("abbreviation", "?"),
+                "shortName": away_team.get("teamName", away_team.get("name", "?")),
+                "logo": away_logo,
+                "totals": away_totals,
+                "wp": round(away_wp, 3),
+                "probablePitcher": prob_away,
+            },
+            "home": {
+                "id": home_id,
+                "name": home_team.get("name", "?"),
+                "abbreviation": home_team.get("abbreviation", "?"),
+                "shortName": home_team.get("teamName", home_team.get("name", "?")),
+                "logo": home_logo,
+                "totals": home_totals,
+                "wp": round(home_wp, 3),
+                "probablePitcher": prob_home,
+            },
             "innings": innings,
-            "currentInning": ls.get("currentInning"),
-            "inningHalf": ls.get("inningHalf", "Top"),
-            "balls": ls.get("balls", 0),
-            "strikes": ls.get("strikes", 0),
-            "outs": ls.get("outs", 0),
-            "currentBatter": current_batter,
-            "currentPitcher": current_pitcher,
+            "currentInning": inning,
+            "inningHalf": half,
+            "inningState": ls.get("inningState", ""),
+            "balls": balls,
+            "strikes": strikes,
+            "outs": outs,
+            "bases": bases,
+            "currentBatter": _person_card(cur_batter_obj),
+            "currentPitcher": _person_card(cur_pitcher_obj),
+            "recentPitches": recent_pitches,
+            "recentPlays": recent_plays,
             "scoringPlays": scoring,
+            "decisions": decisions,
         })
     except Exception as e:
         logger.error("Live game %d error: %s", game_pk, e)
@@ -3138,6 +3588,97 @@ def api_simulate_game():
     except Exception as e:
         logger.exception("Simulation error")
         return jsonify({"error": str(e)}), 500
+
+
+# ── Win Probability / WPA API ───────────────────────────────────────
+
+
+@app.route("/api/wp/state")
+def api_wp_state():
+    """Return v5-empirical win probability for a game state.
+
+    Query params:
+      inning (1-12), half (T/B), outs (0-2), diff (-10..10, batter POV),
+      bases (0-7: bit0=1B, bit1=2B, bit2=3B)
+
+    Returns WP from both the batting team's and home team's POV.
+    """
+    try:
+        inning = int(flask_request.args.get("inning", 1))
+        half = str(flask_request.args.get("half", "T")).upper()
+        outs = int(flask_request.args.get("outs", 0))
+        diff = int(flask_request.args.get("diff", 0))
+        bases = int(flask_request.args.get("bases", 0))
+    except (TypeError, ValueError):
+        return jsonify({"error": "bad params"}), 400
+    is_bot = 1 if half.startswith("B") else 0
+    wp_bat = _wp_lookup_state(inning, is_bot, outs, diff, bases)
+    wp_home = wp_bat if is_bot else 1.0 - wp_bat
+    return jsonify({
+        "inning": inning, "half": "B" if is_bot else "T",
+        "outs": outs, "score_diff_bat": diff, "bases_idx": bases,
+        "wp_bat": round(float(wp_bat), 4),
+        "wp_home": round(float(wp_home), 4),
+        "source": "v5_empirical_table",
+    })
+
+
+@app.route("/api/wpa/top_plays")
+def api_wpa_top_plays():
+    """Top single-play WP swings 2015-2024 from the pre-computed table."""
+    limit = int(flask_request.args.get("limit", 50))
+    year = flask_request.args.get("year")
+    path = os.path.join(os.path.dirname(__file__), "..",
+                        "data", "win_prob", "top_plays_2015_2024.csv")
+    if not os.path.exists(path):
+        return jsonify({"error": "top plays not yet generated"}), 404
+    df = pd.read_csv(path)
+    if year:
+        df = df[df.year == int(year)]
+    df = df.reindex(df.dWP.abs().sort_values(ascending=False).index).head(limit)
+    return jsonify(df.to_dict(orient="records"))
+
+
+@app.route("/api/wpa/leaderboard/<role>")
+def api_wpa_leaderboard(role):
+    """WPA leaderboard for batters or pitchers, by season or career.
+
+    role: 'batter' or 'pitcher'
+    query: year=2024 (season) or career=1 (career 2015-2024)
+            clutch=1 to sort by clutch_WPA instead of WPA
+            limit=N (default 25)
+    """
+    if role not in ("batter", "pitcher"):
+        return jsonify({"error": "role must be batter or pitcher"}), 400
+    career = flask_request.args.get("career", "").lower() in ("1", "true", "yes")
+    clutch = flask_request.args.get("clutch", "").lower() in ("1", "true", "yes")
+    limit = int(flask_request.args.get("limit", 25))
+    base = os.path.join(os.path.dirname(__file__), "..", "data", "win_prob")
+    if career:
+        path = os.path.join(base, f"wpa_career_{role}s.csv")
+    else:
+        path = os.path.join(base, f"wpa_season_{role}s.csv")
+    if not os.path.exists(path):
+        return jsonify({"error": f"{path} not generated"}), 404
+    df = pd.read_csv(path)
+    year = flask_request.args.get("year")
+    if year and not career:
+        df = df[df.year == int(year)]
+    sort_col = "clutch_WPA" if clutch else "WPA"
+    df = df.sort_values(sort_col, ascending=False).head(limit)
+    return jsonify(df.to_dict(orient="records"))
+
+
+@app.route("/api/wpa/managers/<int:year>")
+def api_wpa_managers(year):
+    """Manager decision stats (pitching changes, defensive WPA) for a year."""
+    path = os.path.join(os.path.dirname(__file__), "..",
+                        "data", "win_prob",
+                        f"manager_decisions_{year}.csv")
+    if not os.path.exists(path):
+        return jsonify({"error": f"{path} not generated"}), 404
+    df = pd.read_csv(path).sort_values("def_WPA", ascending=False)
+    return jsonify(df.to_dict(orient="records"))
 
 
 if __name__ == "__main__":
