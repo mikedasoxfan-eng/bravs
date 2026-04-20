@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Percentile Rankings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/static/style.css?v=3">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="mark">BRAVS</span>
+    <span class="divider"></span>
+    <span class="title">Percentile Rankings</span>
+  </div>
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+      <circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <line x1="11" y1="11" x2="14" y2="14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+    </svg>
+    <input id="q" type="text" placeholder="Search player" autocomplete="off" spellcheck="false">
+    <select id="year" aria-label="Season"></select>
+    <div id="results" class="dropdown hidden"></div>
+  </div>
+</header>
+
+<main id="app">
+
+  <section id="card" class="card hidden">
+    <header class="card-hero">
+      <div class="card-title">
+        <h1 id="pname"></h1>
+        <p class="meta" id="pmeta"></p>
+      </div>
+      <div class="scale-legend">
+        <span class="dot poor"></span><span class="lbl">Poor</span>
+        <span class="sep"></span>
+        <span class="dot avg"></span><span class="lbl">Average</span>
+        <span class="sep"></span>
+        <span class="dot great"></span><span class="lbl">Great</span>
+      </div>
+    </header>
+
+    <div class="sections">
+      <section id="sec-value" class="sec hidden">
+        <div class="sec-label"><span class="num">01</span> Value</div>
+        <div class="bars"></div>
+      </section>
+      <section id="sec-batting" class="sec hidden">
+        <div class="sec-label"><span class="num">02</span> Batting</div>
+        <div class="bars"></div>
+      </section>
+      <section id="sec-pitching" class="sec hidden">
+        <div class="sec-label"><span class="num">02</span> Pitching</div>
+        <div class="bars"></div>
+      </section>
+      <section id="sec-fielding" class="sec hidden">
+        <div class="sec-label"><span class="num">03</span> Fielding</div>
+        <div class="bars"></div>
+      </section>
+      <section id="sec-running" class="sec hidden">
+        <div class="sec-label"><span class="num">04</span> Running</div>
+        <div class="bars"></div>
+      </section>
+      <section id="sec-catching" class="sec hidden">
+        <div class="sec-label"><span class="num">05</span> Catching</div>
+        <div class="bars"></div>
+      </section>
+    </div>
+  </section>
+
+  <section id="empty" class="empty">
+    <p class="empty-kicker">Start</p>
+    <h2>Search a player to view their percentile card.</h2>
+    <p class="empty-body">Percentiles are computed against each season's qualifying pool from raw Statcast leaderboards and BRAVS run-value components. Covers 2015&ndash;2025.</p>
+  </section>
+
+</main>
+
+<footer class="footbar">
+  <span>Data: Baseball Savant CSV endpoints + BRAVS engine</span>
+  <span class="sep">&middot;</span>
+  <span>Percentiles computed locally per season</span>
+</footer>
+
+<script src="/static/app.js?v=3"></script>
+</body>
+</html>

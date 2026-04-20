@@ -1,0 +1,16 @@
+{#
+  Renders a <select> grouped by stat.group.
+  Expects: stats (list of Stat), name, selected (key), cls (optional).
+#}
+<select class="ctl {{ cls or '' }}" name="{{ name }}">
+  {% set groups = namespace(current='') %}
+  {% for st in stats %}
+    {% if st.group != groups.current %}
+      {% if groups.current %}</optgroup>{% endif %}
+      <optgroup label="{{ st.group }}">
+      {% set groups.current = st.group %}
+    {% endif %}
+    <option value="{{ st.key }}" {% if st.key == selected %}selected{% endif %}>{{ st.label }}</option>
+  {% endfor %}
+  </optgroup>
+</select>

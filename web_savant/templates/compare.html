@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Compare — BRAVS{% endblock %}
+{% block page_title %}Compare{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <p class="kicker">02 / Compare</p>
+  <h2>Head-to-head.</h2>
+  <p class="lede">Pick 2–5 players, a season (or career totals), and see every core stat side-by-side. Leaders are highlighted per row.</p>
+</div>
+
+<form class="form-panel" method="get" action="/compare" id="cmp-form">
+  <div class="field wide" style="grid-column: span 2">
+    <label>Players</label>
+    <div id="chips" class="mono" style="display:flex;gap:6px;flex-wrap:wrap;min-height:28px;font-size:12px;color:var(--ink-500)"></div>
+    <div class="search-box" style="position:relative;margin-top:6px">
+      <svg class="search-icon" viewBox="0 0 16 16" width="14" height="14"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.3"/><line x1="11" y1="11" x2="14" y2="14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <input id="cmp-q" class="ctl" style="width:100%" type="text" placeholder="Add a player" autocomplete="off">
+      <div id="cmp-results" class="dropdown hidden"></div>
+    </div>
+    <input type="hidden" name="ids" id="ids-input" value="{{ players|map(attribute='mlbam_id')|join(',') }}">
+  </div>
+  <div class="field">
+    <label>Kind</label>
+    <select class="ctl" name="kind">
+      <option value="batter"  {% if kind == 'batter'  %}selected{% endif %}>Batters</option>
+      <option value="pitcher" {% if kind == 'pitcher' %}selected{% endif %}>Pitchers</option>
+    </select>
+  </div>
+  <div class="field">
+    <label>Mode</label>
+    <div class="segmented">
+      <button type="submit" name="mode" value="season" class="seg {% if mode == 'season' %}active{% endif %}">Season</button>
+      <button type="submit" name="mode" value="career" class="seg {% if mode == 'career' %}active{% endif %}">Career</button>
+    </div>
+  </div>
+  {% if mode == 'season' %}
+  <div class="field">
+    <label>Season</label>
+    <select class="ctl mono" name="year">
+      {% for y in years %}<option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>{% endfor %}
+    </select>
+  </div>
+  {% endif %}
+  <div class="actions">
+    <button class="btn" type="submit">Compare</button>
+    <a class="btn secondary" href="/compare">Reset</a>
+  </div>
+</form>
+
+{% if players|length == 2 %}
+  {% set p1 = players[0] %}{% set p2 = players[1] %}
+  <div class="vs-panel">
+    <div class="vs-head">
+      <div class="vs-player">
+        {% if p1.portrait %}<img class="portrait lg" src="{{ p1.portrait }}" alt="">{% else %}<span class="portrait lg portrait-ph">N/A</span>{% endif %}
+        <div>
+          <div class="vs-name"><a href="/player/{{ p1.mlbam_id }}/{{ year }}">{{ p1.name }}</a></div>
+          <div class="vs-meta">{{ 'Career' if mode == 'career' else p1.year }} · {% if p1.kind == 'pitcher' %}Pitcher{% else %}Position{% endif %}</div>
+        </div>
+      </div>
+      <div class="vs-badge">VS</div>
+      <div class="vs-player right">
+        {% if p2.portrait %}<img class="portrait lg" src="{{ p2.portrait }}" alt="">{% else %}<span class="portrait lg portrait-ph">N/A</span>{% endif %}
+        <div>
+          <div class="vs-name"><a href="/player/{{ p2.mlbam_id }}/{{ year }}">{{ p2.name }}</a></div>
+          <div class="vs-meta">{{ 'Career' if mode == 'career' else p2.year }} · {% if p2.kind == 'pitcher' %}Pitcher{% else %}Position{% endif %}</div>
+        </div>
+      </div>
+    </div>
+
+    {% for group_name, group_stats in groups.items() %}
+      <div class="vs-group-head">{{ group_name }}</div>
+      {% for st in group_stats %}
+        {% set c1 = matrix.get(p1.mlbam_id, {}).get(st.key, {}) %}
+        {% set c2 = matrix.get(p2.mlbam_id, {}).get(st.key, {}) %}
+        {% set lead = leaders.get(st.key) %}
+        <div class="vs-row">
+          <div class="vs-cell left {% if lead == p1.mlbam_id %}lead{% endif %} {% if not c1.fmt or c1.fmt == '—' %}na{% endif %}">{{ c1.fmt or '—' }}</div>
+          <div class="vs-stat-name">{{ st.label }}</div>
+          <div class="vs-cell right {% if lead == p2.mlbam_id %}lead{% endif %} {% if not c2.fmt or c2.fmt == '—' %}na{% endif %}">{{ c2.fmt or '—' }}</div>
+        </div>
+      {% endfor %}
+    {% endfor %}
+
+    {% if mode == 'career' and awards_by_pid %}
+      {% set a1 = awards_by_pid.get(p1.mlbam_id, {}) %}
+      {% set a2 = awards_by_pid.get(p2.mlbam_id, {}) %}
+      {% if a1 or a2 %}
+      <div class="vs-group-head">Awards &amp; Honors</div>
+      <div class="awards-strip">
+        <div class="aw-col left">
+          {% for k, v in a1.items() %}<span class="award-chip"><strong>{{ v }}</strong> {{ k }}</span>{% endfor %}
+        </div>
+        <div class="aw-label">Career</div>
+        <div class="aw-col right">
+          {% for k, v in a2.items() %}<span class="award-chip"><strong>{{ v }}</strong> {{ k }}</span>{% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    {% endif %}
+  </div>
+{% elif players|length >= 3 %}
+  <div class="vs-grid-multi" style="--n: {{ players|length }}">
+    <div></div>
+    {% for p in players %}
+      <div class="gm-head">
+        {% if p.portrait %}<img src="{{ p.portrait }}" alt="">{% else %}<span class="portrait md portrait-ph">N/A</span>{% endif %}
+        <div class="nm"><a href="/player/{{ p.mlbam_id }}/{{ year }}">{{ p.name }}</a></div>
+        <div class="yr">{{ 'Career' if mode == 'career' else p.year }}</div>
+      </div>
+    {% endfor %}
+
+    {% for group_name, group_stats in groups.items() %}
+      <div class="gm-group">{{ group_name }}</div>
+      {% for st in group_stats %}
+        <div class="gm-row-head">{{ st.label }}</div>
+        {% for p in players %}
+          {% set cell = matrix.get(p.mlbam_id, {}).get(st.key, {}) %}
+          {% set is_lead = leaders.get(st.key) == p.mlbam_id %}
+          <div class="gm-cell {% if is_lead %}lead{% endif %}">{{ cell.fmt or '—' }}</div>
+        {% endfor %}
+      {% endfor %}
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">Pick 2 or more players to compare</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/compare.js?v=6"></script>
+{% endblock %}

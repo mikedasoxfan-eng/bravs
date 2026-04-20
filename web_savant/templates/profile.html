@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Profile Card — BRAVS{% endblock %}
+{% block page_title %}Profile Card{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <p class="kicker">08 / Profile</p>
+  <h2>Compact share-ready snapshot.</h2>
+  <p class="lede">A portrait, the slash line, and the counting stats — framed by the player's team color. Built to screenshot and post.</p>
+</div>
+
+<div class="profile-shell">
+  <aside class="profile-form">
+    <form id="pf-form" action="/profile" method="get">
+      <label>Player</label>
+      <div class="search-box" style="position:relative">
+        <svg class="search-icon" viewBox="0 0 16 16" width="14" height="14"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.3"/><line x1="11" y1="11" x2="14" y2="14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <input id="pf-q" class="ctl" style="width:100%" type="text" placeholder="Search…" autocomplete="off">
+        <div id="pf-results" class="dropdown hidden"></div>
+      </div>
+
+      <div>
+        <label>Season</label>
+        <select id="pf-year" class="ctl mono" style="width:100%">
+          {% for y in years %}<option value="{{ y }}" {% if player and y == player.year %}selected{% endif %}>{{ y }}</option>{% endfor %}
+        </select>
+      </div>
+    </form>
+  </aside>
+
+  <div class="profile-output">
+    {% if error %}
+      <div class="empty-state">{{ error }}</div>
+    {% elif card %}
+      <article class="pcard" style="--team-primary: {{ card.team_primary }}; --team-secondary: {{ card.team_secondary }}">
+        <span class="pcard-mark">BRAVS</span>
+        <div class="pcard-portrait-wrap">
+          {% if card.portrait %}
+          <img class="pcard-portrait" src="{{ card.portrait }}" alt="">
+          {% else %}
+          <span class="pcard-portrait portrait-ph" style="width:132px;height:132px">N/A</span>
+          {% endif %}
+        </div>
+        <div class="pcard-ident">
+          <h3 class="pcard-name">{{ card.name }}</h3>
+          <div class="pcard-team">{{ card.team_name }}</div>
+          <div class="pcard-meta">{{ card.year }}{% if card.age %} · Age {{ card.age }}{% endif %} · {% if card.kind == 'pitcher' %}Pitcher{% else %}Hitter{% endif %}</div>
+        </div>
+        <div class="pcard-stats">
+          {% for line in card.stat_lines %}
+          <div class="pcard-line" style="--cols: {{ line|length }}">
+            {% for lbl, val in line %}
+            <div class="pcard-cell"><span class="lbl">{{ lbl }}</span><span class="val">{{ val }}</span></div>
+            {% endfor %}
+          </div>
+          {% endfor %}
+        </div>
+      </article>
+      <p style="margin-top:14px;font-family:var(--mono);font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-400)">
+        Want the percentile version? See the <a href="/player/{{ player.id }}/{{ player.year }}" style="color:var(--ink-700);border-bottom:1px solid currentColor">full card</a>.
+      </p>
+    {% else %}
+      <div class="empty-state">Search a player to generate a profile card</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+  const q = document.getElementById('pf-q');
+  const results = document.getElementById('pf-results');
+  const yearSel = document.getElementById('pf-year');
+  let timer = null;
+  let picked = null;
+
+  q.addEventListener('input', () => {
+    clearTimeout(timer);
+    const v = q.value.trim();
+    if (v.length < 2) { results.classList.add('hidden'); return; }
+    timer = setTimeout(() => search(v), 160);
+  });
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#pf-q, #pf-results')) results.classList.add('hidden');
+  });
+  yearSel.addEventListener('change', () => { if (picked) nav(); });
+
+  async function search(qry) {
+    const r = await fetch('/api/search?q=' + encodeURIComponent(qry));
+    const hits = await r.json();
+    results.innerHTML = '';
+    if (!hits.length) {
+      results.innerHTML = `<div class="hit"><span class="name" style="color:var(--ink-400)">No matches</span></div>`;
+    } else {
+      hits.forEach(h => {
+        const el = document.createElement('div');
+        el.className = 'hit';
+        el.innerHTML = `<span class="name">${esc(h.name)}</span><span class="yrs">${h.years[h.years.length-1]}–${h.years[0]}</span>`;
+        el.addEventListener('click', () => {
+          picked = h;
+          q.value = h.name;
+          results.classList.add('hidden');
+          // Sync year select to player's available years
+          yearSel.innerHTML = '';
+          h.years.forEach(y => {
+            const opt = document.createElement('option');
+            opt.value = y; opt.textContent = y;
+            yearSel.appendChild(opt);
+          });
+          nav();
+        });
+        results.appendChild(el);
+      });
+    }
+    results.classList.remove('hidden');
+  }
+  function nav() {
+    location.href = `/profile/${picked.id}/${yearSel.value}`;
+  }
+  function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+})();
+</script>
+{% endblock %}

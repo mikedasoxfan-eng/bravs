@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}{% if team_id %}{{ team_id }} {{ year }}{% else %}Team{% endif %} — BRAVS{% endblock %}
+{% block page_title %}Team{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <p class="kicker">07 / Team</p>
+  <h2>Full roster, two ways.</h2>
+  <p class="lede">Pick a team and season. <strong>Roster</strong> lists every contributor with core stats. <strong>Savant</strong> shows the team leader for each stat with their league percentile.</p>
+</div>
+
+<form class="form-panel" method="get" action="/team">
+  <div class="field">
+    <label>Season</label>
+    <select class="ctl mono" name="year" onchange="this.form.submit()">
+      {% for y in years %}<option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="field">
+    <label>Team</label>
+    <select class="ctl mono" name="team">
+      <option value="">— choose —</option>
+      {% for t in teams %}
+        <option value="{{ t.teamID }}" {% if t.teamID == team_id %}selected{% endif %}>{{ t.teamID }} ({{ t.lgID }})</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="field">
+    <label>Side</label>
+    <select class="ctl" name="kind">
+      <option value="batter"  {% if kind == 'batter'  %}selected{% endif %}>Batters</option>
+      <option value="pitcher" {% if kind == 'pitcher' %}selected{% endif %}>Pitchers</option>
+    </select>
+  </div>
+  <input type="hidden" name="view" value="{{ view }}">
+  <div class="actions"><button class="btn" type="submit">Load</button></div>
+</form>
+
+{% if team_id %}
+<div class="view-tabs">
+  <a href="/team?year={{ year }}&team={{ team_id }}&kind={{ kind }}&view=roster" class="{% if view == 'roster' %}on{% endif %}">Roster</a>
+  <a href="/team?year={{ year }}&team={{ team_id }}&kind={{ kind }}&view=savant" class="{% if view == 'savant' %}on{% endif %}">Savant</a>
+</div>
+{% endif %}
+
+{% if view == 'savant' and team_savant %}
+  <div class="team-savant-hero" style="--team-primary: {{ colors.primary }}">
+    <h2>{{ year }} {{ colors.name }}</h2>
+    <span class="sub">{{ kind|capitalize }}s · Team leader + league percentile</span>
+  </div>
+  <div class="team-savant-table">
+    {% for r in team_savant %}
+      <div class="ts-row">
+        <div class="ts-label">{{ r.stat.label }}</div>
+        <div class="track">
+          {% if r.percentile is not none %}
+            {% set pct = r.percentile %}
+            <div class="fill" style="width: {{ pct }}%; background: hsl({% if pct < 50 %}212{% else %}351{% endif %} {{ (20 + (((pct - 50)|abs / 50) * 48))|round(1) }}% {{ (80 - (((pct - 50)|abs / 50) * 38))|round(1) }}%)"></div>
+            <div class="pct-chip" style="left: {{ pct }}%; background: hsl({% if pct < 50 %}212{% else %}351{% endif %} {{ (20 + (((pct - 50)|abs / 50) * 48))|round(1) }}% {{ (80 - (((pct - 50)|abs / 50) * 38))|round(1) }}%); color: {% if ((pct - 50)|abs / 50) < 0.35 %}var(--ink-900){% else %}#fff{% endif %}">{{ pct }}</div>
+          {% else %}
+            <div class="pct-chip na" style="left: 50%">—</div>
+          {% endif %}
+        </div>
+        <div class="ts-leader">
+          {% if r.portrait %}<img src="{{ r.portrait }}" alt="" loading="lazy">{% else %}<span class="portrait xs portrait-ph" style="width:28px;height:28px">?</span>{% endif %}
+          <span class="nm">{% if r.leader_mlbam %}<a href="/player/{{ r.leader_mlbam }}/{{ year }}">{{ r.leader_name }}</a>{% else %}{{ r.leader_name }}{% endif %}</span>
+        </div>
+        <div class="ts-value">{{ r.value_fmt }}</div>
+      </div>
+    {% endfor %}
+  </div>
+{% elif view == 'savant' and team_id %}
+  <div class="empty-state">No stats available for this team/season</div>
+{% elif roster %}
+  <div class="summary-bar">
+    <span><strong>{{ team_id }}</strong> {{ year }}</span>
+    <span>·</span>
+    <span><strong>{{ kind|capitalize }}s</strong></span>
+    <span>·</span>
+    <span>{{ roster|length }} players</span>
+  </div>
+
+  <div class="team-grid">
+  {% for p in roster %}
+    <a href="{% if p.mlbam_id %}/player/{{ p.mlbam_id }}/{{ year }}{% else %}#{% endif %}" class="team-card" style="display:block">
+      <div class="tc-head">
+        {% if p.portrait %}<img src="{{ p.portrait }}" alt="">{% else %}<span class="portrait sm portrait-ph">?</span>{% endif %}
+        <div class="tc-head-text">
+          <span class="nm">{{ p.name }}</span>
+          <span class="pos">{{ p.pos }}</span>
+        </div>
+      </div>
+      <div class="tc-stats">
+        {% for l, v in p.stats %}
+          <span><span class="l">{{ l }}</span>{{ v }}</span>
+        {% endfor %}
+      </div>
+    </a>
+  {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">Select a team and season</div>
+{% endif %}
+{% endblock %}

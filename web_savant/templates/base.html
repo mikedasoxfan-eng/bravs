@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}BRAVS{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/static/style.css?v=5">
+{% block head %}{% endblock %}
+</head>
+<body>
+
+<aside class="sidenav">
+  <a class="brand" href="/">
+    <span class="mark">BRAVS</span>
+    <span class="brand-sub">Baseball Lab</span>
+  </a>
+  <nav class="nav">
+    <a class="nav-link {% if active=='player' %}active{% endif %}" href="/player">
+      <span class="nav-num">01</span>
+      <span class="nav-label">Player</span>
+    </a>
+    <a class="nav-link {% if active=='compare' %}active{% endif %}" href="/compare">
+      <span class="nav-num">02</span>
+      <span class="nav-label">Compare</span>
+    </a>
+    <a class="nav-link {% if active=='leaderboard' %}active{% endif %}" href="/leaderboard">
+      <span class="nav-num">03</span>
+      <span class="nav-label">Leaderboard</span>
+    </a>
+    <a class="nav-link {% if active=='yoy' %}active{% endif %}" href="/yoy">
+      <span class="nav-num">04</span>
+      <span class="nav-label">Year-over-Year</span>
+    </a>
+    <a class="nav-link {% if active=='leaders' %}active{% endif %}" href="/leaders">
+      <span class="nav-num">04b</span>
+      <span class="nav-label">League Leaders</span>
+    </a>
+    <a class="nav-link {% if active=='filter' %}active{% endif %}" href="/filter">
+      <span class="nav-num">05</span>
+      <span class="nav-label">Stat Filter</span>
+    </a>
+    <a class="nav-link {% if active=='counter' %}active{% endif %}" href="/counter">
+      <span class="nav-num">06</span>
+      <span class="nav-label">Season Counter</span>
+    </a>
+    <a class="nav-link {% if active=='team' %}active{% endif %}" href="/team">
+      <span class="nav-num">07</span>
+      <span class="nav-label">Team</span>
+    </a>
+    <a class="nav-link {% if active=='profile' %}active{% endif %}" href="/profile">
+      <span class="nav-num">08</span>
+      <span class="nav-label">Profile Card</span>
+    </a>
+    <a class="nav-link {% if active=='glossary' %}active{% endif %}" href="/glossary">
+      <span class="nav-num">09</span>
+      <span class="nav-label">Glossary</span>
+    </a>
+  </nav>
+  <div class="side-footer">
+    <span>Coverage</span>
+    <span class="mono">1871–2025</span>
+  </div>
+</aside>
+
+<div class="app-main">
+  <header class="topbar">
+    <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
+    <div class="topbar-aside">{% block topbar_aside %}{% endblock %}</div>
+  </header>
+  <main class="content">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="footbar">
+    <span>Data: Lahman 2025 · Baseball Savant · BRAVS engine</span>
+    <span class="sep">·</span>
+    <span>Percentiles computed locally per season</span>
+  </footer>
+</div>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Stat Filter — BRAVS{% endblock %}
+{% block page_title %}Stat Filter{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <p class="kicker">05 / Filter</p>
+  <h2>Find every season meeting your conditions.</h2>
+  <p class="lede">Combine up to four stat thresholds (AVG ≥ .300 · HR ≥ 40 · K% ≤ 20…) across any year range. Sorted by the stat of your choice.</p>
+</div>
+
+<form class="form-panel" method="get" action="/filter">
+  <div class="field">
+    <label>Kind</label>
+    <select class="ctl" name="kind" onchange="this.form.submit()">
+      <option value="batter"  {% if kind == 'batter'  %}selected{% endif %}>Batters</option>
+      <option value="pitcher" {% if kind == 'pitcher' %}selected{% endif %}>Pitchers</option>
+    </select>
+  </div>
+  <div class="field">
+    <label>From</label>
+    <select class="ctl mono" name="year_from">{% for y in years %}<option value="{{ y }}" {% if y == year_from %}selected{% endif %}>{{ y }}</option>{% endfor %}</select>
+  </div>
+  <div class="field">
+    <label>To</label>
+    <select class="ctl mono" name="year_to">{% for y in years %}<option value="{{ y }}" {% if y == year_to %}selected{% endif %}>{{ y }}</option>{% endfor %}</select>
+  </div>
+  <div class="field">
+    <label>Sort by</label>
+    {% set selected = sort_key %}{% set name = 'sort' %}
+    {% include '_stat_controls.html' with context %}
+  </div>
+  <div class="field">
+    <label>Show</label>
+    <select class="ctl mono" name="n">
+      {% for nv in [10, 20, 30, 50, 100] %}<option value="{{ nv }}" {% if nv == n %}selected{% endif %}>{{ nv }}</option>{% endfor %}
+    </select>
+  </div>
+
+  <div class="field wide" style="grid-column: 1 / -1">
+    <label>Conditions (up to 4)</label>
+    <div id="filters">
+    {% for i in range(1, 5) %}
+      {% set f = filters[i-1] if filters|length >= i else {'stat':'', 'op':'>=', 'value':''} %}
+      <div class="filter-row">
+        {% set selected = f.stat %}{% set name = 'stat' ~ i %}
+        {% include '_stat_controls.html' with context %}
+        <select class="ctl mono" name="op{{ i }}">
+          {% for op in ['>=', '>', '<=', '<', '='] %}<option {% if op == f.op %}selected{% endif %}>{{ op }}</option>{% endfor %}
+        </select>
+        <input class="ctl mono" type="text" name="val{{ i }}" value="{{ f.value }}" placeholder="value">
+        <span></span>
+      </div>
+    {% endfor %}
+    </div>
+  </div>
+  <div class="actions"><button class="btn" type="submit">Find</button></div>
+</form>
+
+{% if rows %}
+<div class="summary-bar">
+  <span>{{ rows|length }} results</span>
+  <span>·</span>
+  <span>{{ year_from }}–{{ year_to }}</span>
+  <span>·</span>
+  <span><strong>{{ kind|capitalize }}s</strong></span>
+</div>
+<div class="table-wrap">
+  <table class="data">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th class="thumb"></th>
+        <th>Player</th>
+        <th>Year</th>
+        <th>Team</th>
+        {% for key in rows[0].stats.keys() %}
+          {% set st = stats|selectattr('key','equalto',key)|first %}
+          <th class="num">{{ st.label if st else key }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td class="rank">{{ r.rank }}</td>
+        <td class="thumb">{% if r.portrait %}<img src="{{ r.portrait }}" alt="" loading="lazy">{% endif %}</td>
+        <td class="name">{% if r.mlbam_id %}<a href="/player/{{ r.mlbam_id }}/{{ r.year }}">{{ r.name }}</a>{% else %}{{ r.name }}{% endif %}</td>
+        <td class="year">{{ r.year }}</td>
+        <td class="team">{{ r.team }}</td>
+        {% for key, val in r.stats.items() %}
+        <td class="num">{{ val }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">Set at least one condition to search</div>
+{% endif %}
+{% endblock %}

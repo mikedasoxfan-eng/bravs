@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Leaderboard — BRAVS{% endblock %}
+{% block page_title %}Leaderboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <p class="kicker">03 / Leaderboard</p>
+  <h2>Top or bottom performers in any stat.</h2>
+  <p class="lede">Rank batters or pitchers by any stat across a single season or multi-year range. Direction follows the stat (ERA low, HR high); flip with the ascending toggle.</p>
+</div>
+
+<form class="form-panel" method="get" action="/leaderboard">
+  <div class="field">
+    <label>Kind</label>
+    <select class="ctl" name="kind" onchange="this.form.submit()">
+      <option value="batter"  {% if kind == 'batter'  %}selected{% endif %}>Batters</option>
+      <option value="pitcher" {% if kind == 'pitcher' %}selected{% endif %}>Pitchers</option>
+    </select>
+  </div>
+  <div class="field">
+    <label>Stat</label>
+    {% set selected = stat_key %}{% set name = 'stat' %}
+    {% include '_stat_controls.html' with context %}
+  </div>
+  <div class="field">
+    <label>From</label>
+    <select class="ctl mono" name="year_from">{% for y in years %}<option value="{{ y }}" {% if y == year_from %}selected{% endif %}>{{ y }}</option>{% endfor %}</select>
+  </div>
+  <div class="field">
+    <label>To</label>
+    <select class="ctl mono" name="year_to">{% for y in years %}<option value="{{ y }}" {% if y == year_to %}selected{% endif %}>{{ y }}</option>{% endfor %}</select>
+  </div>
+  <div class="field">
+    <label>Show</label>
+    <select class="ctl mono" name="n">
+      {% for nv in [10, 20, 30, 50, 100] %}<option value="{{ nv }}" {% if nv == n %}selected{% endif %}>Top {{ nv }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="actions">
+    <button class="btn" type="submit">Rank</button>
+  </div>
+</form>
+
+{% if rows %}
+<div class="summary-bar">
+  <span>{{ year_from }}{% if year_to != year_from %}–{{ year_to }}{% endif %}</span>
+  <span>·</span>
+  <span><strong>{{ kind|capitalize }}s</strong></span>
+  <span>·</span>
+  <span>Ranked by <strong>{{ stat.label }}</strong> ({{ stat.direction }})</span>
+</div>
+<div class="table-wrap">
+  <table class="data">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th class="thumb"></th>
+        <th>Player</th>
+        <th>Year</th>
+        <th>Team</th>
+        <th class="num">{{ stat.label }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td class="rank">{{ r.rank }}</td>
+        <td class="thumb">{% if r.portrait %}<img src="{{ r.portrait }}" alt="" loading="lazy">{% endif %}</td>
+        <td class="name">{% if r.mlbam_id %}<a href="/player/{{ r.mlbam_id }}/{{ r.year }}">{{ r.name }}</a>{% else %}{{ r.name }}{% endif %}</td>
+        <td class="year">{{ r.year }}</td>
+        <td class="team">{{ r.team }}</td>
+        <td class="num">{{ r.value }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">Set parameters and press rank</div>
+{% endif %}
+{% endblock %}

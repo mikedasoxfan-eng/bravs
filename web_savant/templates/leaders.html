@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}League Leaders — BRAVS{% endblock %}
+{% block page_title %}League Leaders{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <p class="kicker">04b / League Leaders</p>
+  <h2>Top performers across many stats at once.</h2>
+  <p class="lede">Pick a season and up to 10 stats. Each gets its own mini-leaderboard — useful for scanning an entire season in one view.</p>
+</div>
+
+<form class="form-panel" method="get" action="/leaders" id="ll-form">
+  <div class="field">
+    <label>Kind</label>
+    <select class="ctl" name="kind" onchange="this.form.submit()">
+      <option value="batter"  {% if kind == 'batter'  %}selected{% endif %}>Batters</option>
+      <option value="pitcher" {% if kind == 'pitcher' %}selected{% endif %}>Pitchers</option>
+    </select>
+  </div>
+  <div class="field">
+    <label>Season</label>
+    <select class="ctl mono" name="year">{% for y in years %}<option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>{% endfor %}</select>
+  </div>
+  <div class="field">
+    <label>Mode</label>
+    <select class="ctl" name="mode">
+      <option value="top" {% if mode == 'top' %}selected{% endif %}>Top</option>
+      <option value="bottom" {% if mode == 'bottom' %}selected{% endif %}>Bottom</option>
+    </select>
+  </div>
+  <div class="field">
+    <label>Per stat</label>
+    <select class="ctl mono" name="n">
+      {% for nv in [3, 5, 10] %}<option value="{{ nv }}" {% if nv == n %}selected{% endif %}>Top {{ nv }}</option>{% endfor %}
+    </select>
+  </div>
+
+  <div class="field wide" style="grid-column: 1 / -1">
+    <label>Stats (click to toggle, up to 10)</label>
+    <div class="stat-picker" id="pills">
+      {% for st in stats %}
+        <span class="stat-pill {% if st.key in selected_keys %}on{% endif %}" data-key="{{ st.key }}">{{ st.label }}</span>
+      {% endfor %}
+    </div>
+    <input type="hidden" name="stats" id="stats-input" value="{{ selected_keys|join(',') }}">
+  </div>
+  <div class="actions"><button class="btn" type="submit">Run</button></div>
+</form>
+
+{% if leaderboards %}
+<div class="summary-bar">
+  <span><strong>{{ year }}</strong></span>
+  <span>·</span>
+  <span><strong>{{ kind|capitalize }}s</strong></span>
+  <span>·</span>
+  <span>{{ leaderboards|length }} leaderboards · Top {{ n }} each</span>
+</div>
+
+<div class="leader-grid">
+  {% for lb in leaderboards %}
+  <div class="leader-card">
+    <div class="lc-head">
+      <div class="lc-stat">{{ lb.stat.label }}</div>
+      <div class="lc-grp">{{ lb.stat.group }}</div>
+    </div>
+    {% for r in lb.rows %}
+      <div class="lc-row">
+        <span class="lc-rank">{{ r.rank }}</span>
+        {% if r.portrait %}<img src="{{ r.portrait }}" alt="" loading="lazy">{% else %}<span class="portrait xs portrait-ph" style="width:32px;height:32px">?</span>{% endif %}
+        <span class="lc-name">{% if r.mlbam_id %}<a href="/player/{{ r.mlbam_id }}/{{ r.year }}">{{ r.name }}</a>{% else %}{{ r.name }}{% endif %}</span>
+        <span class="lc-val">{{ r.value }}</span>
+      </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">Pick stats to display</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+  const pills = document.getElementById('pills');
+  const input = document.getElementById('stats-input');
+  if (!pills) return;
+  pills.addEventListener('click', (e) => {
+    const p = e.target.closest('.stat-pill');
+    if (!p) return;
+    const current = new Set((input.value || '').split(',').filter(Boolean));
+    const k = p.dataset.key;
+    if (current.has(k)) {
+      current.delete(k);
+      p.classList.remove('on');
+    } else {
+      if (current.size >= 10) return;
+      current.add(k);
+      p.classList.add('on');
+    }
+    input.value = Array.from(current).join(',');
+  });
+})();
+</script>
+{% endblock %}

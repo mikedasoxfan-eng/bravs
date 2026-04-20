@@ -1,0 +1,425 @@
+"""Stat glossary — ~90 entries grouped by category.
+
+Each entry:
+    key        — url-friendly slug
+    label      — display name
+    abbrev     — short form as it appears in tables
+    category   — section in the glossary
+    formula    — plain-text formula (monospace rendering)
+    definition — 1–3 sentence plain-English description
+    example    — real-world illustration
+    notes      — optional caveats
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
+
+@dataclass
+class Entry:
+    key: str
+    label: str
+    abbrev: str
+    category: str
+    definition: str
+    formula: str = ""
+    example: str = ""
+    notes: str = ""
+    aliases: list[str] = field(default_factory=list)
+
+
+CATEGORIES = [
+    "Batting — Counting",
+    "Batting — Rate",
+    "Batting — Statcast",
+    "Baserunning & Fielding",
+    "Pitching — Counting",
+    "Pitching — Rate",
+    "Pitching — Statcast",
+    "Value & Win",
+    "BRAVS",
+]
+
+
+ENTRIES: list[Entry] = [
+    # =========================================================
+    # Batting — Counting
+    # =========================================================
+    Entry("g", "Games Played", "G", "Batting — Counting",
+          "The number of games in which a player appeared, even for a single pitch. The denominator for any 162-game pace stat.",
+          formula="", example="Ripken played 162 G in each full season of his streak."),
+    Entry("pa", "Plate Appearances", "PA", "Batting — Counting",
+          "Every time a batter completes a trip to the plate. Counts walks, HBP, sacrifices — anything but interference.",
+          formula="PA = AB + BB + HBP + SF + SH",
+          example="Judge had 703 PA in 2024 — 3.4 per game pace."),
+    Entry("ab", "At Bats", "AB", "Batting — Counting",
+          "PAs excluding walks, HBP, sacrifices, and interference. The denominator for batting average.",
+          formula="AB = PA − BB − HBP − SF − SH",
+          example="A hitter with 650 PA often has ~560–580 AB."),
+    Entry("h", "Hits", "H", "Batting — Counting",
+          "Any AB that puts the ball in play for a base, uncontested by error or fielder's choice.",
+          example="Ichiro 2004: 262 H — the single-season record."),
+    Entry("1b", "Singles", "1B", "Batting — Counting",
+          "A hit on which the batter reaches first base and no one advances on a fielder's throw.",
+          formula="1B = H − 2B − 3B − HR",
+          example="Tony Gwynn 1997: 166 singles, .372 AVG."),
+    Entry("2b", "Doubles", "2B", "Batting — Counting",
+          "A hit that advances the batter to second base.",
+          example="Earl Webb 1931: 67 doubles — single-season record."),
+    Entry("3b", "Triples", "3B", "Batting — Counting",
+          "A hit that advances the batter to third base. Rarest of the hits in the modern game.",
+          example="Chief Wilson 1912: 36 triples — record."),
+    Entry("hr", "Home Runs", "HR", "Batting — Counting",
+          "A hit that clears the field of play (or an inside-the-park HR).",
+          example="Barry Bonds 2001: 73 HR."),
+    Entry("rbi", "Runs Batted In", "RBI", "Batting — Counting",
+          "Credited to the batter for runs that score as a result of his PA (excluding DP and errors).",
+          example="Hack Wilson 1930: 191 RBI — record."),
+    Entry("r", "Runs Scored", "R", "Batting — Counting",
+          "Times the batter crossed home plate. Partly a skill stat, partly a lineup/context stat."),
+    Entry("sb", "Stolen Bases", "SB", "Batting — Counting",
+          "Successful stolen base attempts.",
+          example="Rickey Henderson 1982: 130 SB."),
+    Entry("cs", "Caught Stealing", "CS", "Batting — Counting",
+          "Failed stolen base attempts."),
+    Entry("bb", "Walks (Base on Balls)", "BB", "Batting — Counting",
+          "Four balls before three strikes; batter awarded first base."),
+    Entry("ibb", "Intentional Walks", "IBB", "Batting — Counting",
+          "A walk signaled by the manager, where the pitcher intentionally throws four balls."),
+    Entry("so-bat", "Strikeouts (batter)", "SO", "Batting — Counting",
+          "Three strikes charged to the batter.",
+          aliases=["k"]),
+    Entry("hbp", "Hit By Pitch", "HBP", "Batting — Counting",
+          "The batter is struck by a pitch and awarded first base."),
+    Entry("sf", "Sacrifice Fly", "SF", "Batting — Counting",
+          "A fly ball caught for an out that scores a runner. Not counted as an AB."),
+    Entry("sh", "Sacrifice Bunt", "SH", "Batting — Counting",
+          "A successful bunt that advances a runner while the batter is retired."),
+    Entry("tb", "Total Bases", "TB", "Batting — Counting",
+          "A weighted count of hits by base value.",
+          formula="TB = 1B + 2·2B + 3·3B + 4·HR",
+          example="Babe Ruth 1921: 457 TB — record."),
+    Entry("gidp", "Grounded Into Double Play", "GIDP", "Batting — Counting",
+          "Times a batter hits into a 4-6-3 or similar double play."),
+
+    # =========================================================
+    # Batting — Rate
+    # =========================================================
+    Entry("avg", "Batting Average", "AVG", "Batting — Rate",
+          "Hits divided by at-bats. The headline rate stat for over a century.",
+          formula="AVG = H / AB",
+          example="A .300 hitter is elite; .250 is roughly league-average in most eras."),
+    Entry("obp", "On-Base Percentage", "OBP", "Batting — Rate",
+          "Rate of reaching base via hit, walk, or HBP.",
+          formula="OBP = (H + BB + HBP) / (AB + BB + HBP + SF)",
+          example="Ted Williams career .482 — highest all-time."),
+    Entry("slg", "Slugging Percentage", "SLG", "Batting — Rate",
+          "Total bases per at-bat — measures power.",
+          formula="SLG = TB / AB",
+          example="Barry Bonds 2001: .863 SLG — record."),
+    Entry("ops", "On-Base Plus Slugging", "OPS", "Batting — Rate",
+          "Crude sum of OBP and SLG. An .800 OPS is roughly a league-average corner bat; 1.000+ is MVP-level.",
+          formula="OPS = OBP + SLG"),
+    Entry("iso", "Isolated Power", "ISO", "Batting — Rate",
+          "Extra-base hits per AB. Isolates pure power from batting average.",
+          formula="ISO = SLG − AVG  (equivalently: (2B + 2·3B + 3·HR) / AB)",
+          example=".200 ISO is strong power; .300+ is elite (Judge, Bonds, Stanton)."),
+    Entry("babip", "Batting Average on Balls in Play", "BABIP", "Batting — Rate",
+          "Batting average excluding HR and strikeouts. Regresses toward ~.300; persistent outliers often indicate skill (speed, hard contact) or luck.",
+          formula="BABIP = (H − HR) / (AB − SO − HR + SF)"),
+    Entry("k-pct-bat", "Strikeout Rate", "K%", "Batting — Rate",
+          "Strikeouts per plate appearance. Replacing K/AB because the denominator isn't punished by walks.",
+          formula="K% = SO / PA"),
+    Entry("bb-pct-bat", "Walk Rate", "BB%", "Batting — Rate",
+          "Walks per plate appearance.",
+          formula="BB% = BB / PA",
+          example="Juan Soto routinely 18%+; league average ~8.5%."),
+    Entry("woba", "Weighted On-Base Average", "wOBA", "Batting — Rate",
+          "FanGraphs' preferred offensive rate stat. Weights each event by its run value (singles worth less than HR, etc.) and scales to OBP.",
+          formula="wOBA = (0.69·uBB + 0.72·HBP + 0.89·1B + 1.27·2B + 1.62·3B + 2.10·HR) / (AB + BB − IBB + SF + HBP)  (2024 weights)",
+          notes="Weights are recalibrated each season. League-average wOBA ≈ league OBP."),
+    Entry("wrc-plus", "Weighted Runs Created Plus", "wRC+", "Batting — Rate",
+          "wOBA converted to runs, adjusted for park and league, scaled so 100 = league-average.",
+          formula="wRC+ = 100 × ((wRAA/PA + lg_R/PA) + (lg_R/PA − park·lg_R/PA)) / lg_wRC_per_PA",
+          example="Bonds 2002: 244 wRC+ — 144% better than league average."),
+    Entry("ops-plus", "OPS Plus", "OPS+", "Batting — Rate",
+          "OPS normalized to park and league. 100 = league-average; 150 = 50% better.",
+          formula="OPS+ = 100 × (OBP/lgOBP + SLG/lgSLG − 1)  (park-adjusted)"),
+
+    # =========================================================
+    # Batting — Statcast
+    # =========================================================
+    Entry("xba", "Expected Batting Average", "xBA", "Batting — Statcast",
+          "What a batter's AVG should be based on the exit velocity, launch angle, and sprint speed of each ball in play — stripping out defensive positioning and park.",
+          formula="Per BIP: lookup table (EV × LA × Sprint Speed) → hit probability. xBA = sum of probabilities / AB.",
+          example="Stuck in a BABIP slump? xBA will usually flag luck vs regression."),
+    Entry("xslg", "Expected Slugging", "xSLG", "Batting — Statcast",
+          "Slugging with the same EV/LA/sprint model applied — but weighted by expected bases per BIP.",
+          example="Judge 2024 xSLG: .739. Near identical to actual .701."),
+    Entry("xwoba", "Expected wOBA", "xwOBA", "Batting — Statcast",
+          "The wOBA a player would produce based on his quality of contact + BBs/Ks, independent of defense and park.",
+          formula="Same event weights as wOBA, but uses expected outcomes per BIP from the EV/LA model.",
+          example="Judge 2024 xwOBA = .480 — league-leading by a wide margin."),
+    Entry("xiso", "Expected Isolated Power", "xISO", "Batting — Statcast",
+          "xSLG minus xBA — the power portion of expected stats, isolating raw power from hit-neutral contact.",
+          formula="xISO = xSLG − xBA"),
+    Entry("ev", "Average Exit Velocity", "EV", "Batting — Statcast",
+          "Average speed of the ball coming off the bat (all batted balls, not just hits).",
+          formula="Average of every batted-ball EV (MPH)",
+          example="MLB avg ≈ 89 mph; Stanton, Judge, Soto routinely 94+.",
+          aliases=["exit velo", "avg exit velocity"]),
+    Entry("max-ev", "Maximum Exit Velocity", "Max EV", "Batting — Statcast",
+          "The hardest a player has hit a ball in a given season — a ceiling signal for raw power.",
+          example="Stanton repeatedly 120+ mph; anyone 118+ is elite."),
+    Entry("barrel-pct", "Barrel Rate", "Barrel%", "Batting — Statcast",
+          "Percentage of batted balls classified as 'barrels' — the specific EV × LA combination that historically produces ≥.500 BA and ≥1.500 SLG.",
+          formula="Barrel requires ≥98 mph EV. Above 98 mph, the qualifying LA window widens (at 116 mph, anything 8–50° qualifies).",
+          example="Judge 2024: 26.9% barrels — 1 in 4 balls in play is a barrel."),
+    Entry("hardhit-pct", "Hard-Hit Rate", "Hard-Hit%", "Batting — Statcast",
+          "Rate of batted balls hit ≥95 mph — the threshold above which run value of contact flips positive.",
+          formula="Hard-Hit% = (batted balls ≥95 mph) / (batted balls)"),
+    Entry("sweetspot-pct", "Sweet-Spot Rate", "Sweet-Spot%", "Batting — Statcast",
+          "Rate of batted balls with a launch angle between 8° and 32° — the window that maximizes expected wOBA."),
+    Entry("la", "Average Launch Angle", "LA", "Batting — Statcast",
+          "Average vertical angle of batted balls (−∞ to 90°).",
+          example="Uppercut flyball hitters: 15–20°. Ground-ball contact: 0–5°."),
+    Entry("bat-speed", "Bat Speed", "Bat Speed", "Batting — Statcast",
+          "Average speed of the sweet spot of the bat (6 inches from the tip) at contact, in mph. Available from 2023 onward.",
+          example="MLB avg ~71 mph; Stanton leads the league at ~76 mph."),
+    Entry("squared-up-pct", "Squared-Up Rate", "Squared-Up%", "Batting — Statcast",
+          "Percentage of swings where the collision efficiency between bat and ball approaches the theoretical max — i.e., the barrel meets the ball cleanly."),
+    Entry("chase-pct-bat", "Chase Rate", "Chase%", "Batting — Statcast",
+          "Percentage of pitches outside the strike zone that the batter swings at. Lower is better for hitters.",
+          formula="Chase% = O-Swings / pitches outside zone",
+          aliases=["o-swing", "o-swing%"]),
+    Entry("whiff-pct-bat", "Whiff Rate", "Whiff%", "Batting — Statcast",
+          "Swings that miss, as a percentage of total swings.",
+          formula="Whiff% = swinging strikes / swings"),
+    Entry("zone-contact", "In-Zone Contact Rate", "Z-Contact%", "Batting — Statcast",
+          "Percentage of swings at in-zone pitches that make contact."),
+
+    # =========================================================
+    # Baserunning & Fielding
+    # =========================================================
+    Entry("sprint-speed", "Sprint Speed", "Sprint Speed", "Baserunning & Fielding",
+          "Average feet-per-second over a runner's fastest one-second window during a 'competitive' run (max-effort in home-to-1B or advancing extra bases).",
+          example="MLB avg ~27 ft/s; elite is 30+ (Hamilton, Rojas, Carroll)."),
+    Entry("bsr", "Baserunning Runs", "BsR", "Baserunning & Fielding",
+          "FanGraphs' composite baserunning metric. Combines wSB (stolen-base value), UBR (non-SB advancement), and wGDP (avoiding DPs).",
+          example="Trea Turner career: +40 BsR."),
+    Entry("oaa", "Outs Above Average", "OAA", "Baserunning & Fielding",
+          "Statcast's range-based fielding metric for fielders (infield + outfield). Compares actual outs made to expected outs based on position, ball trajectory, and sprint speed.",
+          example="Nick Ahmed career: +68 OAA."),
+    Entry("drs", "Defensive Runs Saved", "DRS", "Baserunning & Fielding",
+          "BIS's umbrella fielding stat. Combines range, arm, double plays, sure-handedness into runs vs. average."),
+    Entry("uzr", "Ultimate Zone Rating", "UZR", "Baserunning & Fielding",
+          "FanGraphs' older fielding metric, measuring range, arm, errors, and DP in run terms."),
+    Entry("arm-strength", "Arm Strength (OF)", "Arm", "Baserunning & Fielding",
+          "Average throwing velocity on competitive outfield throws, in MPH.",
+          example="Hunter Renfroe, Yordan Álvarez routinely 95+ mph."),
+    Entry("pop-time", "Pop Time", "Pop Time", "Baserunning & Fielding",
+          "Time in seconds from a catcher's glove pop on the pitcher's delivery to the fielder's glove at second base.",
+          example="Elite: 1.85s or lower. 2.05s+ is below average."),
+    Entry("framing", "Framing Runs", "Framing", "Baserunning & Fielding",
+          "Run value of extra (or lost) strikes a catcher earns via pitch presentation. Savant's definition uses rv_tot across 19 framing zones.",
+          example="Jose Trevino routinely +15 framing runs per season."),
+    Entry("blocks-aa", "Blocks Above Average", "Blocks AA", "Baserunning & Fielding",
+          "Catcher's runs saved (or lost) on pitches in the dirt, relative to a modeled expectation weighted by difficulty."),
+    Entry("cs-aa", "Caught Stealing Above Average", "CS AA", "Baserunning & Fielding",
+          "Catcher's contribution to throwing out runners, above what an average catcher would manage given each attempt's difficulty."),
+
+    # =========================================================
+    # Pitching — Counting
+    # =========================================================
+    Entry("w", "Wins", "W", "Pitching — Counting",
+          "Credited to the pitcher of record when his team takes the lead for good. Tied heavily to offense support; rarely the best talent evaluator."),
+    Entry("l", "Losses", "L", "Pitching — Counting",
+          "Credited to the pitcher charged with the go-ahead run in a loss."),
+    Entry("sv", "Saves", "SV", "Pitching — Counting",
+          "Finishing a win while meeting a specific save condition (e.g., entering with tying run on deck).",
+          example="Francisco Rodríguez 2008: 62 SV — record."),
+    Entry("hld", "Holds", "HLD", "Pitching — Counting",
+          "Awarded to a reliever who enters in a save situation, records at least one out, and maintains the lead for the next pitcher."),
+    Entry("ip", "Innings Pitched", "IP", "Pitching — Counting",
+          "Outs recorded divided by 3. Tenths represent thirds of an inning (e.g., 6.1 = 6⅓ innings).",
+          formula="IP = outs_recorded / 3"),
+    Entry("gs", "Games Started", "GS", "Pitching — Counting",
+          "Appearances as the starting pitcher."),
+    Entry("cg", "Complete Games", "CG", "Pitching — Counting",
+          "A starter pitches every inning his team plays in the field. Extinct in the modern bullpen era."),
+    Entry("sho", "Shutouts", "SHO", "Pitching — Counting",
+          "A CG in which the pitcher allows no earned or unearned runs."),
+    Entry("bfp", "Batters Faced", "BFP", "Pitching — Counting",
+          "The pitcher's version of PA — total hitters encountered."),
+    Entry("so-pit", "Strikeouts (pitcher)", "K", "Pitching — Counting",
+          "Strikes out by the pitcher.",
+          example="Nolan Ryan career: 5,714 K."),
+    Entry("bb-pit", "Walks (pitcher)", "BB", "Pitching — Counting",
+          "Issued walks."),
+    Entry("hr-pit", "Home Runs Allowed", "HR", "Pitching — Counting",
+          "Home runs given up."),
+    Entry("er", "Earned Runs", "ER", "Pitching — Counting",
+          "Runs scored without the aid of an error or passed ball."),
+
+    # =========================================================
+    # Pitching — Rate
+    # =========================================================
+    Entry("era", "Earned Run Average", "ERA", "Pitching — Rate",
+          "Earned runs per 9 innings. The traditional headline rate stat; noisy at small sample sizes.",
+          formula="ERA = (ER × 9) / IP",
+          example="A 3.00 ERA was elite in most modern seasons; in 1968 it was slightly above average."),
+    Entry("whip", "Walks + Hits per IP", "WHIP", "Pitching — Rate",
+          "Baserunners allowed per inning (excluding errors).",
+          formula="WHIP = (BB + H) / IP",
+          example="<1.00 is Cy Young-caliber; >1.30 is below average."),
+    Entry("fip", "Fielding Independent Pitching", "FIP", "Pitching — Rate",
+          "ERA-scaled stat built only from outcomes the pitcher fully controls: K, BB, HBP, HR.",
+          formula="FIP = ((13·HR + 3·(BB+HBP) − 2·K) / IP) + constant  (constant ≈ 3.10–3.20)",
+          example="A pitcher with 4.50 ERA and 3.50 FIP is likely unlucky."),
+    Entry("xfip", "Expected FIP", "xFIP", "Pitching — Rate",
+          "FIP but replaces actual HRs with a normalized HR/FB rate — smooths out HR luck year-over-year.",
+          formula="xFIP = ((13·lgHR/FB·FB + 3·(BB+HBP) − 2·K) / IP) + constant"),
+    Entry("siera", "Skill Interactive ERA", "SIERA", "Pitching — Rate",
+          "ERA estimator that accounts for interaction between K/BB rates and batted-ball profile. Tends to predict future ERA better than FIP/xFIP.",
+          formula="Regression-based; ~12 terms weighted from K%, BB%, GB%, and their interactions."),
+    Entry("era-plus", "ERA Plus", "ERA+", "Pitching — Rate",
+          "ERA normalized to park and league. 100 = league-average; 150 = 50% better than league.",
+          formula="ERA+ = 100 × lgERA / (ERA × parkFactor)",
+          example="Pedro 2000: 291 ERA+ — arguably the greatest pitching season ever."),
+    Entry("fip-minus", "FIP Minus", "FIP-", "Pitching — Rate",
+          "FIP normalized to park and league, where 100 = average and lower is better (like wRC+ inverted)."),
+    Entry("k9", "Strikeouts per 9", "K/9", "Pitching — Rate",
+          "Volume stat — how many K a pitcher would get over 9 innings.",
+          formula="K/9 = (K × 9) / IP"),
+    Entry("bb9", "Walks per 9", "BB/9", "Pitching — Rate",
+          "Walks allowed per 9 innings.",
+          formula="BB/9 = (BB × 9) / IP"),
+    Entry("hr9", "HR per 9", "HR/9", "Pitching — Rate",
+          "Home runs allowed per 9 innings.",
+          formula="HR/9 = (HR × 9) / IP"),
+    Entry("k-pct-pit", "K Rate (pitcher)", "K%", "Pitching — Rate",
+          "Strikeouts per batter faced. Better than K/9 for cross-era comparisons (not biased by IP/length of PA).",
+          formula="K% = K / BFP"),
+    Entry("bb-pct-pit", "BB Rate (pitcher)", "BB%", "Pitching — Rate",
+          "Walks per batter faced.",
+          formula="BB% = BB / BFP"),
+    Entry("k-bb-pct", "K minus BB Rate", "K-BB%", "Pitching — Rate",
+          "The gap between K and BB rates — a leading indicator of ERA.",
+          formula="K-BB% = K% − BB%"),
+    Entry("lob-pct", "Left On Base Rate", "LOB%", "Pitching — Rate",
+          "Percent of baserunners a pitcher strands. Regresses hard toward ~72% league-wide.",
+          formula="LOB% = (H + BB + HBP − R) / (H + BB + HBP − 1.4·HR)"),
+    Entry("qs", "Quality Starts", "QS", "Pitching — Rate",
+          "Games in which a starter throws ≥6 IP and allows ≤3 ER."),
+
+    # =========================================================
+    # Pitching — Statcast
+    # =========================================================
+    Entry("xera", "Expected ERA", "xERA", "Pitching — Statcast",
+          "Converts xwOBA allowed into an ERA-scaled number. Defense- and park-neutral.",
+          example="Pitcher with 5.00 ERA and 3.60 xERA has been burned by defense or HR luck."),
+    Entry("xwoba-against", "xwOBA Allowed", "xwOBA", "Pitching — Statcast",
+          "Quality of contact allowed, with the same EV/LA model as hitter xwOBA."),
+    Entry("velo", "Average Fastball Velocity", "Velo", "Pitching — Statcast",
+          "Average MPH of four-seam (or sinker) fastballs thrown in a season.",
+          example="MLB SP avg ~93.8 mph; elite 97+ (Skenes, Strider, deGrom)."),
+    Entry("spin", "Spin Rate", "Spin", "Pitching — Statcast",
+          "Revolutions per minute of a pitch. Higher spin on fastballs → more carry; on breaking balls → more movement.",
+          example="Bauer units (spin/velocity) ≈ 24+ is elite for 4-seamers."),
+    Entry("extension", "Release Extension", "Ext", "Pitching — Statcast",
+          "Distance in feet from the rubber to the pitch release point. 1 ft of extension adds ~3 mph of perceived velocity.",
+          example="Tyler Glasnow 7.3 ft — league leader at 6'8\" with long stride."),
+    Entry("whiff-pct-pit", "Whiff Rate (pitcher)", "Whiff%", "Pitching — Statcast",
+          "Swings and misses induced / total swings. Higher is better for the pitcher."),
+    Entry("chase-pct-pit", "Chase Rate (pitcher)", "Chase%", "Pitching — Statcast",
+          "Percentage of the pitcher's out-of-zone pitches that get swung at."),
+    Entry("csw-pct", "Called + Swinging Strike Rate", "CSW%", "Pitching — Statcast",
+          "(Called strikes + whiffs) / pitches thrown — one of the best single-number pitcher talent indicators."),
+    Entry("barrel-allowed", "Barrel Rate Allowed", "Barrel%", "Pitching — Statcast",
+          "Percentage of batted balls allowed that qualify as barrels — the worst-contact-given-up rate."),
+    Entry("hardhit-allowed", "Hard-Hit Rate Allowed", "Hard-Hit%", "Pitching — Statcast",
+          "Percent of balls in play allowed at ≥95 mph."),
+    Entry("gb-pct", "Ground-Ball Rate", "GB%", "Pitching — Statcast",
+          "Percentage of balls in play that are ground balls. High-GB pitchers tend to suppress HR.",
+          example="Framber Valdez, Logan Webb routinely 55%+."),
+    Entry("stuff-plus", "Stuff+", "Stuff+", "Pitching — Statcast",
+          "Model-based rating of pitch quality (velo, movement, extension) independent of results. 100 = league-average; 110+ is plus stuff.",
+          notes="Several public implementations exist — FanGraphs' Stuff+, PitchingBot, Eno Sarris/Max Bay's model. All directionally agree."),
+
+    # =========================================================
+    # Value & Win
+    # =========================================================
+    Entry("war", "Wins Above Replacement", "WAR", "Value & Win",
+          "Total player value in wins, compared to a freely available 'replacement-level' player. FanGraphs (fWAR) and Baseball-Reference (bWAR) use different methodology.",
+          formula="Hitter: (Batting + Baserunning + Fielding + Positional) runs / RPW. Pitcher: FIP-based (fWAR) or RA9-based (bWAR).",
+          example="A typical MVP season is 8+ WAR; a HoF career is ~60+."),
+    Entry("bwar", "Baseball-Reference WAR", "bWAR", "Value & Win",
+          "bbref's WAR implementation. Uses actual runs allowed (RA9) for pitchers, DRS for fielders."),
+    Entry("fwar", "FanGraphs WAR", "fWAR", "Value & Win",
+          "FanGraphs' WAR. Uses FIP for pitchers and UZR for fielders."),
+    Entry("wpa", "Win Probability Added", "WPA", "Value & Win",
+          "The change in each player's team's win probability across his PAs. A dramatic 9th-inning home run can be worth 0.4+ wins in one swing.",
+          example="David Ortiz is #1 all-time in postseason WPA."),
+    Entry("re24", "Runs Expectancy (24 States)", "RE24", "Value & Win",
+          "Change in run expectancy across the 24 base/out states summed across a player's PAs. Context-dependent but leverage-neutral.",
+          formula="RE24 = Σ (RE_after − RE_before + runs_scored)"),
+    Entry("li", "Leverage Index", "LI", "Value & Win",
+          "Multiplier on expected win-probability swing of the upcoming PA. 1.0 is average, 2.0 is high-leverage, 3.0+ is extreme."),
+    Entry("clutch", "Clutch Score", "Clutch", "Value & Win",
+          "FanGraphs' clutch stat — performance in high-leverage spots vs. neutral-leverage spots. Year-over-year noisy; mostly a descriptor, not a skill."),
+    Entry("bat-rv", "Batting Run Value", "Bat RV", "Value & Win",
+          "Savant's run value of a batter's total contact + discipline events. Comparable to wRAA."),
+    Entry("pit-rv", "Pitching Run Value", "Pit RV", "Value & Win",
+          "Savant's run value allowed across all pitches thrown."),
+    Entry("fld-rv", "Fielding Run Value", "Fld RV", "Value & Win",
+          "OAA-based runs saved/cost, plus arm value for OF/IF throws."),
+
+    # =========================================================
+    # BRAVS (our metric)
+    # =========================================================
+    Entry("bravs", "BRAVS", "BRAVS", "BRAVS",
+          "Our home-grown season value stat. Sums hitting, pitching, baserunning, fielding, positional, durability, AQI, leverage, and catcher components, all in runs. Era-adjusted when displayed as bravs_era_std.",
+          formula="BRAVS = hitting + pitching + baserunning + fielding + positional + durability + leverage + catcher + AQI",
+          example="Bonds 2001: 19.47 BRAVS — highest post-1980 season."),
+    Entry("bravs-war", "BRAVS WAR-eq", "WAR-eq", "BRAVS",
+          "BRAVS converted to wins using that season's runs-per-win (RPW) conversion. Roughly comparable to fWAR/bWAR.",
+          formula="WAR-eq = BRAVS / RPW",
+          example="13.5 WAR-eq = a historic-tier season."),
+    Entry("bravs-era-std", "BRAVS (Era-Standardized)", "BRAVS (std)", "BRAVS",
+          "BRAVS scaled to a neutral run environment so cross-era comparisons are fairer. Dead-ball stars get an uplift; steroid-era hitters get slight clipping."),
+    Entry("hitting-runs", "Hitting Runs", "Hit Runs", "BRAVS",
+          "Pure offensive run value above average. Built from wOBA → runs."),
+    Entry("baserunning-runs", "Baserunning Runs", "BsR Runs", "BRAVS",
+          "Steal value + extra-base taking + GIDP avoidance, all in runs."),
+    Entry("fielding-runs", "Fielding Runs", "Fld Runs", "BRAVS",
+          "Combines OAA-style range, arm, and position-specific adjustments."),
+    Entry("positional-runs", "Positional Adjustment", "Pos Runs", "BRAVS",
+          "Runs added/subtracted based on defensive position difficulty (C +12.5, SS +7.5, …, DH −17.5 per 162 games)."),
+    Entry("durability-runs", "Durability Runs", "Dur Runs", "BRAVS",
+          "Credit for staying on the field — sums small bonuses for full-season availability, penalizes lost time relative to a healthy baseline."),
+    Entry("aqi-runs", "Approach Quality Index Runs", "AQI Runs", "BRAVS",
+          "Residualized plate-discipline run value (chase rate, zone-contact rate, wOBA residual) — captures approach quality NOT already in wOBA."),
+    Entry("leverage-runs", "Leverage Runs", "Lev Runs", "BRAVS",
+          "Credit for performance weighted by Leverage Index. Relievers used in high-LI spots accumulate significantly more."),
+    Entry("catcher-runs", "Catcher Runs", "C Runs", "BRAVS",
+          "Framing + blocking + pop-time components rolled into runs above average behind the plate."),
+    Entry("ci90", "90% Credible Interval", "CI₉₀", "BRAVS",
+          "Lower and upper bounds of the 90% Bayesian credible interval for a player's true-talent BRAVS — because a point estimate shouldn't be mistaken for certainty."),
+    Entry("rpw", "Runs Per Win", "RPW", "BRAVS",
+          "Era-specific conversion factor for turning runs into wins.",
+          formula="RPW ≈ 9 × √(R/G × RA/G)  (Pythagoras-style)",
+          example="~10 runs = 1 win in modern offensive eras; ~8 in dead-ball."),
+]
+
+
+def all_entries() -> list[Entry]:
+    return ENTRIES
+
+
+def categories_with_counts() -> list[tuple[str, int]]:
+    return [(c, sum(1 for e in ENTRIES if e.category == c)) for c in CATEGORIES]
+
+
+def total() -> int:
+    return len(ENTRIES)

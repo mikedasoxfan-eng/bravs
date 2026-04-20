@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Year-over-Year — BRAVS{% endblock %}
+{% block page_title %}Year-over-Year{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <p class="kicker">04 / YoY</p>
+  <h2>Biggest improvers and decliners.</h2>
+  <p class="lede">Pick two seasons and a stat. See who gained the most — or fell the furthest — while still meeting the playing-time threshold in both years.</p>
+</div>
+
+<form class="form-panel" method="get" action="/yoy">
+  <div class="field">
+    <label>Kind</label>
+    <select class="ctl" name="kind" onchange="this.form.submit()">
+      <option value="batter"  {% if kind == 'batter'  %}selected{% endif %}>Batters</option>
+      <option value="pitcher" {% if kind == 'pitcher' %}selected{% endif %}>Pitchers</option>
+    </select>
+  </div>
+  <div class="field">
+    <label>Stat</label>
+    {% set selected = stat_key %}{% set name = 'stat' %}
+    {% include '_stat_controls.html' with context %}
+  </div>
+  <div class="field">
+    <label>From Year</label>
+    <select class="ctl mono" name="year_a">{% for y in years %}<option value="{{ y }}" {% if y == year_a %}selected{% endif %}>{{ y }}</option>{% endfor %}</select>
+  </div>
+  <div class="field">
+    <label>To Year</label>
+    <select class="ctl mono" name="year_b">{% for y in years %}<option value="{{ y }}" {% if y == year_b %}selected{% endif %}>{{ y }}</option>{% endfor %}</select>
+  </div>
+  <div class="field">
+    <label>Mode</label>
+    <select class="ctl" name="mode">
+      <option value="improvers" {% if improvers %}selected{% endif %}>Improvers</option>
+      <option value="decliners" {% if not improvers %}selected{% endif %}>Decliners</option>
+    </select>
+  </div>
+  <div class="field">
+    <label>Show</label>
+    <select class="ctl mono" name="n">
+      {% for nv in [10, 15, 25, 50] %}<option value="{{ nv }}" {% if nv == n %}selected{% endif %}>Top {{ nv }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="actions"><button class="btn" type="submit">Compute</button></div>
+</form>
+
+{% if rows %}
+<div class="summary-bar">
+  <span>{{ year_a }} → {{ year_b }}</span>
+  <span>·</span>
+  <span><strong>{{ kind|capitalize }}s</strong></span>
+  <span>·</span>
+  <span>{{ 'Improvers' if improvers else 'Decliners' }} by <strong>{{ stat.label }}</strong></span>
+</div>
+<div class="table-wrap">
+  <table class="data">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th class="thumb"></th>
+        <th>Player</th>
+        <th class="num">{{ year_a }}</th>
+        <th class="num">{{ year_b }}</th>
+        <th class="num">Δ</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td class="rank">{{ r.rank }}</td>
+        <td class="thumb">{% if r.portrait %}<img src="{{ r.portrait }}" alt="" loading="lazy">{% endif %}</td>
+        <td class="name">{% if r.mlbam_id %}<a href="/player/{{ r.mlbam_id }}/{{ year_b }}">{{ r.name }}</a>{% else %}{{ r.name }}{% endif %}</td>
+        <td class="num">{{ r.a }}</td>
+        <td class="num">{{ r.b }}</td>
+        <td class="num {{ 'delta-up' if r.delta_sign == 'up' else ('delta-down' if r.delta_sign == 'down' else '') }}">{{ r.delta }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">Pick two seasons to begin</div>
+{% endif %}
+{% endblock %}
